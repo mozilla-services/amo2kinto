@@ -40,29 +40,29 @@ def write_addons_items(xml_tree, records):
     for item in records:
         if item['enabled']:
             emItem = etree.SubElement(emItems, 'emItem',
-                                      blockID=item.get('blockID'),
+                                      blockID=item.get('blockID', item['id']),
                                       id=item['addonId'])
             prefs = etree.SubElement(emItem, 'prefs')
             for p in item['prefs']:
                 pref = etree.SubElement(prefs, 'pref')
                 pref.text = p
 
-            versionRange = etree.SubElement(
-                emItem, 'versionRange',
-                minVersion=version.get('minVersion'),
-                maxVersion=version.get('maxVersion'),
-                severity=version.get('severity'),
-                vulnerabilitystatus=version.get('vulnerability'))
+            for version in item['versionRange']:
+                versionRange = etree.SubElement(
+                    emItem, 'versionRange',
+                    minVersion=version.get('minVersion'),
+                    maxVersion=version.get('maxVersion'),
+                    severity=version.get('severity'),
+                    vulnerabilitystatus=version.get('vulnerability'))
 
-            if 'targetApplication' in version:
-                targetApplication = etree.SubElement(
-                    versionRange, 'targetApplication',
-                    id=version['targetApplication']['id'])
-                taVersionRange = etree.SubElement(
-                    targetApplication, 'versionRange',
-                    minVersion=version['targetApplication']['minVersion'],
-                    maxVersion=version['targetApplication']['maxVersion'])
-
+                if 'targetApplication' in version:
+                    targetApplication = etree.SubElement(
+                        versionRange, 'targetApplication',
+                        id=version['targetApplication']['id'])
+                    etree.SubElement(
+                        targetApplication, 'versionRange',
+                        minVersion=version['targetApplication']['minVersion'],
+                        maxVersion=version['targetApplication']['maxVersion'])
 
 
 def write_plugin_items(xml_tree, records):
@@ -70,7 +70,9 @@ def write_plugin_items(xml_tree, records):
 
     <pluginItem blockID="p422">
         <match name="filename" exp="JavaAppletPlugin\.plugin"/>
-        <versionRange minVersion="Java 7 Update 16" maxVersion="Java 7 Update 24" severity="0" vulnerabilitystatus="1">
+        <versionRange minVersion="Java 7 Update 16"
+                      maxVersion="Java 7 Update 24"
+                      severity="0" vulnerabilitystatus="1">
             <targetApplication id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}">
                 <versionRange minVersion="17.0" maxVersion="*"/>
             </targetApplication>
@@ -82,19 +84,19 @@ def write_plugin_items(xml_tree, records):
     for item in records:
         if item['enabled']:
             entry = etree.SubElement(pluginItems, 'pluginItem',
-                                     blockID=item.get('blockID'))
+                                     blockID=item.get('blockID', item['id']))
             if 'matchName' in item:
-                match = etree.SubElement(entry, 'match',
-                                         name='name',
-                                         exp=item['matchName'])
+                etree.SubElement(entry, 'match',
+                                 name='name',
+                                 exp=item['matchName'])
             if 'matchFilename' in item:
-                match = etree.SubElement(entry, 'match',
-                                         name='filename',
-                                         exp=item['matchFilename'])
+                etree.SubElement(entry, 'match',
+                                 name='filename',
+                                 exp=item['matchFilename'])
             if 'matchDescription' in item:
-                match = etree.SubElement(entry, 'match',
-                                         name='description',
-                                         exp=item['matchDescription'])
+                etree.SubElement(entry, 'match',
+                                 name='description',
+                                 exp=item['matchDescription'])
 
             if 'infoURL' in item:
                 infoURL = etree.SubElement(entry, 'infoURL')
@@ -112,7 +114,7 @@ def write_plugin_items(xml_tree, records):
                     targetApplication = etree.SubElement(
                         versionRange, 'targetApplication',
                         id=version['targetApplication']['id'])
-                    taVersionRange = etree.SubElement(
+                    etree.SubElement(
                         targetApplication, 'versionRange',
                         minVersion=version['targetApplication']['minVersion'],
                         maxVersion=version['targetApplication']['maxVersion'])
@@ -137,7 +139,7 @@ def write_gfx_items(xml_tree, records):
     for item in records:
         if item['enabled']:
             entry = etree.SubElement(gfxItems, 'gfxBlacklistEntry',
-                                     blockID=item.get('blockID'))
+                                     blockID=item.get('blockID', item['id']))
             # OS
             os = etree.SubElement(entry, 'os')
             os.text = item['os']
@@ -213,7 +215,7 @@ def main():
     # Retrieve the collection of records.
     try:
         addons_records = client.get_records(collection='addons',
-                                        _sort="last_modified")
+                                            _sort="last_modified")
     except:
         logger.warn('Unable to fetch the ``addons`` collection.')
         addons_records = []
