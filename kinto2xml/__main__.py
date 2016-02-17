@@ -193,18 +193,16 @@ def main():
     remove_action(parser, '-c', '--collection')
 
     # Choose where to write the file down.
-    parser.add_argument('-o', '--out', help='Folder to download files in.',
-                        type=str, default='STDOUT')
+    parser.add_argument('-o', '--out', help='Output file.',
+                        type=str, default=None)
     args = parser.parse_args()
     args.collection = None
 
     cli_utils.setup_logger(logger, args)
 
     close_out_fd = False
-    if args.out.upper() == 'STDOUT':
+    if not args.out.upper():
         out_fd = sys.stdout
-    elif args.out.upper() == 'STDERR':
-        out_fd = sys.stderr
     else:
         out_fd = open(args.out, 'w+')
         close_out_fd = True
