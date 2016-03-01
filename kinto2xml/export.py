@@ -38,7 +38,7 @@ def write_addons_items(xml_tree, records):
     """
     emItems = etree.SubElement(xml_tree, 'emItems')
     for item in records:
-        if item['enabled']:
+        if item.get('enabled', True):
             emItem = etree.SubElement(emItems, 'emItem',
                                       blockID=item.get('blockID', item['id']),
                                       id=item['addonId'])
@@ -82,7 +82,7 @@ def write_plugin_items(xml_tree, records):
 
     pluginItems = etree.SubElement(xml_tree, 'pluginItems')
     for item in records:
-        if item['enabled']:
+        if item.get('enabled', True):
             entry = etree.SubElement(pluginItems, 'pluginItem',
                                      blockID=item.get('blockID', item['id']))
             if 'matchName' in item:
@@ -137,7 +137,7 @@ def write_gfx_items(xml_tree, records):
     """
     gfxItems = etree.SubElement(xml_tree, 'gfxItems')
     for item in records:
-        if item['enabled']:
+        if item.get('enabled', True):
             entry = etree.SubElement(gfxItems, 'gfxBlacklistEntry',
                                      blockID=item.get('blockID', item['id']))
             # OS
@@ -161,11 +161,13 @@ def write_gfx_items(xml_tree, records):
             featureStatus.text = item['featureStatus']
 
             # Driver
-            driverVersion = etree.SubElement(entry, 'driverVersion')
-            driverVersion.text = item['driverVersion']
-            driverVersionComparator = etree.SubElement(
-                entry, 'driverVersionComparator')
-            driverVersionComparator.text = item['driverVersionComparator']
+            if 'driverVersion' in item:
+                driverVersion = etree.SubElement(entry, 'driverVersion')
+                driverVersion.text = item['driverVersion']
+            if 'driverVersionComparator' in item:
+                driverVersionComparator = etree.SubElement(
+                    entry, 'driverVersionComparator')
+                driverVersionComparator.text = item['driverVersionComparator']
 
 
 def write_cert_items(xml_tree, records):
@@ -177,11 +179,11 @@ def write_cert_items(xml_tree, records):
     """
     certItems = etree.SubElement(xml_tree, 'certItems')
     for item in records:
-        if item['enabled']:
+        if item.get('enabled', True):
             cert = etree.SubElement(certItems, 'certItem',
                                     issuerName=item['issuerName'])
             serialNumber = etree.SubElement(cert, 'serialNumber')
-            serialNumber.text = item['issuerName']
+            serialNumber.text = item['serialNumber']
 
 
 def main():
@@ -201,7 +203,7 @@ def main():
     cli_utils.setup_logger(logger, args)
 
     close_out_fd = False
-    if not args.out.upper():
+    if not args.out:
         out_fd = sys.stdout
     else:
         out_fd = open(args.out, 'w+')
