@@ -17,7 +17,7 @@ REQUIREMENTS = [
 
 ENTRY_POINTS = {
     'console_scripts': [
-        'kinto2xml = kinto2xml.__main__:main'
+        'kinto2xml = kinto2xml.export:main',
     ]
 }
 
