@@ -2,23 +2,9 @@ import logging
 import sys
 from lxml import etree
 from kinto_client import cli_utils
+from . import constants
 
 logger = logging.getLogger("kinto2xml")
-
-
-# XXX: We might want to move this to kinto_client.cli_utils.
-def remove_action(parser, short, long):
-    actions = filter(
-        lambda x: x.option_strings == [short, long],
-        parser._actions
-    )
-    if len(actions) == 1:
-        parser._handle_conflict_resolve(None, [
-            (short, actions[0])
-        ])
-        parser._handle_conflict_resolve(None, [
-            (long, actions[0])
-        ])
 
 
 def write_addons_items(xml_tree, records):
@@ -187,18 +173,48 @@ def write_cert_items(xml_tree, records):
 
 
 def main():
-    parser = cli_utils.set_parser_server_options(
-        description='Build a blocklists.xml file.', default_collection=None)
+    parser = cli_utils.add_parser_options(
+        description='Build a blocklists.xml file from Kinto blocklists.',
+        default_collection=None,
+        default_bucket=None,
+        default_server=constants.KINTO_SERVER,
+        default_auth=constants.AUTH,
+        include_bucket=False,
+        include_collection=False)
 
-    # Remove the collection arguments which is not accurate here
-    # because we handle four of them in the bucket.
-    remove_action(parser, '-c', '--collection')
+    parser.add_argument('--cert-bucket', help='Bucket name for certificates',
+                        type=str, default=constants.CERT_BUCKET)
+
+    parser.add_argument('--cert-collection',
+                        help='Collection name for certificates',
+                        type=str, default=constants.CERT_COLLECTION)
+
+    parser.add_argument('--gfx-bucket', help='Bucket name for gfx',
+                        type=str, default=constants.GFX_BUCKET)
+
+    parser.add_argument('--gfx-collection',
+                        help='Collection name for gfx',
+                        type=str, default=constants.GFX_COLLECTION)
+
+    parser.add_argument('--addons-bucket', help='Bucket name for addons',
+                        type=str, default=constants.ADDONS_BUCKET)
+
+    parser.add_argument('--addons-collection',
+                        help='Collection name for addon',
+                        type=str, default=constants.ADDONS_COLLECTION)
+
+    parser.add_argument('--plugins-bucket', help='Bucket name for plugins',
+                        type=str, default=constants.PLUGINS_BUCKET)
+
+    parser.add_argument('--plugins-collection',
+                        help='Collection name for plugin',
+                        type=str, default=constants.PLUGINS_COLLECTION)
 
     # Choose where to write the file down.
-    parser.add_argument('-o', '--out', help='Output file.',
+    parser.add_argument('-o', '--out', help='Output XML file.',
                         type=str, default=None)
+
     args = parser.parse_args()
-    args.collection = None
 
     cli_utils.setup_logger(logger, args)
 
@@ -214,40 +230,68 @@ def main():
     last_update = 0
     # Retrieve the collection of records.
     try:
-        addons_records = client.get_records(collection='addons',
-                                            _sort="last_modified")
+        addons_records = client.get_records(
+            bucket=args.addons_bucket,
+            collection=args.addons_collection,
+            _sort="last_modified")
     except:
-        logger.warn('Unable to fetch the ``addons`` collection.')
+        logger.warn(
+            'Unable to fetch the ``{bucket}/{collection}`` records.'.format(
+                bucket=args.addons_bucket,
+                collection=args.addons_collection,
+            )
+        )
         addons_records = []
 
     if addons_records:
         last_update = addons_records[-1]['last_modified']
 
     try:
-        plugin_records = client.get_records(collection='plugins',
-                                            _sort="last_modified")
+        plugin_records = client.get_records(
+            bucket=args.plugins_bucket,
+            collection=args.plugins_collection,
+            _sort="last_modified")
     except:
-        logger.warn('Unable to fetch the ``plugins`` collection.')
+        logger.warn(
+            'Unable to fetch the ``{bucket}/{collection}`` records.'.format(
+                bucket=args.plugins_bucket,
+                collection=args.plugins_collection,
+            )
+        )
         plugin_records = []
 
     if plugin_records:
         last_update = max(last_update, plugin_records[-1]['last_modified'])
 
     try:
-        gfx_records = client.get_records(collection='gfx',
-                                         _sort="last_modified")
+        gfx_records = client.get_records(
+            bucket=args.gfx_bucket,
+            collection=args.gfx_collection,
+            _sort="last_modified")
     except:
-        logger.warn('Unable to fetch the ``gfx`` collection.')
+        logger.warn(
+            'Unable to fetch the ``{bucket}/{collection}`` records.'.format(
+                bucket=args.gfx_bucket,
+                collection=args.gfx_collection,
+            )
+        )
         gfx_records = []
 
     if gfx_records:
         last_update = max(last_update, gfx_records[-1]['last_modified'])
 
     try:
-        cert_records = client.get_records(collection='certificates',
-                                          _sort="last_modified")
+        cert_records = client.get_records(
+            bucket=args.cert_bucket,
+            collection=args.cert_collection,
+            _sort="last_modified")
     except:
-        logger.warn('Unable to fetch the ``certificates`` collection.')
+        logger.warn(
+            'Unable to fetch the ``{bucket}/{collection}`` records.'.format(
+                bucket=args.cert_bucket,
+                collection=args.cert_collection,
+            )
+        )
         cert_records = []
 
     if cert_records:

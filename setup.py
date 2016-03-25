@@ -1,23 +1,38 @@
 import codecs
 import os
+import sys
 from setuptools import setup, find_packages
 
-here = os.path.abspath(os.path.dirname(__file__))
+HERE = os.path.abspath(os.path.dirname(__file__))
 
-with codecs.open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
+with codecs.open(os.path.join(HERE, 'README.rst'), encoding='utf-8') as f:
     README = f.read()
+
+with codecs.open(os.path.join(HERE, 'CHANGELOG.rst'), encoding='utf-8') as f:
+    CHANGELOG = f.read()
 
 
 REQUIREMENTS = [
     'kinto-client',
+    'requests',
     'lxml',
     'six',
 ]
 
 
+if sys.version_info < (2, 7, 9):
+    # Add OpenSSL dependencies to handle requests SSL warning.
+    REQUIREMENTS.append([
+        "pyopenssl",
+        "ndg-httpsclient",
+        "pyasn1"
+    ])
+
+
 ENTRY_POINTS = {
     'console_scripts': [
         'kinto2xml = kinto2xml.export:main',
+        'amo2kinto = kinto2xml.import:main',
     ]
 }
 
@@ -25,7 +40,7 @@ ENTRY_POINTS = {
 setup(name='kinto2xml',
       version='0.1.0.dev0',
       description='Generate a blocklists.xml file from the Kinto collections.',
-      long_description=README,
+      long_description=README + "\n\n" + CHANGELOG,
       license='Apache License (2.0)',
       classifiers=[
           "Programming Language :: Python",
