@@ -7,6 +7,37 @@ from . import constants
 logger = logging.getLogger("kinto2xml")
 
 
+def build_version_range(root, item):
+    for version in item['versionRange']:
+        versionRange = etree.SubElement(
+            root, 'versionRange')
+        minVersion = version.get('minVersion')
+        if minVersion:
+            versionRange.set('minVersion', minVersion)
+
+        maxVersion = version.get('maxVersion')
+        if maxVersion:
+            versionRange.set('maxVersion', maxVersion)
+
+        severity = version.get('severity')
+        if severity and severity != '0':
+            versionRange.set('severity', str(severity))
+
+        vulnerabilityStatus = version.get('vulnerabilityStatus')
+        if vulnerabilityStatus:
+            versionRange.set('vulnerabilitystatus', str(vulnerabilityStatus))
+
+        if ('targetApplication' in version and
+                version['targetApplication']):
+            targetApplication = etree.SubElement(
+                versionRange, 'targetApplication',
+                id=version['targetApplication'][0]['guid'])
+            etree.SubElement(
+                targetApplication, 'versionRange',
+                minVersion=version['targetApplication'][0]['minVersion'],
+                maxVersion=version['targetApplication'][0]['maxVersion'])
+
+
 def write_addons_items(xml_tree, records):
     """Generate the addons blocklists.
 
@@ -33,35 +64,7 @@ def write_addons_items(xml_tree, records):
                 pref = etree.SubElement(prefs, 'pref')
                 pref.text = p
 
-            for version in item['versionRange']:
-                versionRange = etree.SubElement(
-                    emItem, 'versionRange')
-                minVersion = version.get('minVersion')
-                if minVersion:
-                    versionRange.set('minVersion', minVersion)
-
-                maxVersion = version.get('maxVersion')
-                if maxVersion:
-                    versionRange.set('maxVersion', maxVersion)
-
-                severity = version.get('severity')
-                if severity:
-                    versionRange.set('severity', str(severity))
-
-                vulnerabilityStatus = version.get('vulnerabilityStatus')
-                if vulnerabilityStatus:
-                    versionRange.set('vulnerabilitystatus',
-                                     str(vulnerabilityStatus))
-
-                if ('targetApplication' in version and
-                        version['targetApplication']):
-                    targetApplication = etree.SubElement(
-                        versionRange, 'targetApplication',
-                        id=version['targetApplication'][0]['guid'])
-                    etree.SubElement(
-                        targetApplication, 'versionRange',
-                        minVersion=version['targetApplication'][0]['minVersion'],
-                        maxVersion=version['targetApplication'][0]['maxVersion'])
+            build_version_range(emItem, item)
 
 
 def write_plugin_items(xml_tree, records):
@@ -79,7 +82,7 @@ def write_plugin_items(xml_tree, records):
     </pluginItem>
     """
 
-    pluginItems = etree.SubElement(xml_tree, 'pluginItems')
+    pluginItems = etree.SubElement(xml_tree, 'pluginsItems')
     for item in records:
         if item.get('enabled', True):
             entry = etree.SubElement(pluginItems, 'pluginItem',
@@ -101,22 +104,7 @@ def write_plugin_items(xml_tree, records):
                 infoURL = etree.SubElement(entry, 'infoURL')
                 infoURL.text = item['infoURL']
 
-            for version in item['versionRange']:
-                versionRange = etree.SubElement(
-                    entry, 'versionRange',
-                    minVersion=version['minVersion'] or None,
-                    maxVersion=version['maxVersion'] or None,
-                    severity=version['severity'] or None,
-                    vulnerabilitystatus=version.get('vulnerability'))
-
-                if 'targetApplication' in version:
-                    targetApplication = etree.SubElement(
-                        versionRange, 'targetApplication',
-                        id=version['targetApplication']['id'])
-                    etree.SubElement(
-                        targetApplication, 'versionRange',
-                        minVersion=version['targetApplication']['minVersion'],
-                        maxVersion=version['targetApplication']['maxVersion'])
+            build_version_range(entry, item)
 
 
 def write_gfx_items(xml_tree, records):
@@ -195,10 +183,11 @@ def main(args=None):
         include_bucket=False,
         include_collection=False)
 
-    parser.add_argument('--cert-bucket', help='Bucket name for certificates',
+    parser.add_argument('--certificates-bucket',
+                        help='Bucket name for certificates',
                         type=str, default=constants.CERT_BUCKET)
 
-    parser.add_argument('--cert-collection',
+    parser.add_argument('--certificates-collection',
                         help='Collection name for certificates',
                         type=str, default=constants.CERT_COLLECTION)
 
@@ -231,9 +220,9 @@ def main(args=None):
 
     cli_utils.setup_logger(logger, args)
 
-    close_out_fd = False
     if not args.out:
         out_fd = sys.stdout
+        close_out_fd = False
     else:
         out_fd = open(args.out, 'w+')
         close_out_fd = True
@@ -295,14 +284,14 @@ def main(args=None):
 
     try:
         cert_records = client.get_records(
-            bucket=args.cert_bucket,
-            collection=args.cert_collection,
+            bucket=args.certificates_bucket,
+            collection=args.certificates_collection,
             _sort="last_modified")
     except:
         logger.warn(
             'Unable to fetch the ``{bucket}/{collection}`` records.'.format(
-                bucket=args.cert_bucket,
-                collection=args.cert_collection,
+                bucket=args.certificates_bucket,
+                collection=args.certificates_collection,
             )
         )
         cert_records = []
@@ -330,7 +319,3 @@ def main(args=None):
 
     if close_out_fd:
         out_fd.close()
-
-
-if __name__ == '__main__':
-    main()

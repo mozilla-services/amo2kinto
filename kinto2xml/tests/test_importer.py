@@ -31,11 +31,11 @@ ADDONS_DATA = {
         "maxVersion": "*",
         "severity": 3
     }, {
-         "targetApplication": [],
-         "minVersion": "0",
-         "maxVersion": "*",
-         "severity": 3
-     }],
+        "targetApplication": [],
+        "minVersion": "0",
+        "maxVersion": "*",
+        "severity": 3
+    }],
     "prefs": ["test.blocklist"]
 }
 
