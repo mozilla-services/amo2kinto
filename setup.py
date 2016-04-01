@@ -31,8 +31,8 @@ if sys.version_info < (2, 7, 9):
 
 ENTRY_POINTS = {
     'console_scripts': [
-        'kinto2xml = kinto2xml.export:main',
-        'amo2kinto = kinto2xml.import:main',
+        'kinto2xml = kinto2xml.exporter:main',
+        'amo2kinto = kinto2xml.importer:main',
     ]
 }
 

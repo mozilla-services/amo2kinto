@@ -27,7 +27,7 @@ def write_addons_items(xml_tree, records):
         if item.get('enabled', True):
             emItem = etree.SubElement(emItems, 'emItem',
                                       blockID=item.get('blockID', item['id']),
-                                      id=item['addonId'])
+                                      id=item['guid'])
             prefs = etree.SubElement(emItem, 'prefs')
             for p in item['prefs']:
                 pref = etree.SubElement(prefs, 'pref')
@@ -35,20 +35,33 @@ def write_addons_items(xml_tree, records):
 
             for version in item['versionRange']:
                 versionRange = etree.SubElement(
-                    emItem, 'versionRange',
-                    minVersion=version.get('minVersion'),
-                    maxVersion=version.get('maxVersion'),
-                    severity=version.get('severity'),
-                    vulnerabilitystatus=version.get('vulnerability'))
+                    emItem, 'versionRange')
+                minVersion = version.get('minVersion')
+                if minVersion:
+                    versionRange.set('minVersion', minVersion)
 
-                if 'targetApplication' in version:
+                maxVersion = version.get('maxVersion')
+                if maxVersion:
+                    versionRange.set('maxVersion', maxVersion)
+
+                severity = version.get('severity')
+                if severity:
+                    versionRange.set('severity', str(severity))
+
+                vulnerabilityStatus = version.get('vulnerabilityStatus')
+                if vulnerabilityStatus:
+                    versionRange.set('vulnerabilitystatus',
+                                     str(vulnerabilityStatus))
+
+                if ('targetApplication' in version and
+                        version['targetApplication']):
                     targetApplication = etree.SubElement(
                         versionRange, 'targetApplication',
-                        id=version['targetApplication']['id'])
+                        id=version['targetApplication'][0]['guid'])
                     etree.SubElement(
                         targetApplication, 'versionRange',
-                        minVersion=version['targetApplication']['minVersion'],
-                        maxVersion=version['targetApplication']['maxVersion'])
+                        minVersion=version['targetApplication'][0]['minVersion'],
+                        maxVersion=version['targetApplication'][0]['maxVersion'])
 
 
 def write_plugin_items(xml_tree, records):
@@ -172,7 +185,7 @@ def write_cert_items(xml_tree, records):
             serialNumber.text = item['serialNumber']
 
 
-def main():
+def main(args=None):
     parser = cli_utils.add_parser_options(
         description='Build a blocklists.xml file from Kinto blocklists.',
         default_collection=None,
@@ -214,7 +227,7 @@ def main():
     parser.add_argument('-o', '--out', help='Output XML file.',
                         type=str, default=None)
 
-    args = parser.parse_args()
+    args = parser.parse_args(args=args)
 
     cli_utils.setup_logger(logger, args)
 

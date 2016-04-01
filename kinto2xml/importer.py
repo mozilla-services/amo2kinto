@@ -41,7 +41,7 @@ def sync_records(amo_records, fields,
                  bucket=bucket, collection=collection)
 
 
-def main():
+def main(args=None):
     parser = cli_utils.add_parser_options(
         description='Import the blocklists for AMO into Kinto.',
         default_collection=None,
@@ -57,7 +57,8 @@ def main():
     parser.add_argument('--no-schema', help='Should we handle schemas',
                         action="store_true")
 
-    parser.add_argument('--certificates-bucket', help='Bucket name for certificates',
+    parser.add_argument('--certificates-bucket',
+                        help='Bucket name for certificates',
                         type=str, default=constants.CERT_BUCKET)
 
     parser.add_argument('--certificates-collection',
@@ -102,7 +103,7 @@ def main():
     parser.add_argument('--amo-server', help='The AMO server to import from',
                         type=str, default=constants.AMO_SERVER)
 
-    args = parser.parse_args()
+    args = parser.parse_args(args=args)
     cli_utils.setup_logger(logger, args)
 
     # If none of the different "collections" were passed as parameter, then we
@@ -128,7 +129,8 @@ def main():
 
     for collection_type, records in six.iteritems(blocklists):
         args_type = collection_type.replace('-', '')
-        if hasattr(args, args_type) and (getattr(args, args_type) or import_all):
+        if hasattr(args, args_type) and (getattr(args, args_type) or
+                                         import_all):
             bucket = getattr(args, '%s_bucket' % args_type)
             collection = getattr(args, '%s_collection' % args_type)
             sync_records(amo_records=records,
@@ -136,8 +138,5 @@ def main():
                          kinto_client=kinto_client,
                          bucket=bucket,
                          collection=collection,
-                         schema=schemas[collection_type],
+                         schema=schemas.get(collection_type),
                          permissions=constants.COLLECTION_PERMISSIONS)
-
-if __name__ == '__main__':
-    main()
