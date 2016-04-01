@@ -315,7 +315,7 @@ def main(args=None):
         doc,
         pretty_print=True,
         xml_declaration=True,
-        encoding='UTF-8'))
+        encoding='UTF-8').decode('utf-8'))
 
     if close_out_fd:
         out_fd.close()

@@ -13,7 +13,7 @@ def prepare_amo_records(records, fields):
         blockID = record['blockID']
 
         # Remove fields we do not want to keep.
-        for field in record.keys():
+        for field in list(record.keys()):
             if field not in fields:
                 del record[field]
 

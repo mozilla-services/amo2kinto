@@ -7,6 +7,7 @@ from kinto2xml import constants, exporter
 
 ADDONS_DATA = {
     "id": "e3e8f123-588d-0f73-63d8-93bdfc6ae8e2",
+    "last_modified": "1368430987148",
     "guid": "sqlmoz@facebook.com",
     "blockID": "i454",
     "details": {
@@ -51,7 +52,7 @@ def test_addon_record():
         etree.ElementTree(xml_tree),
         pretty_print=True,
         xml_declaration=True,
-        encoding='UTF-8')
+        encoding='UTF-8').decode('utf-8')
 
     assert result == """<?xml version='1.0' encoding='UTF-8'?>
 <blocklist lastupdate="1459262434336" \
@@ -74,6 +75,7 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 
 PLUGIN_DATA = {
     "id": "6a1b6dfe-f463-3061-e8f8-6e896ccf2a8a",
+    "last_modified": "1301581706645",
     "blockID": "p26",
     "matchName": "^Yahoo Application State Plugin$",
     "matchFilename": "npYState.dll",
@@ -116,7 +118,7 @@ def test_plugin_record():
         etree.ElementTree(xml_tree),
         pretty_print=True,
         xml_declaration=True,
-        encoding='UTF-8')
+        encoding='UTF-8').decode('utf-8')
 
     assert result == """<?xml version='1.0' encoding='UTF-8'?>
 <blocklist lastupdate="1459262434336" \
@@ -140,6 +142,7 @@ vulnerabilitystatus="1">
 
 GFX_DATA = {
     "id": "00a6b9d2-285f-83f0-0a1f-ef0205a60067",
+    "last_modified": "1348467813852",
     "blockID": "g35",
     "devices": ["0x0a6c"],
     "driverVersion": "8.17.12.5896",
@@ -172,7 +175,7 @@ def test_gfx_record():
         etree.ElementTree(xml_tree),
         pretty_print=True,
         xml_declaration=True,
-        encoding='UTF-8')
+        encoding='UTF-8').decode('utf-8')
 
     assert result == """<?xml version='1.0' encoding='UTF-8'?>
 <blocklist lastupdate="1459262434336" \
@@ -195,6 +198,8 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 
 
 CERTIFICATE_DATA = {
+    "id": "fe7681eb-8480-718e-9870-084dca698f1d",
+    "last_modified": "1448372434324",
     "blockID": "c796",
     "issuerName": "MBQxEjAQBgNVBAMTCWVEZWxsUm9vdA==",
     "serialNumber": "a8V7lRiTqpdLYkrAiPw7tg==",
@@ -221,7 +226,7 @@ def test_certificate_record():
         etree.ElementTree(xml_tree),
         pretty_print=True,
         xml_declaration=True,
-        encoding='UTF-8')
+        encoding='UTF-8').decode('utf-8')
 
     assert result == """<?xml version='1.0' encoding='UTF-8'?>
 <blocklist lastupdate="1459262434336" \
@@ -236,6 +241,12 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 
 
 class TestMain(unittest.TestCase):
+    def setUp(self):
+        p = mock.patch('kinto_client.cli_utils.Client')
+        self.MockedClient = p.start()
+        self.MockedClient.return_value.get_records.return_value = []
+        self.addCleanup(p.stop)
+
     def assert_arguments(self, kinto_client, **kwargs):
         kwargs.setdefault('kinto_server', constants.KINTO_SERVER)
         kwargs.setdefault('auth', constants.AUTH)
@@ -289,60 +300,54 @@ class TestMain(unittest.TestCase):
 
     def test_main_default(self):
         # let's check that main() parsing uses our defaults
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
-            exporter.main([])
-            self.assert_arguments(MockedClient)
+        exporter.main([])
+        self.assert_arguments(self.MockedClient)
 
     def test_main_custom_server(self):
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
-            exporter.main(['-s', 'http://yeah'])
-            self.assert_arguments(MockedClient, kinto_server='http://yeah')
+        exporter.main(['-s', 'http://yeah'])
+        self.assert_arguments(self.MockedClient, kinto_server='http://yeah')
 
     def test_can_define_the_certificates_bucket_and_collection(self):
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
-            exporter.main(['--certificates-bucket', 'bucket',
-                           '--certificates-collection', 'collection'])
-            self.assert_arguments(MockedClient,
-                                  certificates_bucket='bucket',
-                                  certificates_collection='collection')
+        exporter.main(['--certificates-bucket', 'bucket',
+                       '--certificates-collection', 'collection'])
+        self.assert_arguments(self.MockedClient,
+                              certificates_bucket='bucket',
+                              certificates_collection='collection')
 
     def test_can_define_the_gfx_bucket_and_collection(self):
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
-            exporter.main(['--gfx-bucket', 'bucket',
-                           '--gfx-collection', 'collection'])
-            self.assert_arguments(MockedClient,
-                                  gfx_bucket='bucket',
-                                  gfx_collection='collection')
+        exporter.main(['--gfx-bucket', 'bucket',
+                       '--gfx-collection', 'collection'])
+        self.assert_arguments(self.MockedClient,
+                              gfx_bucket='bucket',
+                              gfx_collection='collection')
 
     def test_can_define_the_addons_bucket_and_collection(self):
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
-            exporter.main(['--addons-bucket', 'bucket',
-                           '--addons-collection', 'collection'])
-            self.assert_arguments(MockedClient,
-                                  addons_bucket='bucket',
-                                  addons_collection='collection')
+        exporter.main(['--addons-bucket', 'bucket',
+                       '--addons-collection', 'collection'])
+        self.assert_arguments(self.MockedClient,
+                              addons_bucket='bucket',
+                              addons_collection='collection')
 
     def test_can_define_the_plugins_bucket_and_collection(self):
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
-            exporter.main(['--plugins-bucket', 'bucket',
-                           '--plugins-collection', 'collection'])
-            self.assert_arguments(MockedClient,
-                                  plugins_bucket='bucket',
-                                  plugins_collection='collection')
+        exporter.main(['--plugins-bucket', 'bucket',
+                       '--plugins-collection', 'collection'])
+        self.assert_arguments(self.MockedClient,
+                              plugins_bucket='bucket',
+                              plugins_collection='collection')
 
     def test_can_define_the_auth_credentials(self):
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
-            exporter.main(['--auth', 'user:pass'])
-            self.assert_arguments(MockedClient, auth=('user', 'pass'))
+        exporter.main(['--auth', 'user:pass'])
+        self.assert_arguments(self.MockedClient, auth=('user', 'pass'))
 
     def test_can_define_the_output_file(self):
         out_file = StringIO()
-        with mock.patch('kinto2xml.exporter.open', return_value=out_file):
-            with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
+        with mock.patch.object(out_file, 'close') as mocked_close:
+            with mock.patch('kinto2xml.exporter.open', return_value=out_file):
                 exporter.main(['--out', 'file'])
-                self.assert_arguments(MockedClient)
-        self.assertTrue(out_file.closed)
-        self.assertEqual(len(out_file.buflist), 1)
+                self.assert_arguments(self.MockedClient)
+
+                self.assertTrue(mocked_close.called)
+                self.assertNotEqual(len(out_file.getvalue()), 0)
 
     def test_get_records_read_fails(self):
         with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
@@ -350,3 +355,13 @@ class TestMain(unittest.TestCase):
             with mock.patch('kinto2xml.exporter.logger') as mocked_logger:
                 exporter.main([])
                 self.assertEqual(mocked_logger.warn.call_count, 4)
+
+    def test_last_updated_uses_greater_value(self):
+        self.MockedClient.return_value.get_records.side_effect = (
+            [ADDONS_DATA], [PLUGIN_DATA], [GFX_DATA], [CERTIFICATE_DATA]
+        )
+        out_file = StringIO()
+        with mock.patch.object(out_file, 'close'):
+            with mock.patch('kinto2xml.exporter.open', return_value=out_file):
+                exporter.main(['--out', 'file'])
+        self.assertIn('lastupdate="1448372434324"', out_file.getvalue())
