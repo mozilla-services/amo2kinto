@@ -5,7 +5,7 @@ PYTHON = $(VENV)/bin/python
 DEV_STAMP = $(VENV)/.dev_env_installed.stamp
 INSTALL_STAMP = $(VENV)/.install.stamp
 TEMPDIR := $(shell mktemp -d)
-AMO_SERVER = https://addons-dev.allizom.org/
+AMO_SERVER = https://addons.mozilla.org/
 KINTO_SERVER = https://kinto.stage.mozaws.net/v1
 
 AMO_BLOCKLIST_UI_SCHEMA = "https://raw.githubusercontent.com/mozilla-services/amo-blocklist-ui/master/amo-blocklist.json"

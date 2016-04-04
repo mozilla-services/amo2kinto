@@ -57,8 +57,9 @@ def write_addons_items(xml_tree, records):
     for item in records:
         if item.get('enabled', True):
             emItem = etree.SubElement(emItems, 'emItem',
-                                      blockID=item.get('blockID', item['id']),
-                                      id=item['guid'])
+                                      blockID=item.get('blockID', item['id']))
+            if 'guid' in item:
+                emItem.set('id', item['guid'])
             prefs = etree.SubElement(emItem, 'prefs')
             for p in item['prefs']:
                 pref = etree.SubElement(prefs, 'pref')
@@ -142,10 +143,13 @@ def write_gfx_items(xml_tree, records):
                 device.text = d
 
             # Feature
-            feature = etree.SubElement(entry, 'feature')
-            feature.text = item['feature']
-            featureStatus = etree.SubElement(entry, 'featureStatus')
-            featureStatus.text = item['featureStatus']
+            if 'feature' in item:
+                feature = etree.SubElement(entry, 'feature')
+                feature.text = item['feature']
+
+            if 'featureStatus' in item:
+                featureStatus = etree.SubElement(entry, 'featureStatus')
+                featureStatus.text = item['featureStatus']
 
             # Driver
             if 'driverVersion' in item:

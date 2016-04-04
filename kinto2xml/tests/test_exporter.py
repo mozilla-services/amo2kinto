@@ -177,7 +177,7 @@ def test_gfx_record():
         xml_declaration=True,
         encoding='UTF-8').decode('utf-8')
 
-    assert result == """<?xml version='1.0' encoding='UTF-8'?>
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
 <blocklist lastupdate="1459262434336" \
 xmlns="http://www.mozilla.org/2006/addons-blocklist">
   <gfxItems>
@@ -194,7 +194,7 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
     </gfxBlacklistEntry>
   </gfxItems>
 </blocklist>
-"""
+""".decode('utf-8')
 
 
 CERTIFICATE_DATA = {
