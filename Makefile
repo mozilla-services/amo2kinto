@@ -57,7 +57,7 @@ maintainer-clean: distclean
 	rm -fr .venv* .tox/
 
 sync: install
-	$(VENV)/bin/amo2kinto --server $(KINTO_SERVER) --amo-server $(AMO_SERVER) \
+	$(VENV)/bin/json2kinto --server $(KINTO_SERVER) --amo-server $(AMO_SERVER) \
         --certificates-bucket $(BLOCKLIST_BUCKET) --addons-bucket $(BLOCKLIST_BUCKET) \
         --plugins-bucket $(BLOCKLIST_BUCKET) --gfx-bucket $(BLOCKLIST_BUCKET)
 
