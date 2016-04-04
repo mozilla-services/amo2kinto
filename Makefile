@@ -6,7 +6,9 @@ DEV_STAMP = $(VENV)/.dev_env_installed.stamp
 INSTALL_STAMP = $(VENV)/.install.stamp
 TEMPDIR := $(shell mktemp -d)
 AMO_SERVER = https://addons.mozilla.org/
-KINTO_SERVER = https://kinto.stage.mozaws.net/v1
+KINTO_SERVER = http://localhost:8888/v1
+
+BLOCKLIST_FILE_URL = "https://blocklist.addons.mozilla.org/blocklist/3/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/44.0a1/"
 
 AMO_BLOCKLIST_UI_SCHEMA = "https://raw.githubusercontent.com/mozilla-services/amo-blocklist-ui/master/amo-blocklist.json"
 
@@ -57,9 +59,20 @@ maintainer-clean: distclean
 	rm -fr .venv* .tox/
 
 sync: install
-	$(VENV)/bin/json2kinto --server $(KINTO_SERVER) --amo-server $(AMO_SERVER) \
+	$(VENV)/bin/json2kinto --server $(KINTO_SERVER) --amo-server $(AMO_SERVER) -CG \
         --certificates-bucket $(BLOCKLIST_BUCKET) --addons-bucket $(BLOCKLIST_BUCKET) \
         --plugins-bucket $(BLOCKLIST_BUCKET) --gfx-bucket $(BLOCKLIST_BUCKET)
+
+blocklist.xml: update-blocklist-file
+update-blocklist-file:
+	wget -O blocklist.xml $(BLOCKLIST_FILE_URL)
+
+generated-blocklist.xml: sync generate-blocklist-file
+generate-blocklist-file:
+	$(VENV)/bin/kinto2xml -s http://localhost:8888/v1 -o generated-blocklist.xml
+
+verify-blocklists:
+	$(VENV)/bin/xml-verifier blocklist.xml generated-blocklist.xml
 
 update-schemas:
 	wget -O schemas.json $(AMO_BLOCKLIST_UI_SCHEMA)

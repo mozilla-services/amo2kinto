@@ -87,7 +87,9 @@ def write_plugin_items(xml_tree, records):
     for item in records:
         if item.get('enabled', True):
             entry = etree.SubElement(pluginItems, 'pluginItem',
-                                     blockID=item.get('blockID', item['id']))
+                                     blockID=item.get('blockID', item['id']),
+                                     xpcomabi=item.get('xpcomabi'),
+                                     os=item.get('os'))
             if 'matchName' in item:
                 etree.SubElement(entry, 'match',
                                  name='name',
@@ -137,10 +139,11 @@ def write_gfx_items(xml_tree, records):
             vendor.text = item['vendor']
 
             # Devices
-            devices = etree.SubElement(entry, 'devices')
-            for d in item['devices']:
-                device = etree.SubElement(devices, 'device')
-                device.text = d
+            if item['devices']:
+                devices = etree.SubElement(entry, 'devices')
+                for d in item['devices']:
+                    device = etree.SubElement(devices, 'device')
+                    device.text = d
 
             # Feature
             if 'feature' in item:
