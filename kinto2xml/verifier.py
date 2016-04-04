@@ -1,13 +1,41 @@
 """Parse and normalize two XML files and then generate a diff of both."""
 import argparse
+import json
 import logging
 import os
 import subprocess
 import sys
 import tempfile
-from xml.dom import minidom
+import xmltodict
 
 logger = logging.getLogger('xml-verifier')
+
+
+def get_unique_id(*fields):
+    def wraps(d):
+        if isinstance(d, dict):
+            val = tuple((d.get(f) for f in fields))
+            return val
+        else:
+            return d
+
+    return wraps
+
+
+def sort_lists_in_dict(d):
+    if not isinstance(d, dict):
+        return d
+
+    for key, value in d.iteritems():
+        if isinstance(value, list):
+            value = sorted(value, key=get_unique_id(
+                '@blockID', '@id', '@issuerName', '@guid'))
+            value = [sort_lists_in_dict(v) for v in value]
+        elif isinstance(value, dict):
+            value = sort_lists_in_dict(value)
+
+        d[key] = value
+    return d
 
 
 def main(args=None):
@@ -38,8 +66,10 @@ def main(args=None):
         curr_file = tempfile.NamedTemporaryFile(delete=args.clean)
         tmp_files.append(curr_file)
         with open(filepath) as f:
-            dom = minidom.parse(f)
-            dom.writexml(curr_file)
+            d = xmltodict.parse(f.read())
+            # sort lists of the dict
+            sort_lists_in_dict(d)
+            json.dump(d, curr_file, indent=4, sort_keys=True)
 
     diff_args = ['diff', '-u']
     if args.ignore_space_change:

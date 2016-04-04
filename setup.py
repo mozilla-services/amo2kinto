@@ -17,6 +17,7 @@ REQUIREMENTS = [
     'requests',
     'lxml',
     'six',
+    'xmltodict',
 ]
 
 
