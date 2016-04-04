@@ -29,7 +29,8 @@ def sort_lists_in_dict(d):
     for key, value in d.iteritems():
         if isinstance(value, list):
             value = sorted(value, key=get_unique_id(
-                '@blockID', '@id', '@issuerName', '@guid'))
+                '@blockID', '@id', '@issuerName', '@guid', '@name',
+                '@minVersion', '@maxVersion'))
             value = [sort_lists_in_dict(v) for v in value]
         elif isinstance(value, dict):
             value = sort_lists_in_dict(value)

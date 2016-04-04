@@ -20,7 +20,7 @@ def build_version_range(root, item):
             versionRange.set('maxVersion', maxVersion)
 
         severity = version.get('severity')
-        if severity and severity != '0':
+        if severity or severity == 0:
             versionRange.set('severity', str(severity))
 
         vulnerabilityStatus = version.get('vulnerabilityStatus')
@@ -53,13 +53,20 @@ def write_addons_items(xml_tree, records):
       </prefs>
     </emItem>
     """
+    if not records:
+        return
+
     emItems = etree.SubElement(xml_tree, 'emItems')
     for item in records:
         if item.get('enabled', True):
             emItem = etree.SubElement(emItems, 'emItem',
                                       blockID=item.get('blockID', item['id']))
+            if 'os' in item:
+                emItem.set('os', item['os'])
+
             if 'guid' in item:
                 emItem.set('id', item['guid'])
+
             prefs = etree.SubElement(emItem, 'prefs')
             for p in item['prefs']:
                 pref = etree.SubElement(prefs, 'pref')
@@ -83,13 +90,21 @@ def write_plugin_items(xml_tree, records):
     </pluginItem>
     """
 
+    if not records:
+        return
+
     pluginItems = etree.SubElement(xml_tree, 'pluginItems')
     for item in records:
         if item.get('enabled', True):
             entry = etree.SubElement(pluginItems, 'pluginItem',
-                                     blockID=item.get('blockID', item['id']),
-                                     xpcomabi=item.get('xpcomabi'),
-                                     os=item.get('os'))
+                                     blockID=item.get('blockID', item['id']))
+
+            if 'os' in item:
+                entry.set('os', item['os'])
+
+            if 'xpcomabi' in item:
+                entry.set('xpcomabi', item['xpcomabi'])
+
             if 'matchName' in item:
                 etree.SubElement(entry, 'match',
                                  name='name',
@@ -125,6 +140,9 @@ def write_gfx_items(xml_tree, records):
         <driverVersionComparator>LESS_THAN_OR_EQUAL</driverVersionComparator>
     </gfxBlacklistEntry>
     """
+    if not records:
+        return
+
     gfxItems = etree.SubElement(xml_tree, 'gfxItems')
     for item in records:
         if item.get('enabled', True):
@@ -171,6 +189,9 @@ def write_cert_items(xml_tree, records):
       <serialNumber>UoRGnb96CUDTxIqVry6LBg==</serialNumber>
     </certItem>
     """
+    if not records:
+        return
+
     certItems = etree.SubElement(xml_tree, 'certItems')
     for item in records:
         if item.get('enabled', True):
