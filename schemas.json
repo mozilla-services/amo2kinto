@@ -1,0 +1,588 @@
+{
+  "add-ons": {
+    "name": "add-ons",
+    "synced": true,
+    "config": {
+      "displayFields": ["enabled", "addonId", "os"],
+      "schema": {
+        "title": "Add-on",
+        "description": "Add-on",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "addonId"
+        ],
+        "default": {
+          "addonId": "",
+          "os": "",
+          "prefs": [],
+          "versionRange": [{}]
+        },
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "blocking rule is enabled.",
+            "default": false
+          },
+          "addonId": {
+            "type": "string",
+            "title": "Add-on id",
+            "description": "The add-on unique identifier.",
+            "minLength": 1,
+            "default": ""
+          },
+          "os": {
+            "type": "string",
+            "title": "OS",
+            "description": "The operating system identifier."
+          },
+          "prefs": {
+            "type": "array",
+            "title": "Preferences",
+            "description": "The list of impacted preferences.",
+            "uniqueItems": true,
+            "default": [],
+            "items": {
+              "title": "Preference name",
+              "description": "The browser preference name, eg. browser.startup.homepage",
+              "type": "string",
+              "minLength": 1,
+              "default": ""
+            }
+          },
+          "versionRange": {
+            "type": "array",
+            "title": "Versions",
+            "description": "The list of impacted versions.",
+            "default": [],
+            "items": {
+              "type": "object",
+              "title": "Version range",
+              "description": "Version range",
+              "additionalProperties": false,
+              "required": [
+                "minVersion",
+                "maxVersion",
+                "severity"
+              ],
+              "default": {
+                "minVersion": "",
+                "maxVersion": "",
+                "severity": "0",
+                "vulnerabilityStatus": ""
+              },
+              "properties": {
+                "minVersion": {
+                  "type": "string",
+                  "title": "Min version",
+                  "description": "The mininum version."
+                },
+                "maxVersion": {
+                  "type": "string",
+                  "title": "Max version",
+                  "description": "The maximum version.",
+                  "default": ""
+                },
+                "severity": {
+                  "type": "string",
+                  "title": "Severity",
+                  "description": "The severity code number.",
+                  "enum": [
+                    "0",
+                    "1",
+                    "2",
+                    "3"
+                  ],
+                  "default": "0"
+                },
+                "vulnerabilityStatus": {
+                  "type": "string",
+                  "title": "Vulnerability status",
+                  "description": "The vulnerability status code number.",
+                  "enum": [
+                    "",
+                    "1",
+                    "2"
+                  ],
+                  "enumNames": [
+                    "",
+                    "Update available",
+                    "Update unavailable"
+                  ],
+                  "default": ""
+                },
+                "targetApplication": {
+                  "type": "array",
+                  "title": "Target applications",
+                  "description": "The list of target application information.",
+                  "default": [],
+                  "items": {
+                    "type": "object",
+                    "title": "Target application",
+                    "description": "Target application",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "minVersion",
+                      "maxVersion"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "title": "Application id",
+                        "description": "The application unique identifier.",
+                        "enum": [
+                          "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+                          "{3550f703-e582-4d05-9a08-453d09bdfdc6}",
+                          "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}",
+                          "{aa3c5121-dab2-40e2-81ca-7ea25febc110}"
+                        ],
+                        "enumNames": [
+                          "Firefox",
+                          "Thunderbird",
+                          "Seamonkey",
+                          "Android"
+                        ]
+                      },
+                      "minVersion": {
+                        "type": "string",
+                        "title": "Min version",
+                        "description": "The mininum version."
+                      },
+                      "maxVersion": {
+                        "type": "string",
+                        "title": "Max version",
+                        "description": "The maximum version."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "details": {
+            "type": "object",
+            "title": "Details",
+            "properties": {
+              "name": {"type": "string"},
+              "why": {"type": "string"},
+              "who": {"type": "string"},
+              "bug": {"type": "string"}
+            }
+          }
+        }
+      },
+      "uiSchema": {
+        "ui:order": [
+          "enabled",
+          "addonId",
+          "os",
+          "versionRange",
+          "prefs",
+          "details"
+        ],
+        "details": {
+          "why": {"ui:widget": "textarea"},
+          "who": {"ui:widget": "textarea"}
+        }
+      }
+    }
+  },
+  "certificates": {
+    "name": "certificates",
+    "synced": true,
+    "config": {
+      "displayFields": ["enabled", "issuerName"],
+      "schema": {
+        "title": "Certificate",
+        "description": "A blocked certificate entry.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "issuerName",
+          "serialNumber"
+        ],
+        "default": {
+          "issuerName": "",
+          "serialNumber": ""
+        },
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "blocking rule is enabled.",
+            "default": false
+          },
+          "issuerName": {
+            "type": "string",
+            "title": "Issuer name",
+            "description": "The certificate issuer name."
+          },
+          "serialNumber": {
+            "type": "string",
+            "title": "Serial number",
+            "description": "The certificate serial number."
+          },
+          "details": {
+            "type": "object",
+            "title": "Details",
+            "properties": {
+              "name": {"type": "string"},
+              "why": {"type": "string"},
+              "who": {"type": "string"},
+              "bug": {"type": "string"}
+            }
+          }
+        }
+      },
+      "uiSchema": {
+        "details": {
+          "why": {"ui:widget": "textarea"},
+          "who": {"ui:widget": "textarea"}
+        }
+      }
+    }
+  },
+  "gfx": {
+    "name": "gfx",
+    "synced": true,
+    "config": {
+      "displayFields": ["enabled", "os", "vendor", "feature"],
+      "schema": {
+        "title": "Gfx",
+        "description": "A graphic driver blocklist entry.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "os",
+          "vendor",
+          "featureStatus"
+        ],
+        "default": {
+          "os": "",
+          "vendor": "",
+          "devices": [],
+          "feature": "",
+          "featureStatus": "",
+          "driverVersion": "",
+          "driverVersionMax": "",
+          "driverVersionComparator": ""
+        },
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "blocking rule is enabled.",
+            "default": false
+          },
+          "os": {
+            "type": "string",
+            "title": "OS",
+            "description": "The operating system identifier.",
+            "enum": [
+              "",
+              "All",
+              "Android",
+              "Darwin 9",
+              "Darwin 10",
+              "Darwin 11",
+              "Darwin 12",
+              "Darwin 13",
+              "Darwin 14",
+              "Darwin 15",
+              "Linux",
+              "WINNT 5.1",
+              "WINNT 5.2",
+              "WINNT 6.0",
+              "WINNT 6.1",
+              "WINNT 6.2",
+              "WINNT 6.3",
+              "WINNT 10.0",
+              "Other"
+            ]
+          },
+          "vendor": {
+            "type": "string",
+            "title": "Vendor",
+            "description": "A vendor identifier, eg. 0x1002"
+          },
+          "devices": {
+            "type": "array",
+            "title": "Devices",
+            "description": "The list of impacted devices.",
+            "items": {
+              "type": "string",
+              "title": "Device",
+              "description": "A device identifier, eg. 0x9803",
+              "minLength": 1
+            }
+          },
+          "feature": {
+            "type": "string",
+            "title": "Feature",
+            "description": "The type of feature impacted.",
+            "enum": [
+              "",
+              "CANVAS2D_ACCELERATION",
+              "DIRECT2D",
+              "DIRECT3D_9_LAYERS",
+              "DIRECT3D_10_LAYERS",
+              "DIRECT3D_10_1_LAYERS",
+              "DIRECT3D_11_LAYERS",
+              "DIRECT3D_11_ANGLE",
+              "HARDWARE_VIDEO_DECODING",
+              "OPENGL_LAYERS",
+              "STAGEFRIGHT",
+              "WEBGL_OPENGL",
+              "WEBGL_ANGLE",
+              "WEBGL_MSAA",
+              "WEBRTC_HW_ACCELERATION_ENCODE",
+              "WEBRTC_HW_ACCELERATION_DECODE",
+              "WEBRTC_HW_ACCELERATION"
+            ]
+          },
+          "featureStatus": {
+            "type": "string",
+            "title": "Feature status",
+            "description": "The feature status.",
+            "enum": [
+              "",
+              "BLOCKED_DEVICE",
+              "BLOCKED_DRIVER_VERSION",
+              "BLOCKED_OS_VERSION",
+              "DISCOURAGED",
+              "STATUS_OK"
+            ]
+          },
+          "driverVersion": {
+            "type": "string",
+            "title": "Driver version",
+            "description": "The driver version."
+          },
+          "driverVersionMax": {
+            "type": "string",
+            "title": "Driver version max",
+            "description": "The driver version."
+          },
+          "driverVersionComparator": {
+            "type": "string",
+            "title": "Driver version comparator",
+            "description": "The driver version comparator",
+            "enum": [
+              "",
+              "EQUAL",
+              "NOT_EQUAL",
+              "BETWEEN_EXCLUSIVE",
+              "BETWEEN_INCLUSIVE",
+              "BETWEEN_INCLUSIVE_START",
+              "LESS_THAN",
+              "LESS_THAN_OR_EQUAL",
+              "GREATER_THAN",
+              "GREATER_THAN_OR_EQUAL"
+            ]
+          },
+          "details": {
+            "type": "object",
+            "title": "Details",
+            "properties": {
+              "name": {"type": "string"},
+              "why": {"type": "string"},
+              "who": {"type": "string"},
+              "bug": {"type": "string"}
+            }
+          }
+        }
+      },
+      "uiSchema": {
+        "details": {
+          "why": {"ui:widget": "textarea"},
+          "who": {"ui:widget": "textarea"}
+        }
+      }
+    }
+  },
+  "plugins": {
+    "name": "plugins",
+    "synced": true,
+    "config": {
+      "displayFields": ["enabled", "os", "matchName", "matchFilename", "matchDescription"],
+      "schema": {
+        "title": "Plugin",
+        "description": "A blocked plugin entry.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "versionRange"
+        ],
+        "default": {
+          "os": "",
+          "matchName": "",
+          "matchFilename": "",
+          "matchDescription": "",
+          "infoURL": "",
+          "versionRange": [{}]
+        },
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "blocking rule is enabled.",
+            "default": false
+          },
+          "os": {
+            "type": "string",
+            "title": "OS",
+            "description": "The operating system identifier."
+          },
+          "matchName": {
+            "type": "string",
+            "title": "Name match",
+            "description": "A plugin name pattern to match."
+          },
+          "matchFilename": {
+            "type": "string",
+            "title": "Filename match",
+            "description": "A plugin filename pattern to match."
+          },
+          "matchDescription": {
+            "type": "string",
+            "title": "Description match",
+            "description": "A plugin description pattern to match."
+          },
+          "infoURL": {
+            "type": "string",
+            "title": "Info URL",
+            "description": "A HTTP URL providing related information."
+          },
+          "versionRange": {
+            "type": "array",
+            "title": "Versions",
+            "description": "The list of impacted versions.",
+            "default": [],
+            "items": {
+              "type": "object",
+              "title": "Version range",
+              "description": "Version range",
+              "additionalProperties": false,
+              "required": [
+                "minVersion",
+                "maxVersion",
+                "severity"
+              ],
+              "default": {
+                "minVersion": "",
+                "maxVersion": "",
+                "severity": "0",
+                "vulnerabilityStatus": ""
+              },
+              "properties": {
+                "minVersion": {
+                  "type": "string",
+                  "title": "Min version",
+                  "description": "The mininum version."
+                },
+                "maxVersion": {
+                  "type": "string",
+                  "title": "Max version",
+                  "description": "The maximum version.",
+                  "default": ""
+                },
+                "severity": {
+                  "type": "string",
+                  "title": "Severity",
+                  "description": "The severity code number.",
+                  "enum": [
+                    "0",
+                    "1",
+                    "2",
+                    "3"
+                  ],
+                  "default": "0"
+                },
+                "vulnerabilityStatus": {
+                  "type": "string",
+                  "title": "Vulnerability status",
+                  "description": "The vulnerability status code number.",
+                  "enum": [
+                    "",
+                    "1",
+                    "2"
+                  ],
+                  "enumNames": [
+                    "",
+                    "Update available",
+                    "Update unavailable"
+                  ],
+                  "default": ""
+                },
+                "targetApplication": {
+                  "type": "array",
+                  "title": "Target applications",
+                  "description": "The list of target application information.",
+                  "default": [],
+                  "items": {
+                    "type": "object",
+                    "title": "Target application",
+                    "description": "Target application",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "minVersion",
+                      "maxVersion"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "title": "Application id",
+                        "description": "The application unique identifier.",
+                        "enum": [
+                          "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+                          "{3550f703-e582-4d05-9a08-453d09bdfdc6}",
+                          "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}",
+                          "{aa3c5121-dab2-40e2-81ca-7ea25febc110}"
+                        ],
+                        "enumNames": [
+                          "Firefox",
+                          "Thunderbird",
+                          "Seamonkey",
+                          "Android"
+                        ]
+                      },
+                      "minVersion": {
+                        "type": "string",
+                        "title": "Min version",
+                        "description": "The mininum version."
+                      },
+                      "maxVersion": {
+                        "type": "string",
+                        "title": "Max version",
+                        "description": "The maximum version."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "details": {
+            "type": "object",
+            "title": "Details",
+            "properties": {
+              "name": {"type": "string"},
+              "why": {"type": "string"},
+              "who": {"type": "string"},
+              "bug": {"type": "string"}
+            }
+          }
+        }
+      },
+      "uiSchema": {
+        "details": {
+          "why": {"ui:widget": "textarea"},
+          "who": {"ui:widget": "textarea"}
+        }
+      }
+    }
+  }
+}

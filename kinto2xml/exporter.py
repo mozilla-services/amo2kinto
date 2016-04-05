@@ -2,23 +2,40 @@ import logging
 import sys
 from lxml import etree
 from kinto_client import cli_utils
+from . import constants
 
 logger = logging.getLogger("kinto2xml")
 
 
-# XXX: We might want to move this to kinto_client.cli_utils.
-def remove_action(parser, short, long):
-    actions = filter(
-        lambda x: x.option_strings == [short, long],
-        parser._actions
-    )
-    if len(actions) == 1:
-        parser._handle_conflict_resolve(None, [
-            (short, actions[0])
-        ])
-        parser._handle_conflict_resolve(None, [
-            (long, actions[0])
-        ])
+def build_version_range(root, item):
+    for version in item['versionRange']:
+        versionRange = etree.SubElement(
+            root, 'versionRange')
+        minVersion = version.get('minVersion')
+        if minVersion:
+            versionRange.set('minVersion', minVersion)
+
+        maxVersion = version.get('maxVersion')
+        if maxVersion:
+            versionRange.set('maxVersion', maxVersion)
+
+        severity = version.get('severity')
+        if severity and severity != '0':
+            versionRange.set('severity', str(severity))
+
+        vulnerabilityStatus = version.get('vulnerabilityStatus')
+        if vulnerabilityStatus:
+            versionRange.set('vulnerabilitystatus', str(vulnerabilityStatus))
+
+        if ('targetApplication' in version and
+                version['targetApplication']):
+            targetApplication = etree.SubElement(
+                versionRange, 'targetApplication',
+                id=version['targetApplication'][0]['guid'])
+            etree.SubElement(
+                targetApplication, 'versionRange',
+                minVersion=version['targetApplication'][0]['minVersion'],
+                maxVersion=version['targetApplication'][0]['maxVersion'])
 
 
 def write_addons_items(xml_tree, records):
@@ -40,29 +57,15 @@ def write_addons_items(xml_tree, records):
     for item in records:
         if item.get('enabled', True):
             emItem = etree.SubElement(emItems, 'emItem',
-                                      blockID=item.get('blockID', item['id']),
-                                      id=item['addonId'])
+                                      blockID=item.get('blockID', item['id']))
+            if 'guid' in item:
+                emItem.set('id', item['guid'])
             prefs = etree.SubElement(emItem, 'prefs')
             for p in item['prefs']:
                 pref = etree.SubElement(prefs, 'pref')
                 pref.text = p
 
-            for version in item['versionRange']:
-                versionRange = etree.SubElement(
-                    emItem, 'versionRange',
-                    minVersion=version.get('minVersion'),
-                    maxVersion=version.get('maxVersion'),
-                    severity=version.get('severity'),
-                    vulnerabilitystatus=version.get('vulnerability'))
-
-                if 'targetApplication' in version:
-                    targetApplication = etree.SubElement(
-                        versionRange, 'targetApplication',
-                        id=version['targetApplication']['id'])
-                    etree.SubElement(
-                        targetApplication, 'versionRange',
-                        minVersion=version['targetApplication']['minVersion'],
-                        maxVersion=version['targetApplication']['maxVersion'])
+            build_version_range(emItem, item)
 
 
 def write_plugin_items(xml_tree, records):
@@ -102,22 +105,7 @@ def write_plugin_items(xml_tree, records):
                 infoURL = etree.SubElement(entry, 'infoURL')
                 infoURL.text = item['infoURL']
 
-            for version in item['versionRange']:
-                versionRange = etree.SubElement(
-                    entry, 'versionRange',
-                    minVersion=version['minVersion'] or None,
-                    maxVersion=version['maxVersion'] or None,
-                    severity=version['severity'] or None,
-                    vulnerabilitystatus=version.get('vulnerability'))
-
-                if 'targetApplication' in version:
-                    targetApplication = etree.SubElement(
-                        versionRange, 'targetApplication',
-                        id=version['targetApplication']['id'])
-                    etree.SubElement(
-                        targetApplication, 'versionRange',
-                        minVersion=version['targetApplication']['minVersion'],
-                        maxVersion=version['targetApplication']['maxVersion'])
+            build_version_range(entry, item)
 
 
 def write_gfx_items(xml_tree, records):
@@ -155,10 +143,13 @@ def write_gfx_items(xml_tree, records):
                 device.text = d
 
             # Feature
-            feature = etree.SubElement(entry, 'feature')
-            feature.text = item['feature']
-            featureStatus = etree.SubElement(entry, 'featureStatus')
-            featureStatus.text = item['featureStatus']
+            if 'feature' in item:
+                feature = etree.SubElement(entry, 'feature')
+                feature.text = item['feature']
+
+            if 'featureStatus' in item:
+                featureStatus = etree.SubElement(entry, 'featureStatus')
+                featureStatus.text = item['featureStatus']
 
             # Driver
             if 'driverVersion' in item:
@@ -186,25 +177,56 @@ def write_cert_items(xml_tree, records):
             serialNumber.text = item['serialNumber']
 
 
-def main():
-    parser = cli_utils.set_parser_server_options(
-        description='Build a blocklists.xml file.', default_collection=None)
+def main(args=None):
+    parser = cli_utils.add_parser_options(
+        description='Build a blocklists.xml file from Kinto blocklists.',
+        default_collection=None,
+        default_bucket=None,
+        default_server=constants.KINTO_SERVER,
+        default_auth=constants.AUTH,
+        include_bucket=False,
+        include_collection=False)
 
-    # Remove the collection arguments which is not accurate here
-    # because we handle four of them in the bucket.
-    remove_action(parser, '-c', '--collection')
+    parser.add_argument('--certificates-bucket',
+                        help='Bucket name for certificates',
+                        type=str, default=constants.CERT_BUCKET)
+
+    parser.add_argument('--certificates-collection',
+                        help='Collection name for certificates',
+                        type=str, default=constants.CERT_COLLECTION)
+
+    parser.add_argument('--gfx-bucket', help='Bucket name for gfx',
+                        type=str, default=constants.GFX_BUCKET)
+
+    parser.add_argument('--gfx-collection',
+                        help='Collection name for gfx',
+                        type=str, default=constants.GFX_COLLECTION)
+
+    parser.add_argument('--addons-bucket', help='Bucket name for addons',
+                        type=str, default=constants.ADDONS_BUCKET)
+
+    parser.add_argument('--addons-collection',
+                        help='Collection name for addon',
+                        type=str, default=constants.ADDONS_COLLECTION)
+
+    parser.add_argument('--plugins-bucket', help='Bucket name for plugins',
+                        type=str, default=constants.PLUGINS_BUCKET)
+
+    parser.add_argument('--plugins-collection',
+                        help='Collection name for plugin',
+                        type=str, default=constants.PLUGINS_COLLECTION)
 
     # Choose where to write the file down.
-    parser.add_argument('-o', '--out', help='Output file.',
+    parser.add_argument('-o', '--out', help='Output XML file.',
                         type=str, default=None)
-    args = parser.parse_args()
-    args.collection = None
+
+    args = parser.parse_args(args=args)
 
     cli_utils.setup_logger(logger, args)
 
-    close_out_fd = False
     if not args.out:
         out_fd = sys.stdout
+        close_out_fd = False
     else:
         out_fd = open(args.out, 'w+')
         close_out_fd = True
@@ -214,40 +236,68 @@ def main():
     last_update = 0
     # Retrieve the collection of records.
     try:
-        addons_records = client.get_records(collection='addons',
-                                            _sort="last_modified")
+        addons_records = client.get_records(
+            bucket=args.addons_bucket,
+            collection=args.addons_collection,
+            _sort="last_modified")
     except:
-        logger.warn('Unable to fetch the ``addons`` collection.')
+        logger.warn(
+            'Unable to fetch the ``{bucket}/{collection}`` records.'.format(
+                bucket=args.addons_bucket,
+                collection=args.addons_collection,
+            )
+        )
         addons_records = []
 
     if addons_records:
         last_update = addons_records[-1]['last_modified']
 
     try:
-        plugin_records = client.get_records(collection='plugins',
-                                            _sort="last_modified")
+        plugin_records = client.get_records(
+            bucket=args.plugins_bucket,
+            collection=args.plugins_collection,
+            _sort="last_modified")
     except:
-        logger.warn('Unable to fetch the ``plugins`` collection.')
+        logger.warn(
+            'Unable to fetch the ``{bucket}/{collection}`` records.'.format(
+                bucket=args.plugins_bucket,
+                collection=args.plugins_collection,
+            )
+        )
         plugin_records = []
 
     if plugin_records:
         last_update = max(last_update, plugin_records[-1]['last_modified'])
 
     try:
-        gfx_records = client.get_records(collection='gfx',
-                                         _sort="last_modified")
+        gfx_records = client.get_records(
+            bucket=args.gfx_bucket,
+            collection=args.gfx_collection,
+            _sort="last_modified")
     except:
-        logger.warn('Unable to fetch the ``gfx`` collection.')
+        logger.warn(
+            'Unable to fetch the ``{bucket}/{collection}`` records.'.format(
+                bucket=args.gfx_bucket,
+                collection=args.gfx_collection,
+            )
+        )
         gfx_records = []
 
     if gfx_records:
         last_update = max(last_update, gfx_records[-1]['last_modified'])
 
     try:
-        cert_records = client.get_records(collection='certificates',
-                                          _sort="last_modified")
+        cert_records = client.get_records(
+            bucket=args.certificates_bucket,
+            collection=args.certificates_collection,
+            _sort="last_modified")
     except:
-        logger.warn('Unable to fetch the ``certificates`` collection.')
+        logger.warn(
+            'Unable to fetch the ``{bucket}/{collection}`` records.'.format(
+                bucket=args.certificates_bucket,
+                collection=args.certificates_collection,
+            )
+        )
         cert_records = []
 
     if cert_records:
@@ -269,11 +319,7 @@ def main():
         doc,
         pretty_print=True,
         xml_declaration=True,
-        encoding='UTF-8'))
+        encoding='UTF-8').decode('utf-8'))
 
     if close_out_fd:
         out_fd.close()
-
-
-if __name__ == '__main__':
-    main()
