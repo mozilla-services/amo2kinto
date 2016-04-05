@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import subprocess
+import six
 import sys
 import tempfile
 import xmltodict
@@ -33,6 +34,8 @@ def sort_lists_in_dict(d):
             value = [sort_lists_in_dict(v) for v in value]
         elif isinstance(value, dict):
             value = sort_lists_in_dict(value)
+        elif isinstance(value, six.text_type):
+            value = value.strip()
 
         d[key] = value
     return d

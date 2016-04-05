@@ -7,11 +7,12 @@ from . import constants
 logger = logging.getLogger("kinto2xml")
 
 
-def build_version_range(root, item):
+def build_version_range(root, item, app_id, ignore_empty_severity=False):
     for version in item['versionRange']:
         versionRange = etree.SubElement(
             root, 'versionRange')
         minVersion = version.get('minVersion')
+
         if minVersion:
             versionRange.set('minVersion', minVersion)
 
@@ -20,7 +21,11 @@ def build_version_range(root, item):
             versionRange.set('maxVersion', maxVersion)
 
         severity = version.get('severity')
-        if severity or severity == 0:
+
+        if not ignore_empty_severity:
+            severity = severity or severity == 0
+
+        if severity:
             versionRange.set('severity', str(severity))
 
         vulnerabilityStatus = version.get('vulnerabilityStatus')
@@ -29,16 +34,33 @@ def build_version_range(root, item):
 
         if ('targetApplication' in version and
                 version['targetApplication']):
-            targetApplication = etree.SubElement(
-                versionRange, 'targetApplication',
-                id=version['targetApplication'][0]['guid'])
-            etree.SubElement(
-                targetApplication, 'versionRange',
-                minVersion=version['targetApplication'][0]['minVersion'],
-                maxVersion=version['targetApplication'][0]['maxVersion'])
+            for tA in version['targetApplication']:
+                if not tA['guid'] or tA['guid'] == app_id:
+                    targetApplication = etree.SubElement(
+                        versionRange, 'targetApplication',
+                        id=tA['guid'])
+                    etree.SubElement(
+                        targetApplication, 'versionRange',
+                        minVersion=tA['minVersion'],
+                        maxVersion=tA['maxVersion'])
 
 
-def write_addons_items(xml_tree, records):
+def is_related_to(item, app_id):
+    """Return True if the item relate ot the given app_id."""
+    if not item.get('versionRange'):
+        return True
+
+    for vR in item['versionRange']:
+        if not vR.get('targetApplication'):
+            return True
+
+        for tA in vR['targetApplication']:
+            if tA['guid'] == app_id:
+                return True
+    return False
+
+
+def write_addons_items(xml_tree, records, app_id):
     """Generate the addons blocklists.
 
     <emItem blockID="i372" id="5nc3QHFgcb@r06Ws9gvNNVRfH.com">
@@ -58,7 +80,7 @@ def write_addons_items(xml_tree, records):
 
     emItems = etree.SubElement(xml_tree, 'emItems')
     for item in records:
-        if item.get('enabled', True):
+        if item.get('enabled', True) and is_related_to(item, app_id):
             emItem = etree.SubElement(emItems, 'emItem',
                                       blockID=item.get('blockID', item['id']))
             if 'os' in item:
@@ -72,10 +94,11 @@ def write_addons_items(xml_tree, records):
                 pref = etree.SubElement(prefs, 'pref')
                 pref.text = p
 
-            build_version_range(emItem, item)
+            build_version_range(emItem, item, app_id,
+                                ignore_empty_severity=True)
 
 
-def write_plugin_items(xml_tree, records):
+def write_plugin_items(xml_tree, records, app_id):
     """Generate the plugin blocklists.
 
     <pluginItem blockID="p422">
@@ -122,10 +145,10 @@ def write_plugin_items(xml_tree, records):
                 infoURL = etree.SubElement(entry, 'infoURL')
                 infoURL.text = item['infoURL']
 
-            build_version_range(entry, item)
+            build_version_range(entry, item, app_id)
 
 
-def write_gfx_items(xml_tree, records):
+def write_gfx_items(xml_tree, records, app_id):
     """Generate the gfxBlacklistEntry.
 
     <gfxBlacklistEntry blockID="g35">
@@ -145,7 +168,8 @@ def write_gfx_items(xml_tree, records):
 
     gfxItems = etree.SubElement(xml_tree, 'gfxItems')
     for item in records:
-        if item.get('enabled', True):
+        if ('guid' not in item or item['guid'] == app_id) and \
+           item.get('enabled', True):
             entry = etree.SubElement(gfxItems, 'gfxBlacklistEntry',
                                      blockID=item.get('blockID', item['id']))
             # OS
@@ -240,6 +264,9 @@ def main(args=None):
                         help='Collection name for plugin',
                         type=str, default=constants.PLUGINS_COLLECTION)
 
+    parser.add_argument('--app', help='Targeted blocklists.xml APP id',
+                        type=str, default=constants.FIREFOX_APPID)
+
     # Choose where to write the file down.
     parser.add_argument('-o', '--out', help='Output XML file.',
                         type=str, default=None)
@@ -333,9 +360,9 @@ def main(args=None):
         lastupdate='%s' % last_update
     )
 
-    write_addons_items(xml_tree, addons_records)
-    write_plugin_items(xml_tree, plugin_records)
-    write_gfx_items(xml_tree, gfx_records)
+    write_addons_items(xml_tree, addons_records, app_id=args.app)
+    write_plugin_items(xml_tree, plugin_records, app_id=args.app)
+    write_gfx_items(xml_tree, gfx_records, app_id=args.app)
     write_cert_items(xml_tree, cert_records)
 
     doc = etree.ElementTree(xml_tree)
