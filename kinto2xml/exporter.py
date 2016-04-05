@@ -22,10 +22,12 @@ def build_version_range(root, item, app_id, ignore_empty_severity=False):
 
         severity = version.get('severity')
 
-        if not ignore_empty_severity:
-            severity = severity or severity == 0
+        add_severity = bool(severity)
 
-        if severity:
+        if not ignore_empty_severity:
+            add_severity = severity or severity == 0
+
+        if add_severity:
             versionRange.set('severity', str(severity))
 
         vulnerabilityStatus = version.get('vulnerabilityStatus')
