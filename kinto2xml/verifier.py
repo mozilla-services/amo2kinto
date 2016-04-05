@@ -14,8 +14,7 @@ logger = logging.getLogger('xml-verifier')
 def get_unique_id(*fields):
     def wraps(d):
         if isinstance(d, dict):
-            val = tuple((d.get(f) for f in fields))
-            return val
+            return '-'.join([str(v) for v in (d.get(f) for f in fields)])
         else:
             return d
 
@@ -29,8 +28,8 @@ def sort_lists_in_dict(d):
     for key, value in d.iteritems():
         if isinstance(value, list):
             value = sorted(value, key=get_unique_id(
-                '@blockID', '@id', '@issuerName', '@guid', '@name',
-                '@minVersion', '@maxVersion'))
+                '@blockID', '@id', '@issuerName', 'serialNumber',
+                '@guid', '@name', '@minVersion', '@maxVersion'))
             value = [sort_lists_in_dict(v) for v in value]
         elif isinstance(value, dict):
             value = sort_lists_in_dict(value)
@@ -64,13 +63,18 @@ def main(args=None):
 
     for filepath in args.files:
         # Normalize XML
-        curr_file = tempfile.NamedTemporaryFile(delete=args.clean)
+        curr_file = tempfile.NamedTemporaryFile(delete=False)
         tmp_files.append(curr_file)
         with open(filepath) as f:
             d = xmltodict.parse(f.read())
             # sort lists of the dict
             sort_lists_in_dict(d)
             json.dump(d, curr_file, indent=4, sort_keys=True)
+            curr_file.write('\n')
+
+    # Close and clean files
+    for f in tmp_files:
+        f.close()
 
     diff_args = ['diff', '-u']
     if args.ignore_space_change:
@@ -89,9 +93,8 @@ def main(args=None):
     except subprocess.CalledProcessError as e:
         sys.stderr.write(e.output)
 
-    # Close and clean files
-    for f in tmp_files:
-        f.close()
-
     if not args.clean:
         sys.stderr.write('$ %s\n' % ' '.join(diff_args))
+    else:
+        for f in tmp_files:
+            os.unlink(f.name)
