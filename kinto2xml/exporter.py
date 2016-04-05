@@ -83,7 +83,7 @@ def write_plugin_items(xml_tree, records):
     </pluginItem>
     """
 
-    pluginItems = etree.SubElement(xml_tree, 'pluginsItems')
+    pluginItems = etree.SubElement(xml_tree, 'pluginItems')
     for item in records:
         if item.get('enabled', True):
             entry = etree.SubElement(pluginItems, 'pluginItem',

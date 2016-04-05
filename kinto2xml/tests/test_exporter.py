@@ -123,7 +123,7 @@ def test_plugin_record():
     assert result == """<?xml version='1.0' encoding='UTF-8'?>
 <blocklist lastupdate="1459262434336" \
 xmlns="http://www.mozilla.org/2006/addons-blocklist">
-  <pluginsItems>
+  <pluginItems>
     <pluginItem blockID="p26">
       <match exp="^Yahoo Application State Plugin$" name="name"/>
       <match exp="npYState.dll" name="filename"/>
@@ -136,7 +136,7 @@ vulnerabilitystatus="1">
         </targetApplication>
       </versionRange>
     </pluginItem>
-  </pluginsItems>
+  </pluginItems>
 </blocklist>
 """
 
