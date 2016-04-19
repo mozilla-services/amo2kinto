@@ -8,7 +8,9 @@ TEMPDIR := $(shell mktemp -d)
 AMO_SERVER = https://addons.mozilla.org/
 KINTO_SERVER = http://localhost:8888/v1
 
-BLOCKLIST_FILE_URL = "https://blocklist.addons.mozilla.org/blocklist/3/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/44.0a1/"
+BLOCKLIST_ARGS = "blocklist/3/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/44.0a1/"
+
+BLOCKLIST_FILE_URL = "https://blocklist.addons.mozilla.org/$(BLOCKLIST_ARGS)"
 
 AMO_BLOCKLIST_UI_SCHEMA = "https://raw.githubusercontent.com/mozilla-services/amo-blocklist-ui/master/amo-blocklist.json"
 
@@ -59,7 +61,7 @@ maintainer-clean: distclean
 	rm -fr .venv* .tox/
 
 sync: install
-	$(VENV)/bin/json2kinto --server $(KINTO_SERVER) --amo-server $(AMO_SERVER) -CG \
+	$(VENV)/bin/json2kinto --server $(KINTO_SERVER) --amo-server $(AMO_SERVER) \
         --certificates-bucket $(BLOCKLIST_BUCKET) --addons-bucket $(BLOCKLIST_BUCKET) \
         --plugins-bucket $(BLOCKLIST_BUCKET) --gfx-bucket $(BLOCKLIST_BUCKET)
 
@@ -86,3 +88,6 @@ run-kinto: $(VENV)/bin/kinto
 
 need-kinto-running:
 	@curl http://localhost:8888/v1 2>/dev/null 1>&2 || (echo "Run 'make run-kinto' before starting tests." && exit 1)
+
+verify: sync
+	$(VENV)/bin/xml-verifier $(AMO_SERVER)/$(BLOCKLIST_ARGS) $(KINTO_SERVER)/$(BLOCKLIST_ARGS)

@@ -85,6 +85,13 @@ def write_addons_items(xml_tree, records, app_id):
         if item.get('enabled', True) and is_related_to(item, app_id):
             emItem = etree.SubElement(emItems, 'emItem',
                                       blockID=item.get('blockID', item['id']))
+
+            if 'name' in item['details']['name']:
+                try:
+                    emItem.set('name', item['details']['name'].encode('utf-8'))
+                except:
+                    pass
+
             if 'os' in item:
                 emItem.set('os', item['os'])
 
@@ -120,9 +127,12 @@ def write_plugin_items(xml_tree, records, app_id):
 
     pluginItems = etree.SubElement(xml_tree, 'pluginItems')
     for item in records:
-        if item.get('enabled', True):
+        if item.get('enabled', True) and is_related_to(item, app_id):
             entry = etree.SubElement(pluginItems, 'pluginItem',
                                      blockID=item.get('blockID', item['id']))
+
+            if 'name' in item:
+                entry.set('name', item['name'])
 
             if 'os' in item:
                 entry.set('os', item['os'])

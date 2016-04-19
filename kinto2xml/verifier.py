@@ -3,6 +3,7 @@ import argparse
 import json
 import logging
 import os
+import requests
 import subprocess
 import six
 import sys
@@ -60,7 +61,7 @@ def main(args=None):
     tmp_files = []
 
     for filepath in args.files:
-        if not os.path.exists(filepath):
+        if not filepath.startswith('http') and not os.path.exists(filepath):
             logger.error("%s doesn't exists" % filepath)
             sys.exit(1)
 
@@ -68,12 +69,19 @@ def main(args=None):
         # Normalize XML
         curr_file = tempfile.NamedTemporaryFile(delete=False)
         tmp_files.append(curr_file)
-        with open(filepath) as f:
-            d = xmltodict.parse(f.read())
-            # sort lists of the dict
-            sort_lists_in_dict(d)
-            json.dump(d, curr_file, indent=4, sort_keys=True)
-            curr_file.write('\n')
+        if filepath.startswith('http'):
+            resp = requests.get(filepath)
+            resp.raise_for_status()
+            content = resp.text
+        else:
+            with open(filepath) as f:
+                content = f.read()
+
+        d = xmltodict.parse(content)
+        # sort lists of the dict
+        sort_lists_in_dict(d)
+        json.dump(d, curr_file, indent=4, sort_keys=True)
+        curr_file.write('\n')
 
     # Close and clean files
     for f in tmp_files:
