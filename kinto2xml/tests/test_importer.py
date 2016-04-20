@@ -268,7 +268,8 @@ RECORDS = {
     'plugins': None,
 }
 
-RECORDS_FILE = os.path.join(os.path.dirname(__file__), 'blocklists.json')
+RECORDS_FILE = os.path.join(os.path.dirname(__file__),
+                            'fixtures', 'blocklists.json')
 with codecs.open(RECORDS_FILE, encoding='utf-8') as f:
     RECORDS = json.load(f)
 

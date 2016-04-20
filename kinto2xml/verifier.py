@@ -49,10 +49,6 @@ def main(args=None):
 
     parser.add_argument('files', metavar='N',
                         help='Compare files, line by lines', nargs='+',)
-    parser.add_argument('-b', '--ignore-space-change', action="store_true",
-                        help='ignore changes in the amount of white space')
-    parser.add_argument('-w', '--ignore-all-space', action="store_true",
-                        help='ignore all white space')
     parser.add_argument('-k', '--keep-tmp-files', action="store_false",
                         dest='clean', help='Keep normalize temporary files')
 
@@ -64,6 +60,8 @@ def main(args=None):
         if not filepath.startswith('http') and not os.path.exists(filepath):
             logger.error("%s doesn't exists" % filepath)
             sys.exit(1)
+
+    last_updated = None
 
     for filepath in args.files:
         # Normalize XML
@@ -80,6 +78,10 @@ def main(args=None):
         d = xmltodict.parse(content)
         # sort lists of the dict
         sort_lists_in_dict(d)
+        if not last_updated:
+            last_updated = d['blocklist']['@lastupdate']
+        else:
+            d['blocklist']['@lastupdate'] = last_updated
         json.dump(d, curr_file, indent=4, sort_keys=True)
         curr_file.write('\n')
 
@@ -87,17 +89,11 @@ def main(args=None):
     for f in tmp_files:
         f.close()
 
-    diff_args = ['diff', '-u']
-    if args.ignore_space_change:
-        diff_args.append('-b')
-
-    if args.ignore_all_space:
-        diff_args.append('-w')
-
-    diff_args = diff_args + [tf.name for tf in tmp_files]
+    diff_args = ['diff', '-u'] + [tf.name for tf in tmp_files]
 
     # process diff
-    sys.stderr.write('$ %s\n' % ' '.join(diff_args))
+    if not args.clean:
+        sys.stderr.write('$ %s\n' % ' '.join(diff_args))
     try:
         sys.stdout.write(subprocess.check_output(diff_args,
                                                  stderr=subprocess.STDOUT))

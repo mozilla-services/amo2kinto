@@ -1,5 +1,14 @@
 import json
-from kinto2xml.verifier import sort_lists_in_dict
+import mock
+import os
+import sys
+from six import StringIO
+
+from kinto2xml.verifier import sort_lists_in_dict, main
+
+
+def build_path(filename):
+    return os.path.join(os.path.dirname(__file__), 'fixtures', filename)
 
 
 def test_sort_lists_in_dict_handles_recursion():
@@ -27,3 +36,51 @@ def test_sort_lists_in_dict_handles_recursion():
         '"toto": ["a", "c", "d"]}, '
         '{"@id": "gbc", "toto": ["a", "b"]}]}'
     )
+
+
+def test_files_checking():
+    with mock.patch('sys.stdout', new_callable=StringIO) as stdout:
+        with mock.patch('sys.stderr', new_callable=StringIO) as stderr:
+            main([build_path('blocklist.xml'),
+                  build_path('generated-blocklist.xml')])
+
+        assert stdout.getvalue() == ''
+        assert stderr.getvalue() == ''
+
+
+def test_fails_if_file_does_not_exists():
+    with mock.patch('sys.exit', side_effect=sys.exit) as mocked_exit:
+        try:
+            main(['unknown'])
+        except SystemExit:
+            pass
+        finally:
+            mocked_exit.assert_called_with(1)
+
+
+def test_verifier_supports_http_links():
+    with open(build_path('blocklist.xml')) as f:
+        blocklist_content = f.read()
+
+    response = mock.MagicMock(text=blocklist_content)
+    with mock.patch('requests.get', return_value=response) as mocked_request:
+        main(['http://first_server/url/', 'http://second_server/url/'])
+
+        mocked_request.assert_any_call('http://first_server/url/')
+        mocked_request.assert_any_call('http://second_server/url/')
+
+
+def test_clean_option_does_not_remove_tmp_files():
+    with mock.patch('sys.stderr', new_callable=StringIO) as stderr:
+        main([build_path('blocklist.xml'),
+              build_path('generated-blocklist.xml'), '-k'])
+
+        assert stderr.getvalue().startswith('$ diff -u'), stderr.getvalue()
+
+
+def test_in_case_diff_fails_display_the_error():
+    with mock.patch('sys.stderr', new_callable=StringIO) as stderr:
+        main([build_path('fennec-blocklist.xml'),
+              build_path('generated-blocklist.xml')])
+
+        assert stderr.getvalue() != ''
