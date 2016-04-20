@@ -7,7 +7,8 @@ from . import constants
 logger = logging.getLogger("kinto2xml")
 
 
-def build_version_range(root, item, app_id, ignore_empty_severity=False):
+def build_version_range(root, item, app_id, app_ver=None,
+                        ignore_empty_severity=False):
     for version in item['versionRange']:
         versionRange = etree.SubElement(
             root, 'versionRange')
@@ -86,11 +87,8 @@ def write_addons_items(xml_tree, records, app_id):
             emItem = etree.SubElement(emItems, 'emItem',
                                       blockID=item.get('blockID', item['id']))
 
-            if 'name' in item['details']['name']:
-                try:
-                    emItem.set('name', item['details']['name'].encode('utf-8'))
-                except:
-                    pass
+            if 'name' in item:
+                emItem.set('name', item['name'])
 
             if 'os' in item:
                 emItem.set('os', item['os'])
@@ -128,36 +126,80 @@ def write_plugin_items(xml_tree, records, app_id):
     pluginItems = etree.SubElement(xml_tree, 'pluginItems')
     for item in records:
         if item.get('enabled', True) and is_related_to(item, app_id):
-            entry = etree.SubElement(pluginItems, 'pluginItem',
-                                     blockID=item.get('blockID', item['id']))
+            for versionRange in item.get('versionRange', []):
+                if not versionRange.get('targetApplication'):
+                    add_plugin_item(pluginItems, item, versionRange)
+                else:
+                    for targetApplication in versionRange['targetApplication']:
+                        if 'guid' not in targetApplication or \
+                           targetApplication['guid'] == app_id:
+                            add_plugin_item(pluginItems, item, versionRange,
+                                            targetApplication)
 
-            if 'name' in item:
-                entry.set('name', item['name'])
 
-            if 'os' in item:
-                entry.set('os', item['os'])
+def add_plugin_item(pluginItems, item, version, tA=None,
+                    ignore_empty_severity=False):
+    entry = etree.SubElement(pluginItems, 'pluginItem',
+                             blockID=item.get('blockID', item['id']))
 
-            if 'xpcomabi' in item:
-                entry.set('xpcomabi', item['xpcomabi'])
+    if 'name' in item:
+        entry.set('name', item['name'])
 
-            if 'matchName' in item:
-                etree.SubElement(entry, 'match',
-                                 name='name',
-                                 exp=item['matchName'])
-            if 'matchFilename' in item:
-                etree.SubElement(entry, 'match',
-                                 name='filename',
-                                 exp=item['matchFilename'])
-            if 'matchDescription' in item:
-                etree.SubElement(entry, 'match',
-                                 name='description',
-                                 exp=item['matchDescription'])
+    if 'os' in item:
+        entry.set('os', item['os'])
 
-            if 'infoURL' in item:
-                infoURL = etree.SubElement(entry, 'infoURL')
-                infoURL.text = item['infoURL']
+    if 'xpcomabi' in item:
+        entry.set('xpcomabi', item['xpcomabi'])
 
-            build_version_range(entry, item, app_id)
+    if 'matchName' in item:
+        etree.SubElement(entry, 'match',
+                         name='name',
+                         exp=item['matchName'])
+    if 'matchFilename' in item:
+        etree.SubElement(entry, 'match',
+                         name='filename',
+                         exp=item['matchFilename'])
+    if 'matchDescription' in item:
+        etree.SubElement(entry, 'match',
+                         name='description',
+                         exp=item['matchDescription'])
+
+    if 'infoURL' in item:
+        infoURL = etree.SubElement(entry, 'infoURL')
+        infoURL.text = item['infoURL']
+
+    minVersion = version.get('minVersion')
+    maxVersion = version.get('maxVersion')
+    severity = version.get('severity')
+    add_severity = bool(severity)
+    if not ignore_empty_severity:
+        add_severity = severity or severity == 0
+
+    vulnerabilityStatus = version.get('vulnerabilityStatus')
+    add_tA = tA and tA.get('minVersion') and tA.get('maxVersion')
+
+    if (minVersion and maxVersion) or add_severity or \
+       vulnerabilityStatus or add_tA:
+        versionRange = etree.SubElement(entry, 'versionRange')
+
+        if minVersion and maxVersion:
+            versionRange.set('minVersion', minVersion)
+            versionRange.set('maxVersion', maxVersion)
+
+        if add_severity:
+            versionRange.set('severity', str(severity))
+
+        if vulnerabilityStatus:
+            versionRange.set('vulnerabilitystatus', str(vulnerabilityStatus))
+
+        if tA and tA.get('minVersion') and tA.get('maxVersion'):
+            targetApplication = etree.SubElement(
+                versionRange, 'targetApplication',
+                id=tA['guid'])
+            etree.SubElement(
+                targetApplication, 'versionRange',
+                minVersion=tA['minVersion'],
+                maxVersion=tA['maxVersion'])
 
 
 def write_gfx_items(xml_tree, records, app_id):
