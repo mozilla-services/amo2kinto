@@ -31,6 +31,15 @@ ADDONS_DATA = {
         "maxVersion": "*",
         "severity": 3
     }, {
+        "targetApplication": [
+            {"guid": "{some-other-application}",
+             "minVersion": "1.2",
+             "maxVersion": "1.4"}
+        ],
+        "minVersion": "0",
+        "maxVersion": "*",
+        "severity": 3
+    }, {
         "targetApplication": [],
         "minVersion": "0",
         "maxVersion": "*"

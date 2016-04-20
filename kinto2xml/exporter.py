@@ -10,42 +10,46 @@ logger = logging.getLogger("kinto2xml")
 def build_version_range(root, item, app_id, app_ver=None,
                         ignore_empty_severity=False):
     for version in item['versionRange']:
-        versionRange = etree.SubElement(
-            root, 'versionRange')
-        minVersion = version.get('minVersion')
+        if (not version.get('targetApplication') or
+                any(tA for tA in version.get('targetApplication', [])
+                    if not tA.get('guid') or tA.get('guid') == app_id)):
+            versionRange = etree.SubElement(
+                root, 'versionRange')
+            minVersion = version.get('minVersion')
 
-        if minVersion:
-            versionRange.set('minVersion', minVersion)
+            if minVersion:
+                versionRange.set('minVersion', minVersion)
 
-        maxVersion = version.get('maxVersion')
-        if maxVersion:
-            versionRange.set('maxVersion', maxVersion)
+            maxVersion = version.get('maxVersion')
+            if maxVersion:
+                versionRange.set('maxVersion', maxVersion)
 
-        severity = version.get('severity')
+            severity = version.get('severity')
 
-        add_severity = bool(severity)
+            add_severity = bool(severity)
 
-        if not ignore_empty_severity:
-            add_severity = severity or severity == 0
+            if not ignore_empty_severity:
+                add_severity = severity or severity == 0
 
-        if add_severity:
-            versionRange.set('severity', str(severity))
+            if add_severity:
+                versionRange.set('severity', str(severity))
 
-        vulnerabilityStatus = version.get('vulnerabilityStatus')
-        if vulnerabilityStatus:
-            versionRange.set('vulnerabilitystatus', str(vulnerabilityStatus))
+            vulnerabilityStatus = version.get('vulnerabilityStatus')
+            if vulnerabilityStatus:
+                versionRange.set('vulnerabilitystatus',
+                                 str(vulnerabilityStatus))
 
-        if ('targetApplication' in version and
-                version['targetApplication']):
-            for tA in version['targetApplication']:
-                if not tA['guid'] or tA['guid'] == app_id:
-                    targetApplication = etree.SubElement(
-                        versionRange, 'targetApplication',
-                        id=tA['guid'])
-                    etree.SubElement(
-                        targetApplication, 'versionRange',
-                        minVersion=tA['minVersion'],
-                        maxVersion=tA['maxVersion'])
+            if ('targetApplication' in version and
+                    version['targetApplication']):
+                for tA in version['targetApplication']:
+                    if not tA['guid'] or tA['guid'] == app_id:
+                        targetApplication = etree.SubElement(
+                            versionRange, 'targetApplication',
+                            id=tA['guid'])
+                        etree.SubElement(
+                            targetApplication, 'versionRange',
+                            minVersion=tA['minVersion'],
+                            maxVersion=tA['maxVersion'])
 
 
 def is_related_to(item, app_id):
