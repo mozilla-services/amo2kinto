@@ -42,7 +42,8 @@ ADDONS_DATA = {
     }, {
         "targetApplication": [],
         "minVersion": "0",
-        "maxVersion": "*"
+        "maxVersion": "*",
+        "severity": 0
     }],
     "prefs": ["test.blocklist"]
 }
@@ -82,6 +83,118 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
   </emItems>
 </blocklist>
 """.decode('utf-8')
+
+
+def test_addon_record_with_no_version_range_info():
+    xml_tree = etree.Element(
+        'blocklist',
+        xmlns="http://www.mozilla.org/2006/addons-blocklist",
+        lastupdate='1459262434336'
+    )
+
+    data = ADDONS_DATA.copy()
+    data['versionRange'] = []
+
+    exporter.write_addons_items(xml_tree, [data],
+                                constants.FIREFOX_APPID)
+
+    result = etree.tostring(
+        etree.ElementTree(xml_tree),
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='UTF-8').decode('utf-8')
+
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
+<blocklist lastupdate="1459262434336" \
+xmlns="http://www.mozilla.org/2006/addons-blocklist">
+  <emItems>
+    <emItem blockID="i454" id="sqlmoz@facebook.com">
+      <prefs>
+        <pref>test.blocklist</pref>
+      </prefs>
+    </emItem>
+  </emItems>
+</blocklist>
+""".decode('utf-8')
+
+
+def test_addon_record_with_no_targetApplication_info():
+    xml_tree = etree.Element(
+        'blocklist',
+        xmlns="http://www.mozilla.org/2006/addons-blocklist",
+        lastupdate='1459262434336'
+    )
+
+    data = ADDONS_DATA.copy()
+    data['name'] = "Mozilla Service Pack (malware)"
+    data['os'] = "WINNT"
+    data['versionRange'] = [{
+        "targetApplication": [],
+        "minVersion": "0",
+        "maxVersion": "*",
+        "severity": 0
+    }]
+
+    exporter.write_addons_items(xml_tree, [data],
+                                constants.FIREFOX_APPID)
+
+    result = etree.tostring(
+        etree.ElementTree(xml_tree),
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='UTF-8').decode('utf-8')
+
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
+<blocklist lastupdate="1459262434336" \
+xmlns="http://www.mozilla.org/2006/addons-blocklist">
+  <emItems>
+    <emItem blockID="i454" name="Mozilla Service Pack (malware)" \
+os="WINNT" id="sqlmoz@facebook.com">
+      <prefs>
+        <pref>test.blocklist</pref>
+      </prefs>
+      <versionRange minVersion="0" maxVersion="*"/>
+    </emItem>
+  </emItems>
+</blocklist>
+""".decode('utf-8')
+
+
+def test_addon_record_with_no_targetApplication_matching():
+    xml_tree = etree.Element(
+        'blocklist',
+        xmlns="http://www.mozilla.org/2006/addons-blocklist",
+        lastupdate='1459262434336'
+    )
+
+    data = ADDONS_DATA.copy()
+    data['versionRange'] = [{
+        "targetApplication": [
+            {"guid": "{some-other-application}",
+             "minVersion": "1.2",
+             "maxVersion": "1.4"}
+        ],
+        "minVersion": "0",
+        "maxVersion": "*",
+        "severity": 3
+    }]
+
+    exporter.write_addons_items(xml_tree, [data],
+                                constants.FIREFOX_APPID)
+
+    result = etree.tostring(
+        etree.ElementTree(xml_tree),
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='UTF-8').decode('utf-8')
+
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
+<blocklist lastupdate="1459262434336" \
+xmlns="http://www.mozilla.org/2006/addons-blocklist">
+  <emItems/>
+</blocklist>
+""".decode('utf-8')
+
 
 PLUGIN_DATA = {
     "id": "6a1b6dfe-f463-3061-e8f8-6e896ccf2a8a",
@@ -150,6 +263,89 @@ vulnerabilitystatus="1">
   </pluginItems>
 </blocklist>
 """.decode('utf-8')
+
+
+def test_plugin_record_with_no_targetApplication_info():
+    xml_tree = etree.Element(
+        'blocklist',
+        xmlns="http://www.mozilla.org/2006/addons-blocklist",
+        lastupdate='1459262434336'
+    )
+
+    data = PLUGIN_DATA.copy()
+    data['name'] = "Yahoo Application State Plugin"
+    data['os'] = "WINNT"
+    data['xpcomabi'] = "test"
+    data['versionRange'] = [{
+        "targetApplication": [],
+        "minVersion": "0",
+        "maxVersion": "*",
+        "severity": 0,
+        "vulnerabilityStatus": "1"
+    }]
+
+    exporter.write_plugin_items(xml_tree, [data],
+                                constants.FIREFOX_APPID)
+
+    result = etree.tostring(
+        etree.ElementTree(xml_tree),
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='UTF-8').decode('utf-8')
+
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
+<blocklist lastupdate="1459262434336" \
+xmlns="http://www.mozilla.org/2006/addons-blocklist">
+  <pluginItems>
+    <pluginItem blockID="p26" name="Yahoo Application State Plugin" os="WINNT"\
+ xpcomabi="test">
+      <match exp="^Yahoo Application State Plugin$" name="name"/>
+      <match exp="npYState.dll" name="filename"/>
+      <match exp="^Yahoo Application State Plugin$" name="description"/>
+      <infoURL>https://get.adobe.com/flashplayer/</infoURL>
+      <versionRange minVersion="0" maxVersion="*" severity="0" \
+vulnerabilitystatus="1"/>
+    </pluginItem>
+  </pluginItems>
+</blocklist>
+""".decode('utf-8')
+
+
+def test_plugin_record_with_no_targetApplication_matching():
+    xml_tree = etree.Element(
+        'blocklist',
+        xmlns="http://www.mozilla.org/2006/addons-blocklist",
+        lastupdate='1459262434336'
+    )
+
+    data = PLUGIN_DATA.copy()
+    data['versionRange'] = [{
+        "targetApplication": [
+            {"guid": "{some-other-application}",
+             "minVersion": "1.2",
+             "maxVersion": "1.4"}
+        ],
+        "minVersion": "0",
+        "maxVersion": "*",
+        "severity": 3
+    }]
+
+    exporter.write_plugin_items(xml_tree, [data],
+                                constants.FIREFOX_APPID)
+
+    result = etree.tostring(
+        etree.ElementTree(xml_tree),
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='UTF-8').decode('utf-8')
+
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
+<blocklist lastupdate="1459262434336" \
+xmlns="http://www.mozilla.org/2006/addons-blocklist">
+  <pluginItems/>
+</blocklist>
+""".decode('utf-8')
+
 
 GFX_DATA = {
     "id": "00a6b9d2-285f-83f0-0a1f-ef0205a60067",

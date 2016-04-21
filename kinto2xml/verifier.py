@@ -27,7 +27,7 @@ def sort_lists_in_dict(d):
     if not isinstance(d, dict):
         return d
 
-    for key, value in d.iteritems():
+    for key, value in six.iteritems(d):
         if isinstance(value, list):
             value = sorted(value, key=get_unique_id(
                 '@blockID', '@id', '@issuerName', 'serialNumber',
@@ -65,7 +65,7 @@ def main(args=None):
 
     for filepath in args.files:
         # Normalize XML
-        curr_file = tempfile.NamedTemporaryFile(delete=False)
+        curr_file = tempfile.NamedTemporaryFile("w", delete=False)
         tmp_files.append(curr_file)
         if filepath.startswith('http'):
             resp = requests.get(filepath)
@@ -95,10 +95,10 @@ def main(args=None):
     if not args.clean:
         sys.stderr.write('$ %s\n' % ' '.join(diff_args))
     try:
-        sys.stdout.write(subprocess.check_output(diff_args,
-                                                 stderr=subprocess.STDOUT))
+        output = subprocess.check_output(diff_args, stderr=subprocess.STDOUT)
+        sys.stdout.write(output.decode('utf-8'))
     except subprocess.CalledProcessError as e:
-        sys.stderr.write(e.output)
+        sys.stderr.write(e.output.decode('utf-8'))
 
     if not args.clean:
         sys.stderr.write('$ %s\n' % ' '.join(diff_args))

@@ -17,7 +17,7 @@ def prepare_amo_records(records, fields):
             if field not in fields:
                 del record[field]
             else:
-                if isinstance(record[field], (str, unicode)):
+                if isinstance(record[field], six.string_types):
                     record[field] = record[field].strip()
 
         record['id'] = make_id_from_string(blockID)

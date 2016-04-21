@@ -7,8 +7,7 @@ from . import constants
 logger = logging.getLogger("kinto2xml")
 
 
-def build_version_range(root, item, app_id, app_ver=None,
-                        ignore_empty_severity=False):
+def build_version_range(root, item, app_id, app_ver=None):
     for version in item['versionRange']:
         if (not version.get('targetApplication') or
                 any(tA for tA in version.get('targetApplication', [])
@@ -28,16 +27,8 @@ def build_version_range(root, item, app_id, app_ver=None,
 
             add_severity = bool(severity)
 
-            if not ignore_empty_severity:
-                add_severity = severity or severity == 0
-
             if add_severity:
                 versionRange.set('severity', str(severity))
-
-            vulnerabilityStatus = version.get('vulnerabilityStatus')
-            if vulnerabilityStatus:
-                versionRange.set('vulnerabilitystatus',
-                                 str(vulnerabilityStatus))
 
             if ('targetApplication' in version and
                     version['targetApplication']):
@@ -64,6 +55,7 @@ def is_related_to(item, app_id):
         for tA in vR['targetApplication']:
             if tA['guid'] == app_id:
                 return True
+
     return False
 
 
@@ -105,8 +97,7 @@ def write_addons_items(xml_tree, records, app_id):
                 pref = etree.SubElement(prefs, 'pref')
                 pref.text = p
 
-            build_version_range(emItem, item, app_id,
-                                ignore_empty_severity=True)
+            build_version_range(emItem, item, app_id)
 
 
 def write_plugin_items(xml_tree, records, app_id):
