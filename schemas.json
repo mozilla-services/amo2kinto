@@ -31,6 +31,11 @@
           "versionRange": [{}]
         },
         "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Record id."
+          },
           "enabled": {
             "type": "boolean",
             "title": "Enabled",
@@ -208,6 +213,11 @@
           "serialNumber": ""
         },
         "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Record id."
+          },
           "enabled": {
             "type": "boolean",
             "title": "Enabled",
@@ -278,6 +288,11 @@
           "driverVersionComparator": ""
         },
         "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Record id."
+          },
           "enabled": {
             "type": "boolean",
             "title": "Enabled",
@@ -458,6 +473,11 @@
           "versionRange": [{}]
         },
         "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Record id."
+          },
           "enabled": {
             "type": "boolean",
             "title": "Enabled",
