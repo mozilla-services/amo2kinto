@@ -304,7 +304,7 @@ class TestMain(unittest.TestCase):
         cert_schema = kwargs['schemas']['certificates']['config']['schema']
         gfx_schema = kwargs['schemas']['gfx']['config']['schema']
         addons_schema = kwargs['schemas']['add-ons']['config']['schema']
-        plugins_schema = kwargs['schemas']['plugins']
+        plugins_schema = kwargs['schemas']['plugins']['config']['schema']
 
         if kwargs['no_schema']:
             cert_schema = None
