@@ -1,7 +1,6 @@
 import json
 import mock
 import os
-import sys
 from six import StringIO
 
 from kinto2xml.verifier import sort_lists_in_dict, main
