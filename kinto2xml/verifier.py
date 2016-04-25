@@ -12,8 +12,14 @@ import xmltodict
 
 logger = logging.getLogger('xml-verifier')
 
+RECORD_SORT_FIELDS = (
+    '@blockID', '@id', '@issuerName', 'serialNumber',
+    '@guid', '@name', '@minVersion', '@maxVersion'
+)
+
 
 def get_unique_id(*fields):
+    """Generated a unique sort id string for a given record."""
     def wraps(d):
         if isinstance(d, dict):
             return '-'.join([str(v) for v in (d.get(f) for f in fields)])
@@ -29,9 +35,7 @@ def sort_lists_in_dict(d):
 
     for key, value in six.iteritems(d):
         if isinstance(value, list):
-            value = sorted(value, key=get_unique_id(
-                '@blockID', '@id', '@issuerName', 'serialNumber',
-                '@guid', '@name', '@minVersion', '@maxVersion'))
+            value = sorted(value, key=get_unique_id(*RECORD_SORT_FIELDS))
             value = [sort_lists_in_dict(v) for v in value]
         elif isinstance(value, dict):
             value = sort_lists_in_dict(value)
@@ -59,7 +63,7 @@ def main(args=None):
     for filepath in args.files:
         if not filepath.startswith('http') and not os.path.exists(filepath):
             logger.error("%s doesn't exists" % filepath)
-            sys.exit(1)
+            return 1
 
     last_updated = None
 
@@ -100,8 +104,8 @@ def main(args=None):
     except subprocess.CalledProcessError as e:
         sys.stderr.write(e.output.decode('utf-8'))
 
-    if not args.clean:
-        sys.stderr.write('$ %s\n' % ' '.join(diff_args))
-    else:
+    if args.clean:
         for f in tmp_files:
             os.unlink(f.name)
+    else:
+        sys.stderr.write('$ %s\n' % ' '.join(diff_args))

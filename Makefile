@@ -8,7 +8,13 @@ TEMPDIR := $(shell mktemp -d)
 AMO_SERVER = https://addons.mozilla.org/
 KINTO_SERVER = http://localhost:8888/v1
 
-BLOCKLIST_ARGS = "blocklist/3/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/44.0a1/"
+FIREFOX_APP_ID = "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
+THUNDERBIRD_APPID = "{3550f703-e582-4d05-9a08-453d09bdfdc6}"
+SEAMONKEY_APPID = "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
+ANDROID_APPID = "{aa3c5121-dab2-40e2-81ca-7ea25febc110}"
+
+
+BLOCKLIST_ARGS = "blocklist/3/$(FIREFOX_APP_ID)/45.0/"
 
 BLOCKLIST_FILE_URL = "https://blocklist.addons.mozilla.org/$(BLOCKLIST_ARGS)"
 
@@ -89,5 +95,5 @@ run-kinto: $(VENV)/bin/kinto
 need-kinto-running:
 	@curl http://localhost:8888/v1 2>/dev/null 1>&2 || (echo "Run 'make run-kinto' before starting tests." && exit 1)
 
-verify: sync
+verify-server: sync
 	$(VENV)/bin/xml-verifier $(AMO_SERVER)/$(BLOCKLIST_ARGS) $(KINTO_SERVER)/$(BLOCKLIST_ARGS)

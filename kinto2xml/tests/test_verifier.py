@@ -49,13 +49,7 @@ def test_files_checking():
 
 
 def test_fails_if_file_does_not_exists():
-    with mock.patch('sys.exit', side_effect=sys.exit) as mocked_exit:
-        try:
-            main(['unknown'])
-        except SystemExit:
-            pass
-        finally:
-            mocked_exit.assert_called_with(1)
+    assert main(['unknown']) == 1
 
 
 def test_verifier_supports_http_links():

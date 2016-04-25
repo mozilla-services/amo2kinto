@@ -392,13 +392,13 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
     <gfxBlacklistEntry blockID="g35">
       <os>WINNT 6.1</os>
       <vendor>0x10de</vendor>
-      <devices>
-        <device>0x0a6c</device>
-      </devices>
       <feature>DIRECT2D</feature>
       <featureStatus>BLOCKED_DRIVER_VERSION</featureStatus>
       <driverVersion>8.17.12.5896</driverVersion>
       <driverVersionComparator>LESS_THAN_OR_EQUAL</driverVersionComparator>
+      <devices>
+        <device>0x0a6c</device>
+      </devices>
     </gfxBlacklistEntry>
   </gfxItems>
 </blocklist>

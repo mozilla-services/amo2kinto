@@ -9,31 +9,30 @@ logger = logging.getLogger("kinto2xml")
 
 def build_version_range(root, item, app_id, app_ver=None):
     for version in item['versionRange']:
-        if (not version.get('targetApplication') or
-                any(tA for tA in version.get('targetApplication', [])
-                    if not tA.get('guid') or tA.get('guid') == app_id)):
+        is_version_related_to_app = (
+            not version.get('targetApplication') or
+            any(tA for tA in version.get('targetApplication', [])
+                if not tA.get('guid') or tA.get('guid') == app_id))
+
+        if is_version_related_to_app:
             versionRange = etree.SubElement(
                 root, 'versionRange')
-            minVersion = version.get('minVersion')
 
-            if minVersion:
-                versionRange.set('minVersion', minVersion)
+            for field in ['minVersion', 'maxVersion', 'severity']:
+                value = version.get(field)
+                if value:
+                    versionRange.set(field, str(value))
 
-            maxVersion = version.get('maxVersion')
-            if maxVersion:
-                versionRange.set('maxVersion', maxVersion)
+            has_targetApplication = (
+                'targetApplication' in version and version['targetApplication']
+            )
 
-            severity = version.get('severity')
-
-            add_severity = bool(severity)
-
-            if add_severity:
-                versionRange.set('severity', str(severity))
-
-            if ('targetApplication' in version and
-                    version['targetApplication']):
+            if has_targetApplication:
                 for tA in version['targetApplication']:
-                    if not tA['guid'] or tA['guid'] == app_id:
+                    is_targetApp_related = (
+                        not tA['guid'] or tA['guid'] == app_id
+                    )
+                    if is_targetApp_related:
                         targetApplication = etree.SubElement(
                             versionRange, 'targetApplication',
                             id=tA['guid'])
@@ -44,7 +43,7 @@ def build_version_range(root, item, app_id, app_ver=None):
 
 
 def is_related_to(item, app_id):
-    """Return True if the item relate ot the given app_id."""
+    """Return True if the item relates to the given app_id."""
     if not item.get('versionRange'):
         return True
 
@@ -79,15 +78,13 @@ def write_addons_items(xml_tree, records, app_id):
 
     emItems = etree.SubElement(xml_tree, 'emItems')
     for item in records:
-        if item.get('enabled', True) and is_related_to(item, app_id):
+        if is_related_to(item, app_id):
             emItem = etree.SubElement(emItems, 'emItem',
                                       blockID=item.get('blockID', item['id']))
 
-            if 'name' in item:
-                emItem.set('name', item['name'])
-
-            if 'os' in item:
-                emItem.set('os', item['os'])
+            for field in ['name', 'os']:
+                if field in item:
+                    emItem.set(field, item[field])
 
             if 'guid' in item:
                 emItem.set('id', item['guid'])
@@ -120,14 +117,17 @@ def write_plugin_items(xml_tree, records, app_id):
 
     pluginItems = etree.SubElement(xml_tree, 'pluginItems')
     for item in records:
-        if item.get('enabled', True) and is_related_to(item, app_id):
+        if is_related_to(item, app_id):
             for versionRange in item.get('versionRange', []):
                 if not versionRange.get('targetApplication'):
                     add_plugin_item(pluginItems, item, versionRange)
                 else:
                     for targetApplication in versionRange['targetApplication']:
-                        if 'guid' not in targetApplication or \
-                           targetApplication['guid'] == app_id:
+                        is_targetApplication_related = (
+                            'guid' not in targetApplication or
+                            targetApplication['guid'] == app_id
+                        )
+                        if is_targetApplication_related:
                             add_plugin_item(pluginItems, item, versionRange,
                                             targetApplication)
 
@@ -137,27 +137,16 @@ def add_plugin_item(pluginItems, item, version, tA=None,
     entry = etree.SubElement(pluginItems, 'pluginItem',
                              blockID=item.get('blockID', item['id']))
 
-    if 'name' in item:
-        entry.set('name', item['name'])
+    for field in ['name', 'os', 'xpcomabi']:
+        if field in item:
+            entry.set(field, item[field])
 
-    if 'os' in item:
-        entry.set('os', item['os'])
-
-    if 'xpcomabi' in item:
-        entry.set('xpcomabi', item['xpcomabi'])
-
-    if 'matchName' in item:
-        etree.SubElement(entry, 'match',
-                         name='name',
-                         exp=item['matchName'])
-    if 'matchFilename' in item:
-        etree.SubElement(entry, 'match',
-                         name='filename',
-                         exp=item['matchFilename'])
-    if 'matchDescription' in item:
-        etree.SubElement(entry, 'match',
-                         name='description',
-                         exp=item['matchDescription'])
+    for xml_field in ['name', 'filename', 'description']:
+        json_field = 'match%s' % xml_field.capitalize()
+        if json_field in item:
+            etree.SubElement(entry, 'match',
+                             name=xml_field,
+                             exp=item[json_field])
 
     if 'infoURL' in item:
         infoURL = etree.SubElement(entry, 'infoURL')
@@ -173,8 +162,11 @@ def add_plugin_item(pluginItems, item, version, tA=None,
     vulnerabilityStatus = version.get('vulnerabilityStatus')
     add_tA = tA and tA.get('minVersion') and tA.get('maxVersion')
 
-    if (minVersion and maxVersion) or add_severity or \
-       vulnerabilityStatus or add_tA:
+    versionRange_not_null = (
+        (minVersion and maxVersion) or add_severity or
+        vulnerabilityStatus or add_tA
+    )
+    if versionRange_not_null:
         versionRange = etree.SubElement(entry, 'versionRange')
 
         if minVersion and maxVersion:
@@ -191,10 +183,10 @@ def add_plugin_item(pluginItems, item, version, tA=None,
             targetApplication = etree.SubElement(
                 versionRange, 'targetApplication',
                 id=tA['guid'])
-            etree.SubElement(
-                targetApplication, 'versionRange',
-                minVersion=tA['minVersion'],
-                maxVersion=tA['maxVersion'])
+            etree.SubElement(targetApplication,
+                             'versionRange',
+                             minVersion=tA['minVersion'],
+                             maxVersion=tA['maxVersion'])
 
 
 def write_gfx_items(xml_tree, records, app_id):
@@ -217,17 +209,17 @@ def write_gfx_items(xml_tree, records, app_id):
 
     gfxItems = etree.SubElement(xml_tree, 'gfxItems')
     for item in records:
-        if ('guid' not in item or item['guid'] == app_id) and \
-           item.get('enabled', True):
+        is_record_related = ('guid' not in item or item['guid'] == app_id)
+
+        if is_record_related:
             entry = etree.SubElement(gfxItems, 'gfxBlacklistEntry',
                                      blockID=item.get('blockID', item['id']))
-            # OS
-            os = etree.SubElement(entry, 'os')
-            os.text = item['os']
-
-            # Vendor
-            vendor = etree.SubElement(entry, 'vendor')
-            vendor.text = item['vendor']
+            fields = ['os', 'vendor', 'feature', 'featureStatus',
+                      'driverVersion', 'driverVersionComparator']
+            for field in fields:
+                if field in item:
+                    node = etree.SubElement(entry, field)
+                    node.text = item[field]
 
             # Devices
             if item['devices']:
@@ -235,24 +227,6 @@ def write_gfx_items(xml_tree, records, app_id):
                 for d in item['devices']:
                     device = etree.SubElement(devices, 'device')
                     device.text = d
-
-            # Feature
-            if 'feature' in item:
-                feature = etree.SubElement(entry, 'feature')
-                feature.text = item['feature']
-
-            if 'featureStatus' in item:
-                featureStatus = etree.SubElement(entry, 'featureStatus')
-                featureStatus.text = item['featureStatus']
-
-            # Driver
-            if 'driverVersion' in item:
-                driverVersion = etree.SubElement(entry, 'driverVersion')
-                driverVersion.text = item['driverVersion']
-            if 'driverVersionComparator' in item:
-                driverVersionComparator = etree.SubElement(
-                    entry, 'driverVersionComparator')
-                driverVersionComparator.text = item['driverVersionComparator']
 
 
 def write_cert_items(xml_tree, records):
@@ -267,11 +241,10 @@ def write_cert_items(xml_tree, records):
 
     certItems = etree.SubElement(xml_tree, 'certItems')
     for item in records:
-        if item.get('enabled', True):
-            cert = etree.SubElement(certItems, 'certItem',
-                                    issuerName=item['issuerName'])
-            serialNumber = etree.SubElement(cert, 'serialNumber')
-            serialNumber.text = item['serialNumber']
+        cert = etree.SubElement(certItems, 'certItem',
+                                issuerName=item['issuerName'])
+        serialNumber = etree.SubElement(cert, 'serialNumber')
+        serialNumber.text = item['serialNumber']
 
 
 def main(args=None):
