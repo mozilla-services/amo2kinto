@@ -381,6 +381,128 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 """.decode('utf-8')
 
 
+def test_plugin_record_with_api_version_2_with_no_guid_and_severity_only():
+    xml_tree = etree.Element(
+        'blocklist',
+        xmlns="http://www.mozilla.org/2006/addons-blocklist",
+        lastupdate='1459262434336'
+    )
+
+    data = PLUGIN_DATA.copy()
+    data['versionRange'] = [{
+        "targetApplication": [],
+        "severity": 1
+    }]
+
+    exporter.write_plugin_items(xml_tree, [data],
+                                constants.FIREFOX_APPID,
+                                api_ver=2)
+
+    result = etree.tostring(
+        etree.ElementTree(xml_tree),
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='UTF-8').decode('utf-8')
+
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
+<blocklist lastupdate="1459262434336" \
+xmlns="http://www.mozilla.org/2006/addons-blocklist">
+  <pluginItems>
+    <pluginItem blockID="p26">
+      <match exp="^Yahoo Application State Plugin$" name="name"/>
+      <match exp="npYState.dll" name="filename"/>
+      <match exp="^Yahoo Application State Plugin$" name="description"/>
+      <infoURL>https://get.adobe.com/flashplayer/</infoURL>
+      <versionRange severity="1"/>
+    </pluginItem>
+  </pluginItems>
+</blocklist>
+""".decode('utf-8')
+
+
+def test_plugin_record_with_api_version_2_with_no_guid_and_severity_0():
+    xml_tree = etree.Element(
+        'blocklist',
+        xmlns="http://www.mozilla.org/2006/addons-blocklist",
+        lastupdate='1459262434336'
+    )
+
+    data = PLUGIN_DATA.copy()
+    data['versionRange'] = [{
+        "targetApplication": [],
+        "severity": 0
+    }]
+
+    exporter.write_plugin_items(xml_tree, [data],
+                                constants.FIREFOX_APPID,
+                                api_ver=2)
+
+    result = etree.tostring(
+        etree.ElementTree(xml_tree),
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='UTF-8').decode('utf-8')
+
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
+<blocklist lastupdate="1459262434336" \
+xmlns="http://www.mozilla.org/2006/addons-blocklist">
+  <pluginItems>
+    <pluginItem blockID="p26">
+      <match exp="^Yahoo Application State Plugin$" name="name"/>
+      <match exp="npYState.dll" name="filename"/>
+      <match exp="^Yahoo Application State Plugin$" name="description"/>
+      <infoURL>https://get.adobe.com/flashplayer/</infoURL>
+      <versionRange severity="0"/>
+    </pluginItem>
+  </pluginItems>
+</blocklist>
+""".decode('utf-8')
+
+
+def test_plugin_record_with_api_version_2_with_guid_and_no_min_max_version():
+    xml_tree = etree.Element(
+        'blocklist',
+        xmlns="http://www.mozilla.org/2006/addons-blocklist",
+        lastupdate='1459262434336'
+    )
+
+    data = PLUGIN_DATA.copy()
+    data['versionRange'] = [{
+        "targetApplication": [
+            {"guid": "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+             "minVersion": "3.6",
+             "maxVersion": "3.6.*"}
+        ],
+        "severity": 0,
+        "vulnerabilityStatus": 1
+    }]
+
+    exporter.write_plugin_items(xml_tree, [data],
+                                constants.FIREFOX_APPID,
+                                api_ver=2)
+
+    result = etree.tostring(
+        etree.ElementTree(xml_tree),
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='UTF-8').decode('utf-8')
+
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
+<blocklist lastupdate="1459262434336" \
+xmlns="http://www.mozilla.org/2006/addons-blocklist">
+  <pluginItems>
+    <pluginItem blockID="p26">
+      <match exp="^Yahoo Application State Plugin$" name="name"/>
+      <match exp="npYState.dll" name="filename"/>
+      <match exp="^Yahoo Application State Plugin$" name="description"/>
+      <infoURL>https://get.adobe.com/flashplayer/</infoURL>
+      <versionRange severity="0" vulnerabilitystatus="1"/>
+    </pluginItem>
+  </pluginItems>
+</blocklist>
+""".decode('utf-8')
+
+
 def test_plugin_record_with_no_targetApplication_info():
     xml_tree = etree.Element(
         'blocklist',

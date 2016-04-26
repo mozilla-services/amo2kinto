@@ -160,31 +160,47 @@ def add_plugin_item(pluginItems, item, version, tA=None, app_id=None,
     minVersion = version.get('minVersion')
     maxVersion = version.get('maxVersion')
     severity = version.get('severity')
-    add_severity = bool(severity)
     vulnerabilityStatus = version.get('vulnerabilityStatus')
 
-    if not ignore_empty_severity:
-        add_severity = severity or severity == 0
+    app_guid = tA and tA.get('guid') or None
 
     kwargs = OrderedDict()
 
-    add_min_max_version_kwargs = (
-        minVersion and maxVersion and (api_ver > 2 or
-                                       (tA and tA.get('guid') == app_id))
-    )
+    # Condition taken exactly as they were in addons-server code.
+    if (severity or app_guid or (minVersion and maxVersion) or
+            vulnerabilityStatus):
+        if app_guid:
+            if minVersion and maxVersion:
+                kwargs['maxVersion'] = maxVersion
+                kwargs['minVersion'] = minVersion
+                if severity is not None:
+                    kwargs['severity'] = str(severity)
+                if vulnerabilityStatus:
+                    kwargs['vulnerabilitystatus'] = str(vulnerabilityStatus)
+            else:
+                if severity is not None:
+                    kwargs['severity'] = str(severity)
+                if vulnerabilityStatus is not None:
+                    kwargs['vulnerabilitystatus'] = str(vulnerabilityStatus)
 
-    if add_min_max_version_kwargs:
-        kwargs['maxVersion'] = maxVersion
-        kwargs['minVersion'] = minVersion
+        elif api_ver > 2 and minVersion and maxVersion:
+            kwargs['maxVersion'] = maxVersion
+            kwargs['minVersion'] = minVersion
+            if severity is not None:
+                kwargs['severity'] = str(severity)
+            if vulnerabilityStatus is not None:
+                kwargs['vulnerabilitystatus'] = str(vulnerabilityStatus)
 
-    add_severity = ((add_severity and api_ver > 2) or
-                    (severity and vulnerabilityStatus) or vulnerabilityStatus)
+        elif severity and not (minVersion or maxVersion):
+            kwargs['severity'] = str(severity)
 
-    if add_severity:
+        elif vulnerabilityStatus:
+            if severity is not None:
+                kwargs['severity'] = str(severity)
+            kwargs['vulnerabilitystatus'] = str(vulnerabilityStatus)
+
+    elif severity == 0:
         kwargs['severity'] = str(severity)
-
-    if vulnerabilityStatus:
-        kwargs['vulnerabilitystatus'] = str(vulnerabilityStatus)
 
     versionRange_not_null = (
         len(kwargs.keys()) or (api_ver > 2 and tA and tA.get(
@@ -194,19 +210,19 @@ def add_plugin_item(pluginItems, item, version, tA=None, app_id=None,
     if versionRange_not_null:
         versionRange = etree.SubElement(entry, 'versionRange', **kwargs)
 
-        is_targetApplication_applicable = (api_ver > 2 and
-                                           tA and
-                                           tA.get('minVersion') and
-                                           tA.get('maxVersion'))
+    is_targetApplication_applicable = (api_ver > 2 and
+                                       tA and
+                                       tA.get('minVersion') and
+                                       tA.get('maxVersion'))
 
-        if is_targetApplication_applicable:
-            targetApplication = etree.SubElement(
-                versionRange, 'targetApplication',
-                id=tA['guid'])
-            etree.SubElement(targetApplication,
-                             'versionRange',
-                             minVersion=tA['minVersion'],
-                             maxVersion=tA['maxVersion'])
+    if is_targetApplication_applicable:
+        targetApplication = etree.SubElement(
+            versionRange, 'targetApplication',
+            id=tA['guid'])
+        etree.SubElement(targetApplication,
+                         'versionRange',
+                         minVersion=tA['minVersion'],
+                         maxVersion=tA['maxVersion'])
 
 
 def write_gfx_items(xml_tree, records, app_id, api_ver=3):
