@@ -40,7 +40,7 @@ def version_dict(version):
 
 
 def version_int(version):
-    if isinstance(version, six.binary_type):
+    if isinstance(version, six.binary_type):  # pragma: no cover
         version = version.decode('utf-8')
 
     d = version_dict(version)
