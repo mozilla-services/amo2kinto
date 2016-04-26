@@ -185,6 +185,7 @@ def add_plugin_item(pluginItems, item, version, tA=None, app_id=None,
     app_guid = tA and tA.get('guid') or None
 
     kwargs = OrderedDict()
+    force_empty_versionRange = False
 
     # Condition taken exactly as they were in addons-server code.
     if (severity or app_guid or (minVersion and maxVersion) or
@@ -198,6 +199,7 @@ def add_plugin_item(pluginItems, item, version, tA=None, app_id=None,
                 if vulnerabilityStatus:
                     kwargs['vulnerabilitystatus'] = str(vulnerabilityStatus)
             else:
+                force_empty_versionRange = True
                 if severity is not None:
                     kwargs['severity'] = str(severity)
                 if vulnerabilityStatus is not None:
@@ -227,7 +229,7 @@ def add_plugin_item(pluginItems, item, version, tA=None, app_id=None,
             'minVersion') and tA.get('maxVersion'))
     )
 
-    if versionRange_not_null:
+    if versionRange_not_null or force_empty_versionRange:
         versionRange = etree.SubElement(entry, 'versionRange', **kwargs)
 
     is_targetApplication_applicable = (api_ver > 2 and
