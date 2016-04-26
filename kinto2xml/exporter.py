@@ -137,7 +137,7 @@ def write_plugin_items(xml_tree, records, app_id, api_ver=3, app_ver=None):
 
 
 def add_plugin_item(pluginItems, item, version, tA=None, app_id=None,
-                    ignore_empty_severity=False, api_ver=3, app_ver=None):
+                    api_ver=3, app_ver=None):
 
     entry = etree.SubElement(pluginItems, 'pluginItem',
                              blockID=item.get('blockID', item['id']))
