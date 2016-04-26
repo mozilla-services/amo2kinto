@@ -3,39 +3,57 @@
     "name": "add-ons",
     "synced": true,
     "config": {
-      "displayFields": ["enabled", "addonId", "os"],
+      "displayFields": ["enabled", "guid", "os"],
       "schema": {
+        "definitions": {
+          "minVersion": {
+            "type": "string",
+            "title": "Min version",
+            "description": "The mininum version."
+          },
+          "maxVersion": {
+            "type": "string",
+            "title": "Max version",
+            "description": "The maximum version."
+          }
+        },
         "title": "Add-on",
         "description": "Add-on",
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "addonId"
+          "guid"
         ],
         "default": {
-          "addonId": "",
+          "guid": "",
           "os": "",
           "prefs": [],
           "versionRange": [{}]
         },
         "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Record id."
+          },
           "enabled": {
             "type": "boolean",
             "title": "Enabled",
             "description": "blocking rule is enabled.",
             "default": false
           },
-          "addonId": {
+          "guid": {
             "type": "string",
             "title": "Add-on id",
-            "description": "The add-on unique identifier.",
+            "description": "The add-on unique identifier or a regular expression.",
             "minLength": 1,
             "default": ""
           },
           "os": {
             "type": "string",
             "title": "OS",
-            "description": "The operating system identifier."
+            "description": "The comma-separated operating system identifiers, eg. Darwin,Linux",
+            "pattern": "^[^,]*(,[^,]+)*$"
           },
           "prefs": {
             "type": "array",
@@ -61,56 +79,42 @@
               "title": "Version range",
               "description": "Version range",
               "additionalProperties": false,
-              "required": [
-                "minVersion",
-                "maxVersion",
-                "severity"
-              ],
               "default": {
                 "minVersion": "",
                 "maxVersion": "",
-                "severity": "0",
-                "vulnerabilityStatus": ""
+                "severity": 0,
+                "vulnerabilityStatus": 0
               },
               "properties": {
-                "minVersion": {
-                  "type": "string",
-                  "title": "Min version",
-                  "description": "The mininum version."
-                },
-                "maxVersion": {
-                  "type": "string",
-                  "title": "Max version",
-                  "description": "The maximum version.",
-                  "default": ""
-                },
+                "minVersion": {"$ref": "#/definitions/minVersion"},
+                "maxVersion": {"$ref": "#/definitions/maxVersion"},
                 "severity": {
-                  "type": "string",
+                  "type": "integer",
                   "title": "Severity",
                   "description": "The severity code number.",
                   "enum": [
-                    "0",
-                    "1",
-                    "2",
-                    "3"
+                    0,
+                    1,
+                    2,
+                    3
                   ],
-                  "default": "0"
+                  "default": 0
                 },
                 "vulnerabilityStatus": {
-                  "type": "string",
+                  "type": "integer",
                   "title": "Vulnerability status",
                   "description": "The vulnerability status code number.",
                   "enum": [
-                    "",
-                    "1",
-                    "2"
+                    0,
+                    1,
+                    2
                   ],
                   "enumNames": [
                     "",
                     "Update available",
                     "Update unavailable"
                   ],
-                  "default": ""
+                  "default": 0
                 },
                 "targetApplication": {
                   "type": "array",
@@ -123,12 +127,12 @@
                     "description": "Target application",
                     "additionalProperties": false,
                     "required": [
-                      "id",
+                      "guid",
                       "minVersion",
                       "maxVersion"
                     ],
                     "properties": {
-                      "id": {
+                      "guid": {
                         "type": "string",
                         "title": "Application id",
                         "description": "The application unique identifier.",
@@ -145,16 +149,8 @@
                           "Android"
                         ]
                       },
-                      "minVersion": {
-                        "type": "string",
-                        "title": "Min version",
-                        "description": "The mininum version."
-                      },
-                      "maxVersion": {
-                        "type": "string",
-                        "title": "Max version",
-                        "description": "The maximum version."
-                      }
+                      "minVersion": {"$ref": "#/definitions/minVersion"},
+                      "maxVersion": {"$ref": "#/definitions/maxVersion"}
                     }
                   }
                 }
@@ -168,23 +164,32 @@
               "name": {"type": "string"},
               "why": {"type": "string"},
               "who": {"type": "string"},
-              "bug": {"type": "string"}
+              "bug": {"type": "string"},
+              "created": {"type": "string", "format": "date-time"}
             }
+          },
+          "blockID": {
+            "type": "string",
+            "title": "Internal blocklist id",
+            "description": "Original block id, eg. i152",
+            "pattern": "^i[0-9]+$"
           }
         }
       },
       "uiSchema": {
         "ui:order": [
           "enabled",
-          "addonId",
+          "guid",
           "os",
           "versionRange",
           "prefs",
-          "details"
+          "details",
+          "blockID"
         ],
         "details": {
           "why": {"ui:widget": "textarea"},
-          "who": {"ui:widget": "textarea"}
+          "who": {"ui:widget": "textarea"},
+          "created": {"type": "string", "format": "date-time"}
         }
       }
     }
@@ -208,11 +213,22 @@
           "serialNumber": ""
         },
         "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Record id."
+          },
           "enabled": {
             "type": "boolean",
             "title": "Enabled",
             "description": "blocking rule is enabled.",
             "default": false
+          },
+          "blockID": {
+            "type": "string",
+            "title": "Internal blocklist id",
+            "description": "Original block id, eg. c111",
+            "pattern": "^c[0-9]+$"
           },
           "issuerName": {
             "type": "string",
@@ -231,7 +247,8 @@
               "name": {"type": "string"},
               "why": {"type": "string"},
               "who": {"type": "string"},
-              "bug": {"type": "string"}
+              "bug": {"type": "string"},
+              "created": {"type": "string", "format": "date-time"}
             }
           }
         }
@@ -262,6 +279,7 @@
         "default": {
           "os": "",
           "vendor": "",
+          "hardware": "",
           "devices": [],
           "feature": "",
           "featureStatus": "",
@@ -270,6 +288,11 @@
           "driverVersionComparator": ""
         },
         "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Record id."
+          },
           "enabled": {
             "type": "boolean",
             "title": "Enabled",
@@ -298,6 +321,7 @@
               "WINNT 6.1",
               "WINNT 6.2",
               "WINNT 6.3",
+              "WINNT 8.1",
               "WINNT 10.0",
               "Other"
             ]
@@ -382,6 +406,11 @@
               "GREATER_THAN_OR_EQUAL"
             ]
           },
+          "hardware": {
+            "type": "string",
+            "title": "Hardware",
+            "description": "The graphic hardware name, eg. antares"
+          },
           "details": {
             "type": "object",
             "title": "Details",
@@ -389,8 +418,15 @@
               "name": {"type": "string"},
               "why": {"type": "string"},
               "who": {"type": "string"},
-              "bug": {"type": "string"}
+              "bug": {"type": "string"},
+              "created": {"type": "string", "format": "date-time"}
             }
+          },
+          "blockID": {
+            "type": "string",
+            "title": "Internal blocklist id",
+            "description": "Original block id, eg. g28",
+            "pattern": "^g[0-9]+$"
           }
         }
       },
@@ -408,6 +444,18 @@
     "config": {
       "displayFields": ["enabled", "os", "matchName", "matchFilename", "matchDescription"],
       "schema": {
+        "definitions": {
+          "minVersion": {
+            "type": "string",
+            "title": "Min version",
+            "description": "The mininum version."
+          },
+          "maxVersion": {
+            "type": "string",
+            "title": "Max version",
+            "description": "The maximum version."
+          }
+        },
         "title": "Plugin",
         "description": "A blocked plugin entry.",
         "type": "object",
@@ -417,6 +465,7 @@
         ],
         "default": {
           "os": "",
+          "xpcomabi": "",
           "matchName": "",
           "matchFilename": "",
           "matchDescription": "",
@@ -424,6 +473,11 @@
           "versionRange": [{}]
         },
         "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Record id."
+          },
           "enabled": {
             "type": "boolean",
             "title": "Enabled",
@@ -433,7 +487,13 @@
           "os": {
             "type": "string",
             "title": "OS",
-            "description": "The operating system identifier."
+            "description": "The comma-separated operating system identifiers, eg. Darwin,Linux",
+            "pattern": "^[^,]*(,[^,]+)*$"
+          },
+          "xpcomabi": {
+            "type": "string",
+            "title": "XPCOM ABI",
+            "description": "The comma-separated XPCOM binary interfaces, eg. x86-gcc3,x86_64-msvc."
           },
           "matchName": {
             "type": "string",
@@ -465,56 +525,42 @@
               "title": "Version range",
               "description": "Version range",
               "additionalProperties": false,
-              "required": [
-                "minVersion",
-                "maxVersion",
-                "severity"
-              ],
               "default": {
                 "minVersion": "",
                 "maxVersion": "",
-                "severity": "0",
-                "vulnerabilityStatus": ""
+                "severity": 0,
+                "vulnerabilityStatus": 0
               },
               "properties": {
-                "minVersion": {
-                  "type": "string",
-                  "title": "Min version",
-                  "description": "The mininum version."
-                },
-                "maxVersion": {
-                  "type": "string",
-                  "title": "Max version",
-                  "description": "The maximum version.",
-                  "default": ""
-                },
+                "minVersion": {"$ref": "#/definitions/minVersion"},
+                "maxVersion": {"$ref": "#/definitions/maxVersion"},
                 "severity": {
-                  "type": "string",
+                  "type": "integer",
                   "title": "Severity",
                   "description": "The severity code number.",
                   "enum": [
-                    "0",
-                    "1",
-                    "2",
-                    "3"
+                    0,
+                    1,
+                    2,
+                    3
                   ],
-                  "default": "0"
+                  "default": 0
                 },
                 "vulnerabilityStatus": {
-                  "type": "string",
+                  "type": "integer",
                   "title": "Vulnerability status",
                   "description": "The vulnerability status code number.",
                   "enum": [
-                    "",
-                    "1",
-                    "2"
+                    0,
+                    1,
+                    2
                   ],
                   "enumNames": [
                     "",
                     "Update available",
                     "Update unavailable"
                   ],
-                  "default": ""
+                  "default": 0
                 },
                 "targetApplication": {
                   "type": "array",
@@ -527,12 +573,12 @@
                     "description": "Target application",
                     "additionalProperties": false,
                     "required": [
-                      "id",
+                      "guid",
                       "minVersion",
                       "maxVersion"
                     ],
                     "properties": {
-                      "id": {
+                      "guid": {
                         "type": "string",
                         "title": "Application id",
                         "description": "The application unique identifier.",
@@ -549,16 +595,8 @@
                           "Android"
                         ]
                       },
-                      "minVersion": {
-                        "type": "string",
-                        "title": "Min version",
-                        "description": "The mininum version."
-                      },
-                      "maxVersion": {
-                        "type": "string",
-                        "title": "Max version",
-                        "description": "The maximum version."
-                      }
+                      "minVersion": {"$ref": "#/definitions/minVersion"},
+                      "maxVersion": {"$ref": "#/definitions/maxVersion"}
                     }
                   }
                 }
@@ -572,8 +610,15 @@
               "name": {"type": "string"},
               "why": {"type": "string"},
               "who": {"type": "string"},
-              "bug": {"type": "string"}
+              "bug": {"type": "string"},
+              "created": {"type": "string", "format": "date-time"}
             }
+          },
+          "blockID": {
+            "type": "string",
+            "title": "Internal blocklist id",
+            "description": "Original block id, eg. p165",
+            "pattern": "^p[0-9]+$"
           }
         }
       },

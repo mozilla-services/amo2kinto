@@ -133,10 +133,13 @@ def main(args=None):
                                          import_all):
             bucket = getattr(args, '%s_bucket' % args_type)
             collection = getattr(args, '%s_collection' % args_type)
+            jsonschema = None
+            if collection_type in schemas:
+                jsonschema = schemas[collection_type]['config']['schema']
             sync_records(amo_records=records,
                          fields=FIELDS[collection_type],
                          kinto_client=kinto_client,
                          bucket=bucket,
                          collection=collection,
-                         schema=schemas.get(collection_type),
+                         schema=jsonschema,
                          permissions=constants.COLLECTION_PERMISSIONS)

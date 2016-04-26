@@ -301,13 +301,13 @@ class TestMain(unittest.TestCase):
                                         bucket=None,
                                         collection=None)
 
-        certificate_schema = kwargs['schemas']['certificates']
-        gfx_schema = kwargs['schemas']['gfx']
-        addons_schema = kwargs['schemas']['add-ons']
-        plugins_schema = kwargs['schemas']['plugins']
+        cert_schema = kwargs['schemas']['certificates']['config']['schema']
+        gfx_schema = kwargs['schemas']['gfx']['config']['schema']
+        addons_schema = kwargs['schemas']['add-ons']['config']['schema']
+        plugins_schema = kwargs['schemas']['plugins']['config']['schema']
 
         if kwargs['no_schema']:
-            certificate_schema = None
+            cert_schema = None
             gfx_schema = None
             addons_schema = None
             plugins_schema = None
@@ -318,7 +318,7 @@ class TestMain(unittest.TestCase):
             'kinto_client': kinto_client.return_value,
             'bucket': kwargs['certificates_bucket'],
             'collection': kwargs['certificates_collection'],
-            'schema': certificate_schema,
+            'schema': cert_schema,
             'permissions': constants.COLLECTION_PERMISSIONS,
         }
 
