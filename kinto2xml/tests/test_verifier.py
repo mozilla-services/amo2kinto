@@ -68,7 +68,8 @@ def test_clean_option_does_not_remove_tmp_files():
         main([build_path('blocklist.xml'),
               build_path('generated-blocklist.xml'), '-k'])
 
-        assert stderr.getvalue().startswith('$ diff -u'), stderr.getvalue()
+        content = stderr.getvalue()
+        assert content.startswith('$ diff -U10 -u'), content
 
 
 def test_in_case_diff_fails_display_the_error():

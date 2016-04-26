@@ -97,7 +97,7 @@ def main(args=None):
     for f in tmp_files:
         f.close()
 
-    diff_args = ['diff', '-u'] + [tf.name for tf in tmp_files]
+    diff_args = ['diff', '-U10', '-u'] + [tf.name for tf in tmp_files]
 
     # Print the diff command to stderr if we kept the file for debugging.
     if not args.clean:

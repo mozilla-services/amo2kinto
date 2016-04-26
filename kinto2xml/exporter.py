@@ -4,6 +4,7 @@ from collections import OrderedDict
 from lxml import etree
 from kinto_client import cli_utils
 from . import constants
+from .compare import version_int
 
 logger = logging.getLogger("kinto2xml")
 
@@ -98,6 +99,12 @@ def write_addons_items(xml_tree, records, app_id, api_ver=3):
             build_version_range(emItem, item, app_id)
 
 
+def between(ver, min, max):
+    if not (min and max):
+        return True
+    return version_int(min) < ver < version_int(max)
+
+
 def write_plugin_items(xml_tree, records, app_id, api_ver=3, app_ver=None):
     """Generate the plugin blocklists.
 
@@ -131,9 +138,22 @@ def write_plugin_items(xml_tree, records, app_id, api_ver=3, app_ver=None):
                             targetApplication['guid'] == app_id
                         )
                         if is_targetApplication_related:
-                            add_plugin_item(pluginItems, item, versionRange,
-                                            targetApplication, app_id=app_id,
-                                            api_ver=api_ver, app_ver=app_ver)
+                            if api_ver < 3 and app_ver is not None:
+                                app_version = version_int(app_ver)
+                                is_version_related = between(
+                                    app_version,
+                                    targetApplication.get('minVersion', 0),
+                                    targetApplication.get('maxVersion', '*'))
+                                if is_version_related:
+                                    add_plugin_item(
+                                        pluginItems, item, versionRange,
+                                        targetApplication, app_id=app_id,
+                                        api_ver=api_ver, app_ver=app_ver)
+                            else:
+                                add_plugin_item(
+                                    pluginItems, item, versionRange,
+                                    targetApplication, app_id=app_id,
+                                    api_ver=api_ver, app_ver=app_ver)
 
 
 def add_plugin_item(pluginItems, item, version, tA=None, app_id=None,
