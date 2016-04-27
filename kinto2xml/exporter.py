@@ -312,6 +312,7 @@ def main(args=None):
         addons_records = client.get_records(
             bucket=args.addons_bucket,
             collection=args.addons_collection,
+            enabled=True,
             _sort="last_modified")
     except:
         logger.warn(
@@ -329,6 +330,7 @@ def main(args=None):
         plugin_records = client.get_records(
             bucket=args.plugins_bucket,
             collection=args.plugins_collection,
+            enabled=True,
             _sort="last_modified")
     except:
         logger.warn(
@@ -346,6 +348,7 @@ def main(args=None):
         gfx_records = client.get_records(
             bucket=args.gfx_bucket,
             collection=args.gfx_collection,
+            enabled=True,
             _sort="last_modified")
     except:
         logger.warn(
@@ -363,6 +366,7 @@ def main(args=None):
         cert_records = client.get_records(
             bucket=args.certificates_bucket,
             collection=args.certificates_collection,
+            enabled=True,
             _sort="last_modified")
     except:
         logger.warn(
