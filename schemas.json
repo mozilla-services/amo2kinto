@@ -178,6 +178,7 @@
       },
       "uiSchema": {
         "ui:order": [
+          "id",
           "enabled",
           "guid",
           "os",
@@ -186,6 +187,9 @@
           "details",
           "blockID"
         ],
+        "id": {
+          "ui:widget": "hidden"
+        },
         "details": {
           "why": {"ui:widget": "textarea"},
           "who": {"ui:widget": "textarea"},
@@ -254,6 +258,9 @@
         }
       },
       "uiSchema": {
+        "id": {
+          "ui:widget": "hidden"
+        },
         "details": {
           "why": {"ui:widget": "textarea"},
           "who": {"ui:widget": "textarea"}
@@ -431,6 +438,9 @@
         }
       },
       "uiSchema": {
+        "id": {
+          "ui:widget": "hidden"
+        },
         "details": {
           "why": {"ui:widget": "textarea"},
           "who": {"ui:widget": "textarea"}
@@ -623,6 +633,9 @@
         }
       },
       "uiSchema": {
+        "id": {
+          "ui:widget": "hidden"
+        },
         "details": {
           "why": {"ui:widget": "textarea"},
           "who": {"ui:widget": "textarea"}

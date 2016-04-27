@@ -17,6 +17,7 @@ REQUIREMENTS = [
     'requests',
     'lxml',
     'six',
+    'xmltodict',
 ]
 
 
@@ -33,6 +34,7 @@ ENTRY_POINTS = {
     'console_scripts': [
         'kinto2xml = kinto2xml.exporter:main',
         'json2kinto = kinto2xml.importer:main',
+        'xml-verifier = kinto2xml.verifier:main',
     ]
 }
 

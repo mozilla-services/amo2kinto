@@ -6,7 +6,17 @@ DEV_STAMP = $(VENV)/.dev_env_installed.stamp
 INSTALL_STAMP = $(VENV)/.install.stamp
 TEMPDIR := $(shell mktemp -d)
 AMO_SERVER = https://addons.mozilla.org/
-KINTO_SERVER = https://kinto.stage.mozaws.net/v1
+KINTO_SERVER = http://localhost:8888/v1
+
+FIREFOX_APP_ID = "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
+THUNDERBIRD_APPID = "{3550f703-e582-4d05-9a08-453d09bdfdc6}"
+SEAMONKEY_APPID = "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
+ANDROID_APPID = "{aa3c5121-dab2-40e2-81ca-7ea25febc110}"
+
+
+BLOCKLIST_ARGS = "blocklist/3/$(FIREFOX_APP_ID)/45.0/"
+
+BLOCKLIST_FILE_URL = "https://blocklist.addons.mozilla.org/$(BLOCKLIST_ARGS)"
 
 AMO_BLOCKLIST_UI_SCHEMA = "https://raw.githubusercontent.com/mozilla-services/amo-blocklist-ui/master/amo-blocklist.json"
 
@@ -61,6 +71,17 @@ sync: install
         --certificates-bucket $(BLOCKLIST_BUCKET) --addons-bucket $(BLOCKLIST_BUCKET) \
         --plugins-bucket $(BLOCKLIST_BUCKET) --gfx-bucket $(BLOCKLIST_BUCKET)
 
+blocklist.xml: update-blocklist-file
+update-blocklist-file:
+	wget -O blocklist.xml $(BLOCKLIST_FILE_URL)
+
+generated-blocklist.xml: sync generate-blocklist-file
+generate-blocklist-file:
+	$(VENV)/bin/kinto2xml -s http://localhost:8888/v1 -o generated-blocklist.xml
+
+verify-blocklists:
+	$(VENV)/bin/xml-verifier blocklist.xml generated-blocklist.xml
+
 update-schemas:
 	wget -O schemas.json $(AMO_BLOCKLIST_UI_SCHEMA)
 
@@ -73,3 +94,6 @@ run-kinto: $(VENV)/bin/kinto
 
 need-kinto-running:
 	@curl http://localhost:8888/v1 2>/dev/null 1>&2 || (echo "Run 'make run-kinto' before starting tests." && exit 1)
+
+verify-server: sync
+	$(VENV)/bin/xml-verifier $(AMO_SERVER)/$(BLOCKLIST_ARGS) $(KINTO_SERVER)/$(BLOCKLIST_ARGS)
