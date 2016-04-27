@@ -82,10 +82,14 @@ def main(args=None):
         d = xmltodict.parse(content)
         # sort lists of the dict
         sort_lists_in_dict(d)
+
+        # Ignore differences in the lastupdate blocklist tag
+        # parameter. So that if they differs we ignore it.
         if not last_updated:
             last_updated = d['blocklist']['@lastupdate']
         else:
             d['blocklist']['@lastupdate'] = last_updated
+
         json.dump(d, curr_file, indent=4, sort_keys=True)
         curr_file.write('\n')
 
@@ -95,7 +99,7 @@ def main(args=None):
 
     diff_args = ['diff', '-u'] + [tf.name for tf in tmp_files]
 
-    # process diff
+    # Print the diff command to stderr if we kept the file for debugging.
     if not args.clean:
         sys.stderr.write('$ %s\n' % ' '.join(diff_args))
     try:
