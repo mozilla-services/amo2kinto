@@ -14,7 +14,7 @@ COLLECTION_PERMISSIONS = {'read': ["system.Everyone"]}
 
 # Buckets name default
 ADDONS_BUCKET = u'staging'
-ADDONS_COLLECTION = u'add-ons'
+ADDONS_COLLECTION = u'addons'
 CERT_BUCKET = u'staging'
 CERT_COLLECTION = u'certificates'
 GFX_BUCKET = u'staging'
