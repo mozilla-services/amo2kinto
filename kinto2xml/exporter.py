@@ -1,8 +1,10 @@
 import logging
 import sys
+from collections import OrderedDict
 from lxml import etree
 from kinto_client import cli_utils
 from . import constants
+from .compare import version_int
 
 logger = logging.getLogger("kinto2xml")
 
@@ -58,7 +60,7 @@ def is_related_to(item, app_id):
     return False
 
 
-def write_addons_items(xml_tree, records, app_id):
+def write_addons_items(xml_tree, records, app_id, api_ver=3):
     """Generate the addons blocklists.
 
     <emItem blockID="i372" id="5nc3QHFgcb@r06Ws9gvNNVRfH.com">
@@ -97,7 +99,13 @@ def write_addons_items(xml_tree, records, app_id):
             build_version_range(emItem, item, app_id)
 
 
-def write_plugin_items(xml_tree, records, app_id):
+def between(ver, min, max):
+    if not (min and max):
+        return True
+    return version_int(min) < ver < version_int(max)
+
+
+def write_plugin_items(xml_tree, records, app_id, api_ver=3, app_ver=None):
     """Generate the plugin blocklists.
 
     <pluginItem blockID="p422">
@@ -120,7 +128,9 @@ def write_plugin_items(xml_tree, records, app_id):
         if is_related_to(item, app_id):
             for versionRange in item.get('versionRange', []):
                 if not versionRange.get('targetApplication'):
-                    add_plugin_item(pluginItems, item, versionRange)
+                    add_plugin_item(pluginItems, item, versionRange,
+                                    app_id=app_id, api_ver=api_ver,
+                                    app_ver=app_ver)
                 else:
                     for targetApplication in versionRange['targetApplication']:
                         is_targetApplication_related = (
@@ -128,12 +138,27 @@ def write_plugin_items(xml_tree, records, app_id):
                             targetApplication['guid'] == app_id
                         )
                         if is_targetApplication_related:
-                            add_plugin_item(pluginItems, item, versionRange,
-                                            targetApplication)
+                            if api_ver < 3 and app_ver is not None:
+                                app_version = version_int(app_ver)
+                                is_version_related = between(
+                                    app_version,
+                                    targetApplication.get('minVersion', 0),
+                                    targetApplication.get('maxVersion', '*'))
+                                if is_version_related:
+                                    add_plugin_item(
+                                        pluginItems, item, versionRange,
+                                        targetApplication, app_id=app_id,
+                                        api_ver=api_ver, app_ver=app_ver)
+                            else:
+                                add_plugin_item(
+                                    pluginItems, item, versionRange,
+                                    targetApplication, app_id=app_id,
+                                    api_ver=api_ver, app_ver=app_ver)
 
 
-def add_plugin_item(pluginItems, item, version, tA=None,
-                    ignore_empty_severity=False):
+def add_plugin_item(pluginItems, item, version, tA=None, app_id=None,
+                    api_ver=3, app_ver=None):
+
     entry = etree.SubElement(pluginItems, 'pluginItem',
                              blockID=item.get('blockID', item['id']))
 
@@ -155,41 +180,74 @@ def add_plugin_item(pluginItems, item, version, tA=None,
     minVersion = version.get('minVersion')
     maxVersion = version.get('maxVersion')
     severity = version.get('severity')
-    add_severity = bool(severity)
-    if not ignore_empty_severity:
-        add_severity = severity or severity == 0
-
     vulnerabilityStatus = version.get('vulnerabilityStatus')
-    add_tA = tA and tA.get('minVersion') and tA.get('maxVersion')
+
+    app_guid = tA and tA.get('guid') or None
+
+    kwargs = OrderedDict()
+    force_empty_versionRange = False
+
+    # Condition taken exactly as they were in addons-server code.
+    if (severity or app_guid or (minVersion and maxVersion) or
+            vulnerabilityStatus):
+        if app_guid:
+            if minVersion and maxVersion:
+                kwargs['maxVersion'] = maxVersion
+                kwargs['minVersion'] = minVersion
+                if severity is not None:
+                    kwargs['severity'] = str(severity)
+                if vulnerabilityStatus:
+                    kwargs['vulnerabilitystatus'] = str(vulnerabilityStatus)
+            else:
+                force_empty_versionRange = True
+                if severity is not None:
+                    kwargs['severity'] = str(severity)
+                if vulnerabilityStatus is not None:
+                    kwargs['vulnerabilitystatus'] = str(vulnerabilityStatus)
+
+        elif api_ver > 2 and minVersion and maxVersion:
+            kwargs['maxVersion'] = maxVersion
+            kwargs['minVersion'] = minVersion
+            if severity is not None:
+                kwargs['severity'] = str(severity)
+            if vulnerabilityStatus is not None:
+                kwargs['vulnerabilitystatus'] = str(vulnerabilityStatus)
+
+        elif severity and not (minVersion or maxVersion):
+            kwargs['severity'] = str(severity)
+
+        elif vulnerabilityStatus:
+            if severity is not None:
+                kwargs['severity'] = str(severity)
+            kwargs['vulnerabilitystatus'] = str(vulnerabilityStatus)
+
+    elif severity == 0:
+        kwargs['severity'] = str(severity)
 
     versionRange_not_null = (
-        (minVersion and maxVersion) or add_severity or
-        vulnerabilityStatus or add_tA
+        len(kwargs.keys()) or (api_ver > 2 and tA and tA.get(
+            'minVersion') and tA.get('maxVersion'))
     )
-    if versionRange_not_null:
-        versionRange = etree.SubElement(entry, 'versionRange')
 
-        if minVersion and maxVersion:
-            versionRange.set('minVersion', minVersion)
-            versionRange.set('maxVersion', maxVersion)
+    if versionRange_not_null or force_empty_versionRange:
+        versionRange = etree.SubElement(entry, 'versionRange', **kwargs)
 
-        if add_severity:
-            versionRange.set('severity', str(severity))
+    is_targetApplication_applicable = (api_ver > 2 and
+                                       tA and
+                                       tA.get('minVersion') and
+                                       tA.get('maxVersion'))
 
-        if vulnerabilityStatus:
-            versionRange.set('vulnerabilitystatus', str(vulnerabilityStatus))
-
-        if tA and tA.get('minVersion') and tA.get('maxVersion'):
-            targetApplication = etree.SubElement(
-                versionRange, 'targetApplication',
-                id=tA['guid'])
-            etree.SubElement(targetApplication,
-                             'versionRange',
-                             minVersion=tA['minVersion'],
-                             maxVersion=tA['maxVersion'])
+    if is_targetApplication_applicable:
+        targetApplication = etree.SubElement(
+            versionRange, 'targetApplication',
+            id=tA['guid'])
+        etree.SubElement(targetApplication,
+                         'versionRange',
+                         minVersion=tA['minVersion'],
+                         maxVersion=tA['maxVersion'])
 
 
-def write_gfx_items(xml_tree, records, app_id):
+def write_gfx_items(xml_tree, records, app_id, api_ver=3):
     """Generate the gfxBlacklistEntry.
 
     <gfxBlacklistEntry blockID="g35">
@@ -229,7 +287,7 @@ def write_gfx_items(xml_tree, records, app_id):
                     device.text = d
 
 
-def write_cert_items(xml_tree, records):
+def write_cert_items(xml_tree, records, api_ver=3):
     """Generate the certificate blocklists.
 
     <certItem issuerName="MIGQMQswCQYD...IENB">
