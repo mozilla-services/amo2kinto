@@ -3,7 +3,7 @@ CHANGELOG
 
 This document describes changes between each past release.
 
-0.1.0 (unreleased)
+0.1.0 (2016-04-27)
 ==================
 
 **Initial version**
@@ -24,3 +24,6 @@ This document describes changes between each past release.
 - Full Python 2.7 and Python 3.4/3.5 support
 - Handle the enabled flag to activate records
 - Makefile rule to update the schema definition
+- Export kinto blocklists in XML blocklist file version 2
+- Export kinto blocklists in XML blocklist file version 3
+- XML verifier that create a diff of two XML files
