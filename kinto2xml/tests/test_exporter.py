@@ -475,6 +475,7 @@ class TestMain(unittest.TestCase):
         cert_arguments = {
             'bucket': kwargs['certificates_bucket'],
             'collection': kwargs['certificates_collection'],
+            'enabled': True,
             '_sort': 'last_modified',
         }
 
@@ -483,6 +484,7 @@ class TestMain(unittest.TestCase):
         gfx_arguments = {
             'bucket': kwargs['gfx_bucket'],
             'collection': kwargs['gfx_collection'],
+            'enabled': True,
             '_sort': 'last_modified',
         }
 
@@ -491,6 +493,7 @@ class TestMain(unittest.TestCase):
         addons_arguments = {
             'bucket': kwargs['addons_bucket'],
             'collection': kwargs['addons_collection'],
+            'enabled': True,
             '_sort': 'last_modified',
         }
 
@@ -500,6 +503,7 @@ class TestMain(unittest.TestCase):
         plugins_arguments = {
             'bucket': kwargs['plugins_bucket'],
             'collection': kwargs['plugins_collection'],
+            'enabled': True,
             '_sort': 'last_modified',
         }
 
