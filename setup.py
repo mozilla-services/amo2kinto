@@ -40,7 +40,7 @@ ENTRY_POINTS = {
 
 
 setup(name='kinto2xml',
-      version='0.1.0',
+      version='0.2.0.dev0',
       description='Generate a blocklists.xml file from the Kinto collections.',
       long_description=README + "\n\n" + CHANGELOG,
       license='Apache License (2.0)',
