@@ -1,4 +1,4 @@
-from kinto2xml.compare import MAXVERSION, version_int, version_dict
+from amo2kinto.compare import MAXVERSION, version_int, version_dict
 
 
 def test_version_int():

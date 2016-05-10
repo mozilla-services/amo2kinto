@@ -3,7 +3,7 @@ import unittest
 from lxml import etree
 from six import StringIO
 
-from kinto2xml import constants, exporter, compare
+from amo2kinto import constants, exporter, compare
 
 ADDONS_DATA = {
     "id": "e3e8f123-588d-0f73-63d8-93bdfc6ae8e2",
@@ -882,7 +882,7 @@ class TestMain(unittest.TestCase):
     def test_can_define_the_output_file(self):
         out_file = StringIO()
         with mock.patch.object(out_file, 'close') as mocked_close:
-            with mock.patch('kinto2xml.exporter.open', return_value=out_file):
+            with mock.patch('amo2kinto.exporter.open', return_value=out_file):
                 exporter.main(['--out', 'file'])
                 self.assert_arguments(self.MockedClient)
 
@@ -892,7 +892,7 @@ class TestMain(unittest.TestCase):
     def test_get_records_read_fails(self):
         with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
             MockedClient.return_value.get_records.side_effect = Exception
-            with mock.patch('kinto2xml.exporter.logger') as mocked_logger:
+            with mock.patch('amo2kinto.exporter.logger') as mocked_logger:
                 exporter.main([])
                 self.assertEqual(mocked_logger.warn.call_count, 4)
 
@@ -902,6 +902,6 @@ class TestMain(unittest.TestCase):
         )
         out_file = StringIO()
         with mock.patch.object(out_file, 'close'):
-            with mock.patch('kinto2xml.exporter.open', return_value=out_file):
+            with mock.patch('amo2kinto.exporter.open', return_value=out_file):
                 exporter.main(['--out', 'file'])
         self.assertIn('lastupdate="1448372434324"', out_file.getvalue())

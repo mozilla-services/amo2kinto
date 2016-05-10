@@ -1,4 +1,3 @@
-import logging
 import sys
 from collections import OrderedDict
 from lxml import etree
@@ -6,7 +5,7 @@ from kinto_client import cli_utils
 from . import constants
 from .compare import version_int
 
-logger = logging.getLogger("kinto2xml")
+from .logger import logger
 
 
 def build_version_range(root, item, app_id, app_ver=None):

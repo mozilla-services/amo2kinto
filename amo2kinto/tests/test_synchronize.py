@@ -2,7 +2,7 @@ import mock
 import unittest
 
 from contextlib import contextmanager
-from kinto2xml.synchronize import get_diff, push_changes
+from amo2kinto.synchronize import get_diff, push_changes
 
 
 def test_get_diff():

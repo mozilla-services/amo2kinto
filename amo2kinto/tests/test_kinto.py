@@ -1,5 +1,5 @@
 import mock
-from kinto2xml.kinto import get_kinto_records
+from amo2kinto.kinto import get_kinto_records
 
 
 def test_get_kinto_records_try_to_create_the_bucket():
