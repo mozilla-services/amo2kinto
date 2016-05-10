@@ -128,11 +128,11 @@ def main(args=None):
     blocklists = resp.json()
 
     for collection_type, records in six.iteritems(blocklists):
-        args_type = collection_type.replace('-', '')
-        if hasattr(args, args_type) and (getattr(args, args_type) or
-                                         import_all):
-            bucket = getattr(args, '%s_bucket' % args_type)
-            collection = getattr(args, '%s_collection' % args_type)
+        collection_type = collection_type.replace('-', '')
+        if hasattr(args, collection_type) and (
+                getattr(args, collection_type) or import_all):
+            bucket = getattr(args, '%s_bucket' % collection_type)
+            collection = getattr(args, '%s_collection' % collection_type)
             jsonschema = None
             if collection_type in schemas:
                 jsonschema = schemas[collection_type]['config']['schema']
