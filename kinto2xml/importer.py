@@ -14,7 +14,7 @@ from .synchronize import get_diff, push_changes
 
 
 FIELDS = {
-    'add-ons': ['blockID', 'os', 'guid', 'prefs', 'versionRange', 'details'],
+    'addons': ['blockID', 'os', 'guid', 'prefs', 'versionRange', 'details'],
     'certificates': ['serialNumber', 'issuerName', 'details'],
     'gfx': ['blockID', 'os', 'vendor', 'feature', 'featureStatus',
             'driverVersion', 'driverVersionmax', 'driverVersionComparator',
@@ -120,7 +120,7 @@ def main(args=None):
     schemas = {}
     if not args.no_schema:
         with codecs.open(args.schema_file, 'r', encoding='utf-8') as f:
-            schemas = json.load(f)
+            schemas = json.load(f)['collections']
 
     amo_blocklists_url = urljoin(args.amo_server, '/blocked/blocklists.json')
     resp = requests.get(amo_blocklists_url)
