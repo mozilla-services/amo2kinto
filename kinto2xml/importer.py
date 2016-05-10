@@ -14,7 +14,7 @@ from .synchronize import get_diff, push_changes
 
 
 FIELDS = {
-    'add-ons': ['blockID', 'os', 'guid', 'prefs', 'versionRange', 'details'],
+    'addons': ['blockID', 'os', 'guid', 'prefs', 'versionRange', 'details'],
     'certificates': ['serialNumber', 'issuerName', 'details'],
     'gfx': ['blockID', 'os', 'vendor', 'feature', 'featureStatus',
             'driverVersion', 'driverVersionmax', 'driverVersionComparator',
@@ -120,7 +120,7 @@ def main(args=None):
     schemas = {}
     if not args.no_schema:
         with codecs.open(args.schema_file, 'r', encoding='utf-8') as f:
-            schemas = json.load(f)
+            schemas = json.load(f)['collections']
 
     amo_blocklists_url = urljoin(args.amo_server, '/blocked/blocklists.json')
     resp = requests.get(amo_blocklists_url)
@@ -128,11 +128,11 @@ def main(args=None):
     blocklists = resp.json()
 
     for collection_type, records in six.iteritems(blocklists):
-        args_type = collection_type.replace('-', '')
-        if hasattr(args, args_type) and (getattr(args, args_type) or
-                                         import_all):
-            bucket = getattr(args, '%s_bucket' % args_type)
-            collection = getattr(args, '%s_collection' % args_type)
+        collection_type = collection_type.replace('-', '')
+        if hasattr(args, collection_type) and (
+                getattr(args, collection_type) or import_all):
+            bucket = getattr(args, '%s_bucket' % collection_type)
+            collection = getattr(args, '%s_collection' % collection_type)
             jsonschema = None
             if collection_type in schemas:
                 jsonschema = schemas[collection_type]['config']['schema']

@@ -41,7 +41,7 @@ ADDONS_DATA = {
 
 
 def test_addon_record():
-    assert prepare_amo_records([ADDONS_DATA], FIELDS['add-ons']) == [{
+    assert prepare_amo_records([ADDONS_DATA], FIELDS['addons']) == [{
         "id": "e3e8f123-588d-0f73-63d8-93bdfc6ae8e2",
         "guid": "sqlmoz@facebook.com",
         "blockID": "i454",
@@ -252,19 +252,19 @@ def test_sync_records_calls_the_scenario():
 SCHEMAS = {
     'certificates': None,
     'gfx': None,
-    'add-ons': None,
+    'addons': None,
     'plugins': None,
 }
 
 
 with codecs.open(constants.SCHEMA_FILE, encoding='utf-8') as f:
-    SCHEMAS = json.load(f)
+    SCHEMAS = json.load(f)['collections']
 
 
 RECORDS = {
     'certificates': None,
     'gfx': None,
-    'add-ons': None,
+    'addons': None,
     'plugins': None,
 }
 
@@ -304,7 +304,7 @@ class TestMain(unittest.TestCase):
 
         cert_schema = kwargs['schemas']['certificates']['config']['schema']
         gfx_schema = kwargs['schemas']['gfx']['config']['schema']
-        addons_schema = kwargs['schemas']['add-ons']['config']['schema']
+        addons_schema = kwargs['schemas']['addons']['config']['schema']
         plugins_schema = kwargs['schemas']['plugins']['config']['schema']
 
         if kwargs['no_schema']:
@@ -338,8 +338,8 @@ class TestMain(unittest.TestCase):
         mock_sync.assert_any_call(**gfx_arguments)
 
         addons_arguments = {
-            'amo_records': RECORDS['add-ons'],
-            'fields': FIELDS['add-ons'],
+            'amo_records': RECORDS['addons'],
+            'fields': FIELDS['addons'],
             'kinto_client': kinto_client.return_value,
             'bucket': kwargs['addons_bucket'],
             'collection': kwargs['addons_collection'],
