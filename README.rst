@@ -6,12 +6,12 @@ amo2kinto
 Installation
 ============
 
-To install the release, just use::
+To install the release::
 
     pip install amo2kinto
 
 
-To install the development environment, just run::
+To install the development environment::
 
     make install
 
@@ -24,7 +24,7 @@ In order to build ``amo2kinto`` dependencies you may need the following librarie
 - Building **lxml** will require: ``libxml2-dev libxslt-dev python-dev``
 - Building **cryptography** will require: ``build-essential libffi-dev libssl-dev python-dev``
 
-If you have got error messages telling you a header file is missing, please install them:
+Otherwise you will run into errors like:
 
 - ``libxml/xmlversion.h: File not found``
 - ``ffi.h: File not found``
@@ -37,25 +37,44 @@ Importing blocklists from AMO into Kinto
 The `addons-server <https://github.com/mozilla/addons-server/>`_ is
 able to export its blocklists database in JSON.
 
+The script will create the bucket/collection with a given schema.
+
+The last version of the schema file can be find here:
+https://github.com/mozilla-services/amo-blocklist-ui/blob/master/amo-blocklist.json
+
+You can use the ``make update-schemas`` command to grab it.
+
 You can use the ``json2kinto`` script to load this database into a
-kinto server::
+Kinto server::
 
     json2kinto --server http://localhost:8888/v1 \
                --amo-server https://addons.mozilla.org/  \
                --schema-file schemas.json
 
-The last version of the schema file can be find here:
-https://github.com/mozilla-services/amo-blocklist-ui/blob/master/amo-blocklist.json
 
 The script is able to synchronize (add new blocked items and remove old ones).
 
 However if a blocked item already exists it won't be altered.
 
 **json2kinto** gives you the ability to configure what you want to
-load, with which user credentials and in which bucket and collection.
+load, with which user credentials and from which bucket and collection.
 
 .. code-block::
 
+usage: json2kinto [-h] [--amo-server AMO_SERVER] [-s SERVER] [-a AUTH] [-v] [-q] [-D]
+                  [-S SCHEMA_FILE] [--no-schema]
+                  [--certificates-bucket CERTIFICATES_BUCKET]
+                  [--certificates-collection CERTIFICATES_COLLECTION]
+                  [--gfx-bucket GFX_BUCKET] [--gfx-collection GFX_COLLECTION]
+                  [--addons-bucket ADDONS_BUCKET]
+                  [--addons-collection ADDONS_COLLECTION]
+                  [--plugins-bucket PLUGINS_BUCKET]
+                  [--plugins-collection PLUGINS_COLLECTION]
+                  [-C] [-G] [-A] [-P]
+
+Import the blocklists for AMO into Kinto.
+
+optional arguments:
   -h, --help            show this help message and exit
   --amo-server AMO_SERVER
                         The AMO server to import from
@@ -90,14 +109,13 @@ load, with which user credentials and in which bucket and collection.
   -P, --plugins         Only import plugins
 
 
-
 Generate a blocklist.xml file from Kinto collections
 ====================================================
 
 If you want to export blocklists stored in Kinto in the AMO XML export
 format, you can use the ``kinto2xml`` script::
 
-    kinto2xml -s http://localhost:8888
+    kinto2xml -s http://localhost:8888/v1
 
 
 **kinto2xml** gives you the ability to configure what you want to
@@ -105,6 +123,19 @@ export and in which bucket and collection are the data stored.
 
 .. code-block::
 
+usage: kinto2xml [-h] [-s SERVER] [-a AUTH] [-v] [-q] [-D]
+                 [--certificates-bucket CERTIFICATES_BUCKET]
+                 [--certificates-collection CERTIFICATES_COLLECTION]
+                 [--gfx-bucket GFX_BUCKET] [--gfx-collection GFX_COLLECTION]
+                 [--addons-bucket ADDONS_BUCKET]
+                 [--addons-collection ADDONS_COLLECTION]
+                 [--plugins-bucket PLUGINS_BUCKET]
+                 [--plugins-collection PLUGINS_COLLECTION] [--app APP]
+                 [-o OUT]
+
+Build a blocklists.xml file from Kinto blocklists.
+
+optional arguments:
   -h, --help            show this help message and exit
   -s SERVER, --server SERVER
                         The location of the remote server (with prefix)
