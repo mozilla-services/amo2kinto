@@ -43,7 +43,7 @@ def sync_records(amo_records, fields,
 
 def main(args=None):
     parser = cli_utils.add_parser_options(
-        description='Import the blocklists for AMO into Kinto.',
+        description='Import the blocklists from the addons server into Kinto.',
         default_collection=None,
         default_bucket=None,
         default_server=constants.KINTO_SERVER,
@@ -99,9 +99,10 @@ def main(args=None):
     parser.add_argument('-P', '--plugins', help='Only import plugins',
                         action='store_true')
 
-    # AMO Server selection
-    parser.add_argument('--amo-server', help='The AMO server to import from',
-                        type=str, default=constants.AMO_SERVER)
+    # Addons Server selection
+    parser.add_argument('--addons-server',
+                        help='The addons server to import from',
+                        type=str, default=constants.ADDONS_SERVER)
 
     args = parser.parse_args(args=args)
     cli_utils.setup_logger(logger, args)
@@ -122,8 +123,8 @@ def main(args=None):
         with codecs.open(args.schema_file, 'r', encoding='utf-8') as f:
             schemas = json.load(f)['collections']
 
-    amo_blocklists_url = urljoin(args.amo_server, '/blocked/blocklists.json')
-    resp = requests.get(amo_blocklists_url)
+    blocklists_url = urljoin(args.addons_server, '/blocked/blocklists.json')
+    resp = requests.get(blocklists_url)
     resp.raise_for_status()
     blocklists = resp.json()
 

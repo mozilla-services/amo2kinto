@@ -5,7 +5,7 @@ PYTHON = $(VENV)/bin/python
 DEV_STAMP = $(VENV)/.dev_env_installed.stamp
 INSTALL_STAMP = $(VENV)/.install.stamp
 TEMPDIR := $(shell mktemp -d)
-AMO_SERVER = https://addons.mozilla.org/
+ADDONS_SERVER = https://addons.mozilla.org/
 KINTO_SERVER = http://localhost:8888/v1
 
 FIREFOX_APP_ID = "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
@@ -67,7 +67,7 @@ maintainer-clean: distclean
 	rm -fr .venv* .tox/
 
 sync: install
-	$(VENV)/bin/json2kinto --server $(KINTO_SERVER) --amo-server $(AMO_SERVER) \
+	$(VENV)/bin/json2kinto --server $(KINTO_SERVER) --addons-server $(ADDONS_SERVER) \
         --certificates-bucket $(BLOCKLIST_BUCKET) --addons-bucket $(BLOCKLIST_BUCKET) \
         --plugins-bucket $(BLOCKLIST_BUCKET) --gfx-bucket $(BLOCKLIST_BUCKET)
 
