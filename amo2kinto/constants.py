@@ -4,8 +4,8 @@ SCHEMA_FILE = os.path.abspath(os.path.join(
     os.path.dirname(os.path.dirname(__file__)),
     'schemas.json'))
 
-# AMO defaults
-AMO_SERVER = 'https://addons-dev.allizom.org/'
+# Addons Server defaults
+ADDONS_SERVER = 'https://addons-dev.allizom.org/'
 
 # Kinto server defaults
 KINTO_SERVER = 'http://localhost:8888/v1'

@@ -294,7 +294,7 @@ class TestMain(unittest.TestCase):
         kwargs.setdefault('plugins_bucket', constants.PLUGINS_BUCKET)
         kwargs.setdefault('plugins_collection', constants.PLUGINS_COLLECTION)
         kwargs.setdefault('no_schema', False)
-        kwargs.setdefault('amo_server', constants.AMO_SERVER)
+        kwargs.setdefault('amo_server', constants.ADDONS_SERVER)
         kwargs.setdefault('schemas', SCHEMAS)
 
         kinto_client.assert_called_with(server_url=kwargs['kinto_server'],
