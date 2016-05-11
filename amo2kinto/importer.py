@@ -117,6 +117,15 @@ def main(args=None):
 
     kinto_client = cli_utils.create_client_from_args(args)
 
+    # Check if the schema capability is activated
+    body, headers = kinto_client.session.request('get', '/')
+    if 'schema' not in body.get('capabilities', {}):
+        logger.warn('\t --- Importing without schema validation --- \n')
+        logger.warn('The kinto server at {}/ does not supports schema '
+                    'validation.\nPlease set the following config: ``'
+                    'kinto.experimental_collection_schema_validation = true``'
+                    '\n'.format(args.server))
+
     # Load the schemas
     schemas = {}
     if not args.no_schema:

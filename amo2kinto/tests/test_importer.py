@@ -368,6 +368,30 @@ class TestMain(unittest.TestCase):
                 main([])
                 self.assert_arguments(mock_sync, MockedClient)
 
+    def test_warning_on_server_schema_capability_missing(self):
+        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
+            with mock.patch('amo2kinto.importer.sync_records'):
+                with mock.patch('amo2kinto.importer.logger') as mocked_logger:
+                    MockedClient.return_value.session.request.return_value = {
+                        'capabilities': {}
+                    }, {}
+
+                    main([])
+
+                    self.assertEqual(mocked_logger.warn.call_count, 2)
+
+    def test_no_warning_on_server_schema_capability_enabled(self):
+        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
+            with mock.patch('amo2kinto.importer.sync_records'):
+                with mock.patch('amo2kinto.importer.logger') as mocked_logger:
+                    MockedClient.return_value.session.request.return_value = {
+                        'capabilities': {"schema": {}}
+                    }, {}
+
+                    main([])
+
+                    self.assertEqual(mocked_logger.warn.call_count, 0)
+
     def test_no_schema_option_does_add_the_schema(self):
         with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
             with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
