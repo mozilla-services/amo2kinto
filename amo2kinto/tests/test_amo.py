@@ -1,4 +1,4 @@
-from kinto2xml.amo import make_id_from_string, prepare_amo_records
+from amo2kinto.amo import make_id_from_string, prepare_amo_records
 
 
 def test_make_id_from_string():

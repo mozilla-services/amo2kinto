@@ -47,7 +47,7 @@ build-requirements:
 	$(TEMPDIR)/bin/pip freeze > requirements.txt
 
 tests-once: install-dev
-	$(VENV)/bin/py.test --cov-report term-missing --cov-fail-under 100 --cov kinto2xml kinto2xml
+	$(VENV)/bin/py.test --cov-report term-missing --cov-fail-under 100 --cov amo2kinto amo2kinto
 
 tests:
 	@rm -fr .coverage

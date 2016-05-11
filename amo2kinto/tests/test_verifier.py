@@ -3,7 +3,7 @@ import mock
 import os
 from six import StringIO
 
-from kinto2xml.verifier import sort_lists_in_dict, main
+from amo2kinto.verifier import sort_lists_in_dict, main
 
 
 def build_path(filename):

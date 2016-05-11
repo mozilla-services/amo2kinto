@@ -32,14 +32,14 @@ if sys.version_info < (2, 7, 9):
 
 ENTRY_POINTS = {
     'console_scripts': [
-        'kinto2xml = kinto2xml.exporter:main',
-        'json2kinto = kinto2xml.importer:main',
-        'xml-verifier = kinto2xml.verifier:main',
+        'kinto2xml = amo2kinto.exporter:main',
+        'json2kinto = amo2kinto.importer:main',
+        'xml-verifier = amo2kinto.verifier:main',
     ]
 }
 
 
-setup(name='kinto2xml',
+setup(name='amo2kinto',
       version='0.2.0.dev0',
       description='Generate a blocklists.xml file from the Kinto collections.',
       long_description=README + "\n\n" + CHANGELOG,
@@ -55,7 +55,7 @@ setup(name='kinto2xml',
       keywords="web services",
       author='Mozilla Services',
       author_email='services-dev@mozilla.com',
-      url='https://github.com/mozilla-services/kinto2xml',
+      url='https://github.com/mozilla-services/amo2kinto',
       packages=find_packages(),
       zip_safe=False,
       install_requires=REQUIREMENTS,
