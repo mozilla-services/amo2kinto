@@ -1,5 +1,6 @@
 import codecs
 import json
+import jsonschema
 import requests
 import six
 
@@ -28,6 +29,11 @@ def sync_records(amo_records, fields,
                  kinto_client, bucket, collection, schema, permissions):
 
     amo_records = prepare_amo_records(amo_records, fields)
+
+    if schema:
+        for record in amo_records:
+            jsonschema.validate(record, schema)
+
     kinto_records = get_kinto_records(
         kinto_client=kinto_client,
         bucket=bucket,
