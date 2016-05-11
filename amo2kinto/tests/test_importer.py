@@ -276,9 +276,19 @@ with codecs.open(RECORDS_FILE, encoding='utf-8') as f:
 
 class TestMain(unittest.TestCase):
     def setUp(self):
+        # Mock requests
         request_mock = mock.MagicMock()
         request_mock.json.return_value = RECORDS
         p = mock.patch('requests.get', return_value=request_mock)
+        self.addCleanup(p.stop)
+        p.start()
+
+        # Mock client
+        self.MockedClient = mock.MagicMock()
+        self.MockedClient.return_value.session.request.return_value = {
+            'capabilities': {}
+        }, {}
+        p = mock.patch('kinto_client.cli_utils.Client', self.MockedClient)
         self.addCleanup(p.stop)
         p.start()
 
@@ -363,109 +373,101 @@ class TestMain(unittest.TestCase):
 
     def test_main_default(self):
         # let's check that main() parsing uses our defaults
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
-            with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
-                main([])
-                self.assert_arguments(mock_sync, MockedClient)
+        with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
+            main([])
+
+        self.assert_arguments(mock_sync, self.MockedClient)
 
     def test_warning_on_server_schema_capability_missing(self):
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
-            with mock.patch('amo2kinto.importer.sync_records'):
-                with mock.patch('amo2kinto.importer.logger') as mocked_logger:
-                    MockedClient.return_value.session.request.return_value = {
-                        'capabilities': {}
-                    }, {}
+        with mock.patch('amo2kinto.importer.sync_records'):
+            with mock.patch('amo2kinto.importer.logger') as mocked_logger:
+                self.MockedClient.return_value.session.request.return_value = {
+                    'capabilities': {}
+                }, {}
+                main([])
 
-                    main([])
-
-                    self.assertEqual(mocked_logger.warn.call_count, 2)
+        self.assertEqual(mocked_logger.warn.call_count, 2)
 
     def test_no_warning_on_server_schema_capability_enabled(self):
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
-            with mock.patch('amo2kinto.importer.sync_records'):
-                with mock.patch('amo2kinto.importer.logger') as mocked_logger:
-                    MockedClient.return_value.session.request.return_value = {
-                        'capabilities': {"schema": {}}
-                    }, {}
+        with mock.patch('amo2kinto.importer.sync_records'):
+            with mock.patch('amo2kinto.importer.logger') as mocked_logger:
+                self.MockedClient.return_value.session.request.return_value = {
+                    'capabilities': {"schema": {}}
+                }, {}
+                main([])
 
-                    main([])
-
-                    self.assertEqual(mocked_logger.warn.call_count, 0)
+        self.assertEqual(mocked_logger.warn.call_count, 0)
 
     def test_no_schema_option_does_add_the_schema(self):
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
-            with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
-                main(['--no-schema'])
-                self.assert_arguments(mock_sync, MockedClient,
-                                      no_schema=True)
+        with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
+            main(['--no-schema'])
+
+        self.assert_arguments(mock_sync, self.MockedClient,
+                              no_schema=True)
 
     def test_main_custom_server(self):
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
-            with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
-                main(['-s', 'http://yeah'])
-                self.assert_arguments(mock_sync, MockedClient,
-                                      kinto_server='http://yeah')
+        with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
+            main(['-s', 'http://yeah'])
+
+        self.assert_arguments(mock_sync, self.MockedClient,
+                              kinto_server='http://yeah')
 
     def test_can_define_the_certificates_bucket_and_collection(self):
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
-            with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
-                main(
-                    ['--certificates-bucket', 'bucket',
-                     '--certificates-collection', 'collection'])
-                self.assert_arguments(mock_sync, MockedClient,
-                                      certificates_bucket='bucket',
-                                      certificates_collection='collection')
+        with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
+            main(
+                ['--certificates-bucket', 'bucket',
+                 '--certificates-collection', 'collection'])
+
+        self.assert_arguments(mock_sync, self.MockedClient,
+                              certificates_bucket='bucket',
+                              certificates_collection='collection')
 
     def test_can_define_the_gfx_bucket_and_collection(self):
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
-            with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
-                main(
-                    ['--gfx-bucket', 'bucket',
-                     '--gfx-collection', 'collection'])
-                self.assert_arguments(mock_sync, MockedClient,
-                                      gfx_bucket='bucket',
-                                      gfx_collection='collection')
+        with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
+            main(
+                ['--gfx-bucket', 'bucket',
+                 '--gfx-collection', 'collection'])
+        self.assert_arguments(mock_sync, self.MockedClient,
+                              gfx_bucket='bucket',
+                              gfx_collection='collection')
 
     def test_can_define_the_addons_bucket_and_collection(self):
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
-            with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
-                main(
-                    ['--addons-bucket', 'bucket',
-                     '--addons-collection', 'collection'])
-                self.assert_arguments(mock_sync, MockedClient,
-                                      addons_bucket='bucket',
-                                      addons_collection='collection')
+        with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
+            main(
+                ['--addons-bucket', 'bucket',
+                 '--addons-collection', 'collection'])
+        self.assert_arguments(mock_sync, self.MockedClient,
+                              addons_bucket='bucket',
+                              addons_collection='collection')
 
     def test_can_define_the_plugins_bucket_and_collection(self):
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
-            with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
-                main(
-                    ['--plugins-bucket', 'bucket',
-                     '--plugins-collection', 'collection'])
-                self.assert_arguments(mock_sync, MockedClient,
-                                      plugins_bucket='bucket',
-                                      plugins_collection='collection')
+        with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
+            main(
+                ['--plugins-bucket', 'bucket',
+                 '--plugins-collection', 'collection'])
+        self.assert_arguments(mock_sync, self.MockedClient,
+                              plugins_bucket='bucket',
+                              plugins_collection='collection')
 
     def test_can_define_the_auth_credentials(self):
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
-            with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
-                main(['--auth', 'user:pass'])
-                self.assert_arguments(mock_sync, MockedClient,
-                                      auth=('user', 'pass'))
+        with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
+            main(['--auth', 'user:pass'])
+
+        self.assert_arguments(mock_sync, self.MockedClient,
+                              auth=('user', 'pass'))
 
     def test_no_collections_means_all_collections(self):
         """If no 'collection' is passed as parameter, import all of them."""
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
-            with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
-                main([])
-                # Nothing specific to be tested here, it's the default behavior
-                self.assert_arguments(mock_sync, MockedClient)
+        with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
+            main([])
+
+        # Nothing specific to be tested here, it's the default behavior
+        self.assert_arguments(mock_sync, self.MockedClient)
 
     def test_only_import_certificats(self):
         """If only one collection is specified, only import it."""
-        with mock.patch('kinto_client.cli_utils.Client'):
-            with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
-                main(['--certificates', '--no-schema'])
+        with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
+            main(['--certificates', '--no-schema'])
 
         mock_sync.assert_called_once_with(
             amo_records=RECORDS['certificates'],
@@ -478,9 +480,8 @@ class TestMain(unittest.TestCase):
 
     def test_only_import_certs_and_gfx(self):
         """Only import specified collections"""
-        with mock.patch('kinto_client.cli_utils.Client'):
-            with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
-                main(['--certificates', '-G', '--no-schema'])
+        with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
+            main(['--certificates', '-G', '--no-schema'])
 
         assert mock_sync.call_count == 2  # Only called for certificats and gfx
         mock_sync.assert_has_calls([
