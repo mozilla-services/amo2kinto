@@ -280,35 +280,35 @@ with codecs.open(RECORDS_FILE, encoding='utf-8') as f:
     RECORDS = json.load(f)
 
 
-def test_sync_records_validate_records_against_schema():
-    with mock.patch(
-            'amo2kinto.importer.get_kinto_records',
-            return_value=[]):
-        with mock.patch('amo2kinto.importer.push_changes'):
+class TestSyncRecords(unittest.TestCase):
+    def setUp(self):
+        p = mock.patch('amo2kinto.importer.get_kinto_records', return_value=[])
+        self.addCleanup(p.stop)
+        p.start()
+        p = mock.patch('amo2kinto.importer.push_changes')
+        self.addCleanup(p.stop)
+        p.start()
 
-            sync_records(RECORDS['addons'],
-                         FIELDS['addons'],
+    def test_sync_records_validate_records_against_schema(self):
+        # sync_records should not raise an Exception here.
+        sync_records(RECORDS['addons'],
+                     FIELDS['addons'],
+                     mock.sentinel.kinto_client,
+                     mock.sentinel.bucket,
+                     mock.sentinel.collection,
+                     SCHEMAS['addons'],
+                     mock.sentinel.permissions)
+
+    def test_sync_records_fails_if_the_schema_does_not_validate_records(self):
+        # Make sure it raises an exception with wrong records.
+        with pytest.raises(ValidationError):
+            sync_records(RECORDS['gfx'],
+                         FIELDS['gfx'],
                          mock.sentinel.kinto_client,
                          mock.sentinel.bucket,
                          mock.sentinel.collection,
-                         SCHEMAS['addons'],
+                         SCHEMAS['addons']['config']['schema'],
                          mock.sentinel.permissions)
-
-
-def test_sync_records_validate_records_against_schema_and_fails_if_wrong():
-    with mock.patch(
-            'amo2kinto.importer.get_kinto_records',
-            return_value=[]):
-        with mock.patch('amo2kinto.importer.push_changes'):
-
-            with pytest.raises(ValidationError):
-                sync_records(RECORDS['gfx'],
-                             FIELDS['gfx'],
-                             mock.sentinel.kinto_client,
-                             mock.sentinel.bucket,
-                             mock.sentinel.collection,
-                             SCHEMAS['addons']['config']['schema'],
-                             mock.sentinel.permissions)
 
 
 class TestMain(unittest.TestCase):

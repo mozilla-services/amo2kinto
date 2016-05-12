@@ -31,6 +31,12 @@ def sync_records(amo_records, fields,
     amo_records = prepare_amo_records(amo_records, fields)
 
     if schema:
+        # We validate all amo_records to make sure nothing is broken
+        # if we were to import everything.
+        #
+        # We could be validating only to_create records below but it
+        # is a sane safety check.
+        #
         for record in amo_records:
             jsonschema.validate(record, schema)
 
