@@ -117,6 +117,16 @@ def main(args=None):
 
     kinto_client = cli_utils.create_client_from_args(args)
 
+    # Check if the schema capability is activated
+    body, headers = kinto_client.session.request('get', '/')
+    if 'schema' not in body.get('capabilities', {}):
+        logger.warn('\t --- Server schema validation disabled --- \n')
+        logger.warn("The server at {} won't validate the records against "
+                    "the collection JSON schema. More information "
+                    "http://kinto.readthedocs.io/en/stable/api/1.x/"
+                    "collections.html?highlight=json%20validation"
+                    "#collection-json-schema\n".format(args.server))
+
     # Load the schemas
     schemas = {}
     if not args.no_schema:
