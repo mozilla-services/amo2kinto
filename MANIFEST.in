@@ -1,2 +1,3 @@
-include LICENCE *.rst
+include LICENSE *.rst Makefile .coveragerc schemas.json dev-requirements.txt tox.ini
+recursive-include config *.ini
 recursive-include amo2kinto *.json *.xml

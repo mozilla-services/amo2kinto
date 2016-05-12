@@ -3,10 +3,22 @@ CHANGELOG
 
 This document describes changes between each past release.
 
-0.2.0 (unreleased)
+1.0.0 (2016-05-12)
 ==================
 
-- Nothing changed yet.
+**Breaking changes**
+
+- kinto2xml was renamed amo2kinto (#21)
+- New JSON Schema file format with a "collection" prefix (#22)
+
+**New features**
+
+- Use the schema to validate AMO records in the importer script. (#5)
+- Warn if the server does not have the schema capability (#24)
+
+**Internal changes**
+
+- Document amo2kinto commands: json2kinto, kinto2xml and verifier. (#23)
 
 
 0.1.0 (2016-04-27)
