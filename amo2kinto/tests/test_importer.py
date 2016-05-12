@@ -2,7 +2,10 @@ import codecs
 import json
 import mock
 import os
+import pytest
 import unittest
+
+from jsonschema.exceptions import ValidationError
 
 from amo2kinto import constants
 from amo2kinto.importer import FIELDS, prepare_amo_records, sync_records, main
@@ -205,12 +208,13 @@ def test_certificate_record():
 
 
 def test_sync_records_calls_the_scenario():
+    prepared_records = []
     with mock.patch(
             'amo2kinto.importer.get_kinto_records',
             return_value=mock.sentinel.kinto_records) as get_kinto_records:
         with mock.patch(
                 'amo2kinto.importer.prepare_amo_records',
-                return_value=mock.sentinel.prepared_records) as p_amo_records:
+                return_value=prepared_records) as p_amo_records:
             with mock.patch(
                     'amo2kinto.importer.get_diff',
                     return_value=(
@@ -219,7 +223,9 @@ def test_sync_records_calls_the_scenario():
                 with mock.patch(
                         'amo2kinto.importer.push_changes') as push_changes:
 
-                    sync_records(mock.sentinel.amo_records,
+                    amo_records = []
+
+                    sync_records(amo_records,
                                  mock.sentinel.fields,
                                  mock.sentinel.kinto_client,
                                  mock.sentinel.bucket,
@@ -228,7 +234,7 @@ def test_sync_records_calls_the_scenario():
                                  mock.sentinel.permissions)
 
                     p_amo_records.assert_called_with(
-                        mock.sentinel.amo_records,
+                        amo_records,
                         mock.sentinel.fields)
 
                     get_kinto_records.assert_called_with(
@@ -239,7 +245,7 @@ def test_sync_records_calls_the_scenario():
                         permissions=mock.sentinel.permissions)
 
                     get_diff.assert_called_with(
-                        mock.sentinel.prepared_records,
+                        prepared_records,
                         mock.sentinel.kinto_records)
 
                     push_changes.assert_called_with(
@@ -272,6 +278,37 @@ RECORDS_FILE = os.path.join(os.path.dirname(__file__),
                             'fixtures', 'blocklists.json')
 with codecs.open(RECORDS_FILE, encoding='utf-8') as f:
     RECORDS = json.load(f)
+
+
+class TestSyncRecords(unittest.TestCase):
+    def setUp(self):
+        p = mock.patch('amo2kinto.importer.get_kinto_records', return_value=[])
+        self.addCleanup(p.stop)
+        p.start()
+        p = mock.patch('amo2kinto.importer.push_changes')
+        self.addCleanup(p.stop)
+        p.start()
+
+    def test_sync_records_validate_records_against_schema(self):
+        # sync_records should not raise an Exception here.
+        sync_records(RECORDS['addons'],
+                     FIELDS['addons'],
+                     mock.sentinel.kinto_client,
+                     mock.sentinel.bucket,
+                     mock.sentinel.collection,
+                     SCHEMAS['addons'],
+                     mock.sentinel.permissions)
+
+    def test_sync_records_fails_if_the_schema_does_not_validate_records(self):
+        # Make sure it raises an exception with wrong records.
+        with pytest.raises(ValidationError):
+            sync_records(RECORDS['gfx'],
+                         FIELDS['gfx'],
+                         mock.sentinel.kinto_client,
+                         mock.sentinel.bucket,
+                         mock.sentinel.collection,
+                         SCHEMAS['addons']['config']['schema'],
+                         mock.sentinel.permissions)
 
 
 class TestMain(unittest.TestCase):

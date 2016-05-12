@@ -13,6 +13,7 @@ with codecs.open(os.path.join(HERE, 'CHANGELOG.rst'), encoding='utf-8') as f:
 
 
 REQUIREMENTS = [
+    'jsonschema',
     'kinto-client',
     'requests',
     'lxml',
