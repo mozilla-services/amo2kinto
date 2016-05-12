@@ -381,9 +381,7 @@ class TestMain(unittest.TestCase):
     def test_warning_on_server_schema_capability_missing(self):
         with mock.patch('amo2kinto.importer.sync_records'):
             with mock.patch('amo2kinto.importer.logger') as mocked_logger:
-                self.MockedClient.return_value.session.request.return_value = {
-                    'capabilities': {}
-                }, {}
+                # capabilities is mocked to an empty value dict in the setUp.
                 main([])
 
         self.assertEqual(mocked_logger.warn.call_count, 2)
@@ -414,9 +412,8 @@ class TestMain(unittest.TestCase):
 
     def test_can_define_the_certificates_bucket_and_collection(self):
         with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
-            main(
-                ['--certificates-bucket', 'bucket',
-                 '--certificates-collection', 'collection'])
+            main(['--certificates-bucket', 'bucket',
+                  '--certificates-collection', 'collection'])
 
         self.assert_arguments(mock_sync, self.MockedClient,
                               certificates_bucket='bucket',
