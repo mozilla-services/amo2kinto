@@ -10,7 +10,7 @@ ADDONS_SERVER = 'https://addons-dev.allizom.org/'
 # Kinto server defaults
 KINTO_SERVER = 'http://localhost:8888/v1'
 AUTH = ('mark', 'p4ssw0rd')
-COLLECTION_PERMISSIONS = {'read': ["system.Everyone"]}
+COLLECTION_PERMISSIONS = {}
 
 # Buckets name default
 ADDONS_BUCKET = u'staging'
