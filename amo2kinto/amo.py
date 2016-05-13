@@ -19,6 +19,7 @@ def prepare_amo_records(records, fields):
             else:
                 if isinstance(record[field], six.string_types):
                     record[field] = record[field].strip()
+                # In AMO we do not have numeric to level fields.
                 elif isinstance(record[field], (int, float)):
                     record[field] = six.text_type(record[field])
 
