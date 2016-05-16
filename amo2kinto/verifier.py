@@ -107,6 +107,7 @@ def main(args=None):
         sys.stdout.write(output.decode('utf-8'))
     except subprocess.CalledProcessError as e:
         sys.stderr.write(e.output.decode('utf-8'))
+        return 2
 
     if args.clean:
         for f in tmp_files:
