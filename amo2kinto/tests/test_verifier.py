@@ -78,3 +78,9 @@ def test_in_case_diff_fails_display_the_error():
               build_path('generated-blocklist.xml')])
 
         assert stderr.getvalue() != ''
+
+
+def test_in_case_diff_fails_exit_with_2():
+    with mock.patch('sys.stderr', new_callable=StringIO):
+        assert main([build_path('fennec-blocklist.xml'),
+                     build_path('generated-blocklist.xml')]) == 2
