@@ -12,7 +12,7 @@ This document describes changes between each past release.
 
 **Internal changes**
 
-- ``json2kinto`` is now importing in collection that are not public anymore (#27)
+- ``json2kinto`` does not set destination collections as publicly readable (#27)
 
 
 1.0.0 (2016-05-12)
