@@ -3,10 +3,16 @@ CHANGELOG
 
 This document describes changes between each past release.
 
-1.1.0 (unreleased)
+1.1.0 (2016-05-18)
 ==================
 
-- Nothing changed yet.
+**Bug fix**
+
+- In case there is a diff using xml-verifier, the command now returns an error code (#28)
+
+**Internal changes**
+
+- ``json2kinto`` is now importing in collection that are not public anymore (#27)
 
 
 1.0.0 (2016-05-12)
