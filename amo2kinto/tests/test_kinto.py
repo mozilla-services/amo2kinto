@@ -38,14 +38,16 @@ def test_get_kinto_records_try_to_create_the_collection_with_schema():
     kinto_client.create_collection.return_value.status_code = 201
     kinto_client.create_collection.return_value.json.return_value = {
         "data": {
-            "schema": {}
+            "schema": {},
+            "uiSchema": {},
+            "displayFields": {}
         }
     }
     get_kinto_records(kinto_client,
                       mock.sentinel.bucket,
                       mock.sentinel.collection,
                       mock.sentinel.permissions,
-                      schema={'foo': 'bar'})
+                      config={"schema": {'foo': 'bar'}})
 
     kinto_client.patch_collection.assert_called_with(
         bucket=mock.sentinel.bucket,
@@ -58,7 +60,9 @@ def test_get_kinto_records_try_to_update_the_collection_schema():
     kinto_client.create_collection.return_value = {
         "details": {
             "existing": {
-                "schema": {}
+                "schema": {},
+                "uiSchema": {},
+                "displayFields": {}
             }
         }
     }
@@ -66,7 +70,7 @@ def test_get_kinto_records_try_to_update_the_collection_schema():
                       mock.sentinel.bucket,
                       mock.sentinel.collection,
                       mock.sentinel.permissions,
-                      schema={'foo': 'bar'})
+                      config={"schema": {'foo': 'bar'}})
 
     kinto_client.patch_collection.assert_called_with(
         bucket=mock.sentinel.bucket,
@@ -74,12 +78,14 @@ def test_get_kinto_records_try_to_update_the_collection_schema():
         data={"schema": {"foo": "bar"}})
 
 
-def test_get_kinto_records_does_not_update_the_collection_schema_if_right():
+def test_get_kinto_records_does_not_update_the_collection_schema_if_correct():
     kinto_client = mock.MagicMock()
     kinto_client.create_collection.return_value = {
         "details": {
             "existing": {
-                "schema": {"foo": "bar"}
+                "schema": {"foo": "bar"},
+                "uiSchema": {"ui": "bar"},
+                "displayFields": ["display", "bar"],
             }
         }
     }
@@ -87,7 +93,11 @@ def test_get_kinto_records_does_not_update_the_collection_schema_if_right():
                       mock.sentinel.bucket,
                       mock.sentinel.collection,
                       mock.sentinel.permissions,
-                      schema={'foo': 'bar'})
+                      config={
+                          "schema": {"foo": "bar"},
+                          "uiSchema": {"ui": "bar"},
+                          "displayFields": ["display", "bar"],
+                      })
 
     assert not kinto_client.patch_collection.called
 
@@ -103,6 +113,6 @@ def test_get_kinto_records_does_update_if_it_has_created_it():
                       mock.sentinel.bucket,
                       mock.sentinel.collection,
                       mock.sentinel.permissions,
-                      schema={'foo': 'bar'})
+                      config={"schema": {'foo': 'bar'}})
 
     assert kinto_client.patch_collection.called

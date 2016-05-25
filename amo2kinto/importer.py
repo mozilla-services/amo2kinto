@@ -26,11 +26,11 @@ FIELDS = {
 
 
 def sync_records(amo_records, fields,
-                 kinto_client, bucket, collection, schema, permissions):
+                 kinto_client, bucket, collection, config, permissions):
 
     amo_records = prepare_amo_records(amo_records, fields)
 
-    if schema:
+    if config:
         # We validate all amo_records to make sure nothing is broken
         # if we were to import everything.
         #
@@ -38,13 +38,13 @@ def sync_records(amo_records, fields,
         # is a sane safety check.
         #
         for record in amo_records:
-            jsonschema.validate(record, schema)
+            jsonschema.validate(record, config['schema'])
 
     kinto_records = get_kinto_records(
         kinto_client=kinto_client,
         bucket=bucket,
         collection=collection,
-        schema=schema,
+        config=config,
         permissions=permissions)
 
     to_create, to_delete = get_diff(amo_records, kinto_records)
@@ -156,13 +156,13 @@ def main(args=None):
                 getattr(args, collection_type) or import_all):
             bucket = getattr(args, '%s_bucket' % collection_type)
             collection = getattr(args, '%s_collection' % collection_type)
-            jsonschema = None
+            config = None
             if collection_type in schemas:
-                jsonschema = schemas[collection_type]['config']['schema']
+                config = schemas[collection_type]['config']
             sync_records(amo_records=records,
                          fields=FIELDS[collection_type],
                          kinto_client=kinto_client,
                          bucket=bucket,
                          collection=collection,
-                         schema=jsonschema,
+                         config=config,
                          permissions=constants.COLLECTION_PERMISSIONS)
