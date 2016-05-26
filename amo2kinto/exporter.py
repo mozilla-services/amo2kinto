@@ -350,6 +350,9 @@ def main(args=None):
                         help='Collection name for plugin',
                         type=str, default=constants.PLUGINS_COLLECTION)
 
+    parser.add_argument('--api-version', help='Targeted blocklists.xml APP id',
+                        type=str, default=3)
+
     parser.add_argument('--app', help='Targeted blocklists.xml APP id',
                         type=str, default=constants.FIREFOX_APPID)
 
@@ -453,11 +456,18 @@ def main(args=None):
         lastupdate='%s' % last_update
     )
 
-    write_addons_items(xml_tree, addons_records, app_id=args.app)
-    write_plugin_items(xml_tree, plugin_records, app_id=args.app,
+    write_addons_items(xml_tree, addons_records,
+                       api_ver=args.api_version,
+                       app_id=args.app)
+    write_plugin_items(xml_tree, plugin_records,
+                       api_ver=args.api_version,
+                       app_id=args.app,
                        app_ver=args.app_version)
-    write_gfx_items(xml_tree, gfx_records, app_id=args.app)
-    write_cert_items(xml_tree, cert_records)
+    write_gfx_items(xml_tree, gfx_records,
+                    api_ver=args.api_version,
+                    app_id=args.app)
+    write_cert_items(xml_tree, cert_records,
+                     api_ver=args.api_version)
 
     doc = etree.ElementTree(xml_tree)
     out_fd.write(etree.tostring(
