@@ -129,8 +129,9 @@ export and in which bucket and collection are the data stored.
                      [--addons-bucket ADDONS_BUCKET]
                      [--addons-collection ADDONS_COLLECTION]
                      [--plugins-bucket PLUGINS_BUCKET]
-                     [--plugins-collection PLUGINS_COLLECTION] [--app APP]
-                     [-o OUT]
+                     [--plugins-collection PLUGINS_COLLECTION]
+                     [--api-version API_VERSION] [--app APP]
+                     [--app-version APP_VERSION] [-o OUT]
     
     Build a blocklists.xml file from Kinto blocklists.
     
@@ -158,7 +159,11 @@ export and in which bucket and collection are the data stored.
                             Bucket name for plugins
       --plugins-collection PLUGINS_COLLECTION
                             Collection name for plugin
+      --api-version API_VERSION
+                            Targeted blocklists.xml APP id
       --app APP             Targeted blocklists.xml APP id
+      --app-version APP_VERSION
+                            The targetted app version
       -o OUT, --out OUT     Output XML file.
 
 
@@ -177,5 +182,5 @@ The **xml-verifier** command accept both files path and files URLs.
 .. code-block::
 
     APPID="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
-    kinto2xml --app $APPID -o generated-blocklists.xml
+    kinto2xml --app $APPID --app-version 46.0 -o generated-blocklists.xml
     xml-verifier https://blocklist.addons.mozilla.org/blocklist/3/$APPID/46.0/ generated-blocklists.xml

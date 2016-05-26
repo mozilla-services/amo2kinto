@@ -20,7 +20,7 @@ ADDONS_DATA = {
     },
     "versionRange": [{
         "targetApplication": [
-            {"guid": "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+            {"guid": constants.FIREFOX_APPID,
              "minVersion": "3.6",
              "maxVersion": "3.6.*"},
             {"guid": "{some-other-application}",
@@ -148,8 +148,8 @@ def test_addon_record_with_no_targetApplication_info():
 <blocklist lastupdate="1459262434336" \
 xmlns="http://www.mozilla.org/2006/addons-blocklist">
   <emItems>
-    <emItem blockID="i454" name="Mozilla Service Pack (malware)" \
-os="WINNT" id="sqlmoz@facebook.com">
+    <emItem blockID="i454" id="sqlmoz@facebook.com" \
+name="Mozilla Service Pack (malware)" os="WINNT">
       <prefs>
         <pref>test.blocklist</pref>
       </prefs>
@@ -196,6 +196,71 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 """.decode('utf-8')
 
 
+def test_addon_record_group_by_blockID():
+    xml_tree = etree.Element(
+        'blocklist',
+        xmlns="http://www.mozilla.org/2006/addons-blocklist",
+        lastupdate='1459262434336'
+    )
+
+    data = ADDONS_DATA.copy()
+    data['versionRange'] = [{
+        "targetApplication": [
+            {"guid": constants.FIREFOX_APPID,
+             "minVersion": "1.2",
+             "maxVersion": "1.4"}
+        ],
+        "minVersion": "0",
+        "maxVersion": "*",
+        "severity": 3
+    }]
+
+    data2 = ADDONS_DATA.copy()
+    data2['blockID'] = 'i586'
+    data2['versionRange'] = [{
+        "targetApplication": [
+            {"guid": constants.FIREFOX_APPID,
+             "minVersion": "3.6",
+             "maxVersion": "3.6.*"}
+        ],
+        "minVersion": "0",
+        "maxVersion": "*",
+        "severity": 2
+    }]
+
+    exporter.write_addons_items(xml_tree, [data, data2],
+                                constants.FIREFOX_APPID)
+
+    result = etree.tostring(
+        etree.ElementTree(xml_tree),
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='UTF-8').decode('utf-8')
+
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
+<blocklist lastupdate="1459262434336" \
+xmlns="http://www.mozilla.org/2006/addons-blocklist">
+  <emItems>
+    <emItem blockID="i586" id="sqlmoz@facebook.com">
+      <prefs>
+        <pref>test.blocklist</pref>
+      </prefs>
+      <versionRange minVersion="0" maxVersion="*" severity="3">
+        <targetApplication id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}">
+          <versionRange maxVersion="1.4" minVersion="1.2"/>
+        </targetApplication>
+      </versionRange>
+      <versionRange minVersion="0" maxVersion="*" severity="2">
+        <targetApplication id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}">
+          <versionRange maxVersion="3.6.*" minVersion="3.6"/>
+        </targetApplication>
+      </versionRange>
+    </emItem>
+  </emItems>
+</blocklist>
+""".decode('utf-8')
+
+
 PLUGIN_DATA = {
     "id": "6a1b6dfe-f463-3061-e8f8-6e896ccf2a8a",
     "last_modified": "1301581706645",
@@ -221,7 +286,7 @@ PLUGIN_DATA = {
         "vulnerabilityStatus": 1,
         "targetApplication": [{
             "minVersion": "3.0a1",
-            "guid": "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+            "guid": constants.FIREFOX_APPID,
             "maxVersion": "3.*"
         }]
     }]
@@ -473,7 +538,7 @@ def test_plugin_record_with_api_version_2_with_guid_and_no_min_max_version():
     data = PLUGIN_DATA.copy()
     data['versionRange'] = [{
         "targetApplication": [
-            {"guid": "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+            {"guid": constants.FIREFOX_APPID,
              "minVersion": "3.6",
              "maxVersion": "3.6.*"}
         ],
@@ -517,7 +582,7 @@ def test_plugin_record_with_api_version_2_with_guid_and_empty_versionRange():
     data = PLUGIN_DATA.copy()
     data['versionRange'] = [{
         "targetApplication": [
-            {"guid": "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+            {"guid": constants.FIREFOX_APPID,
              "minVersion": "3.6",
              "maxVersion": "3.6.*"}
         ]
@@ -559,7 +624,7 @@ def test_plugin_record_with_api_version_2_with_related_version():
     data = PLUGIN_DATA.copy()
     data['versionRange'] = [{
         "targetApplication": [
-            {"guid": "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+            {"guid": constants.FIREFOX_APPID,
              "minVersion": "3.6",
              "maxVersion": "3.6.*"}
         ],
