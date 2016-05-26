@@ -3,13 +3,14 @@ CHANGELOG
 
 This document describes changes between each past release.
 
-1.2.0 (unreleased)
+1.2.0 (2016-05-26)
 ==================
 
 **New features**
 
 - Let people specify ``--app-version`` and ``--api-version`` while using kinto2xml (#33)
-- Add functional tests for both version of the XML file format.
+- Add functional tests for both version of the XML file format. (#33)
+- Configure the kinto-admin as well as the JSONSchema (#32)
 
 **Bug fix**
 
