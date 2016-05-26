@@ -78,22 +78,29 @@ def write_addons_items(xml_tree, records, app_id, api_ver=3):
         return
 
     emItems = etree.SubElement(xml_tree, 'emItems')
+    groupby = {}
     for item in records:
         if is_related_to(item, app_id):
-            emItem = etree.SubElement(emItems, 'emItem',
-                                      blockID=item.get('blockID', item['id']))
+            if item['guid'] in groupby:
+                emItem = groupby[item['guid']]
+                current_blockID = int(item['blockID'][1:])
+                previous_blockID = int(emItem.attrib['blockID'][1:])
+                if current_blockID > previous_blockID:
+                    emItem.attrib['blockID'] = item['blockID']
+            else:
+                emItem = etree.SubElement(emItems, 'emItem',
+                                          blockID=item['blockID'])
+                groupby[item['guid']] = emItem
+                prefs = etree.SubElement(emItem, 'prefs')
+                for p in item['prefs']:
+                    pref = etree.SubElement(prefs, 'pref')
+                    pref.text = p
+
+            emItem.set('id', item['guid'])
 
             for field in ['name', 'os']:
                 if field in item:
                     emItem.set(field, item[field])
-
-            if 'guid' in item:
-                emItem.set('id', item['guid'])
-
-            prefs = etree.SubElement(emItem, 'prefs')
-            for p in item['prefs']:
-                pref = etree.SubElement(prefs, 'pref')
-                pref.text = p
 
             build_version_range(emItem, item, app_id)
 
@@ -346,6 +353,9 @@ def main(args=None):
     parser.add_argument('--app', help='Targeted blocklists.xml APP id',
                         type=str, default=constants.FIREFOX_APPID)
 
+    parser.add_argument('--app-version', help='The targetted app version',
+                        type=str, default=None)
+
     # Choose where to write the file down.
     parser.add_argument('-o', '--out', help='Output XML file.',
                         type=str, default=None)
@@ -444,7 +454,8 @@ def main(args=None):
     )
 
     write_addons_items(xml_tree, addons_records, app_id=args.app)
-    write_plugin_items(xml_tree, plugin_records, app_id=args.app)
+    write_plugin_items(xml_tree, plugin_records, app_id=args.app,
+                       app_ver=args.app_version)
     write_gfx_items(xml_tree, gfx_records, app_id=args.app)
     write_cert_items(xml_tree, cert_records)
 
