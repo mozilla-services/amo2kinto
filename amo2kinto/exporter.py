@@ -351,7 +351,7 @@ def main(args=None):
                         type=str, default=constants.PLUGINS_COLLECTION)
 
     parser.add_argument('--api-version', help='Targeted blocklists.xml APP id',
-                        type=str, default=3)
+                        type=int, default=3)
 
     parser.add_argument('--app', help='Targeted blocklists.xml APP id',
                         type=str, default=constants.FIREFOX_APPID)
