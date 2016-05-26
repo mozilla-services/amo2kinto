@@ -20,7 +20,7 @@ ADDONS_DATA = {
     },
     "versionRange": [{
         "targetApplication": [
-            {"guid": "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+            {"guid": constants.FIREFOX_APPID,
              "minVersion": "3.6",
              "maxVersion": "3.6.*"},
             {"guid": "{some-other-application}",
@@ -206,7 +206,7 @@ def test_addon_record_group_by_blockID():
     data = ADDONS_DATA.copy()
     data['versionRange'] = [{
         "targetApplication": [
-            {"guid": "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+            {"guid": constants.FIREFOX_APPID,
              "minVersion": "1.2",
              "maxVersion": "1.4"}
         ],
@@ -219,7 +219,7 @@ def test_addon_record_group_by_blockID():
     data2['blockID'] = 'i586'
     data2['versionRange'] = [{
         "targetApplication": [
-            {"guid": "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+            {"guid": constants.FIREFOX_APPID,
              "minVersion": "3.6",
              "maxVersion": "3.6.*"}
         ],
@@ -286,7 +286,7 @@ PLUGIN_DATA = {
         "vulnerabilityStatus": 1,
         "targetApplication": [{
             "minVersion": "3.0a1",
-            "guid": "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+            "guid": constants.FIREFOX_APPID,
             "maxVersion": "3.*"
         }]
     }]
@@ -538,7 +538,7 @@ def test_plugin_record_with_api_version_2_with_guid_and_no_min_max_version():
     data = PLUGIN_DATA.copy()
     data['versionRange'] = [{
         "targetApplication": [
-            {"guid": "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+            {"guid": constants.FIREFOX_APPID,
              "minVersion": "3.6",
              "maxVersion": "3.6.*"}
         ],
@@ -582,7 +582,7 @@ def test_plugin_record_with_api_version_2_with_guid_and_empty_versionRange():
     data = PLUGIN_DATA.copy()
     data['versionRange'] = [{
         "targetApplication": [
-            {"guid": "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+            {"guid": constants.FIREFOX_APPID,
              "minVersion": "3.6",
              "maxVersion": "3.6.*"}
         ]
@@ -624,7 +624,7 @@ def test_plugin_record_with_api_version_2_with_related_version():
     data = PLUGIN_DATA.copy()
     data['versionRange'] = [{
         "targetApplication": [
-            {"guid": "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}",
+            {"guid": constants.FIREFOX_APPID,
              "minVersion": "3.6",
              "maxVersion": "3.6.*"}
         ],
