@@ -6,7 +6,9 @@ This document describes changes between each past release.
 1.2.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+**Bug fix**
+
+- Group addons by the biggest guid (#33)
 
 
 1.1.0 (2016-05-18)
