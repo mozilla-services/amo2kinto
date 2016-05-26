@@ -78,7 +78,7 @@ def test_get_kinto_records_try_to_update_the_collection_schema():
         data={"schema": {"foo": "bar"}})
 
 
-def test_get_kinto_records_does_not_update_the_collection_schema_if_correct():
+def test_get_kinto_records_doesnt_update_the_collection_schema_if_identical():
     kinto_client = mock.MagicMock()
     kinto_client.create_collection.return_value = {
         "details": {
