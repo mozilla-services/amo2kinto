@@ -3,8 +3,16 @@ CHANGELOG
 
 This document describes changes between each past release.
 
+1.3.0 (unreleased)
+==================
+
+- Nothing changed yet.
+
+
 1.2.1 (2016-05-26)
 ==================
+
+**Bug fix**
 
 - kinto_client.delete_records API changed. (#35)
 
