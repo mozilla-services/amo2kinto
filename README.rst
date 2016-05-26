@@ -1,6 +1,19 @@
 amo2kinto
 #########
 
+.. image:: https://img.shields.io/travis/mozilla-services/amo2kinto/master.svg
+        :target: https://travis-ci.org/mozilla-services/amo2kinto
+
+.. image:: https://img.shields.io/pypi/v/amo2kinto.svg
+        :target: https://pypi.python.org/pypi/amo2kinto
+
+.. image:: https://coveralls.io/repos/mozilla-services/amo2kinto/badge.svg?branch=master
+        :target: https://coveralls.io/r/mozilla-services/amo2kinto
+
+- **json2kinto**: Import ``addons-server`` blocklist into kinto
+- **kinto2xml**: Export the blocklist in the legacy XML format
+- **xml-verifier**: Show the differences between the ``addons-server`` XML file and the ``kinto2xml`` generated one.
+
 
 Installation
 ============
