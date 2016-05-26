@@ -230,7 +230,7 @@ def test_sync_records_calls_the_scenario():
                                  mock.sentinel.kinto_client,
                                  mock.sentinel.bucket,
                                  mock.sentinel.collection,
-                                 mock.sentinel.schema,
+                                 mock.sentinel.config,
                                  mock.sentinel.permissions)
 
                     p_amo_records.assert_called_with(
@@ -241,7 +241,7 @@ def test_sync_records_calls_the_scenario():
                         kinto_client=mock.sentinel.kinto_client,
                         bucket=mock.sentinel.bucket,
                         collection=mock.sentinel.collection,
-                        schema=mock.sentinel.schema,
+                        config=mock.sentinel.config,
                         permissions=mock.sentinel.permissions)
 
                     get_diff.assert_called_with(
@@ -296,7 +296,7 @@ class TestSyncRecords(unittest.TestCase):
                      mock.sentinel.kinto_client,
                      mock.sentinel.bucket,
                      mock.sentinel.collection,
-                     SCHEMAS['addons'],
+                     SCHEMAS['addons']['config'],
                      mock.sentinel.permissions)
 
     def test_sync_records_fails_if_the_schema_does_not_validate_records(self):
@@ -307,7 +307,7 @@ class TestSyncRecords(unittest.TestCase):
                          mock.sentinel.kinto_client,
                          mock.sentinel.bucket,
                          mock.sentinel.collection,
-                         SCHEMAS['addons']['config']['schema'],
+                         SCHEMAS['addons']['config'],
                          mock.sentinel.permissions)
 
 
@@ -349,16 +349,16 @@ class TestMain(unittest.TestCase):
                                         bucket=None,
                                         collection=None)
 
-        cert_schema = kwargs['schemas']['certificates']['config']['schema']
-        gfx_schema = kwargs['schemas']['gfx']['config']['schema']
-        addons_schema = kwargs['schemas']['addons']['config']['schema']
-        plugins_schema = kwargs['schemas']['plugins']['config']['schema']
+        cert_config = kwargs['schemas']['certificates']['config']
+        gfx_config = kwargs['schemas']['gfx']['config']
+        addons_config = kwargs['schemas']['addons']['config']
+        plugins_config = kwargs['schemas']['plugins']['config']
 
         if kwargs['no_schema']:
-            cert_schema = None
-            gfx_schema = None
-            addons_schema = None
-            plugins_schema = None
+            cert_config = None
+            gfx_config = None
+            addons_config = None
+            plugins_config = None
 
         cert_arguments = {
             'amo_records': RECORDS['certificates'],
@@ -366,7 +366,7 @@ class TestMain(unittest.TestCase):
             'kinto_client': kinto_client.return_value,
             'bucket': kwargs['certificates_bucket'],
             'collection': kwargs['certificates_collection'],
-            'schema': cert_schema,
+            'config': cert_config,
             'permissions': constants.COLLECTION_PERMISSIONS,
         }
 
@@ -378,7 +378,7 @@ class TestMain(unittest.TestCase):
             'kinto_client': kinto_client.return_value,
             'bucket': kwargs['gfx_bucket'],
             'collection': kwargs['gfx_collection'],
-            'schema': gfx_schema,
+            'config': gfx_config,
             'permissions': constants.COLLECTION_PERMISSIONS,
         }
 
@@ -390,7 +390,7 @@ class TestMain(unittest.TestCase):
             'kinto_client': kinto_client.return_value,
             'bucket': kwargs['addons_bucket'],
             'collection': kwargs['addons_collection'],
-            'schema': addons_schema,
+            'config': addons_config,
             'permissions': constants.COLLECTION_PERMISSIONS,
         }
 
@@ -402,7 +402,7 @@ class TestMain(unittest.TestCase):
             'kinto_client': kinto_client.return_value,
             'bucket': kwargs['plugins_bucket'],
             'collection': kwargs['plugins_collection'],
-            'schema': plugins_schema,
+            'config': plugins_config,
             'permissions': constants.COLLECTION_PERMISSIONS,
         }
 
@@ -509,7 +509,7 @@ class TestMain(unittest.TestCase):
             kinto_client=mock.ANY,
             bucket=constants.CERT_BUCKET,
             collection=constants.CERT_COLLECTION,
-            schema=None,
+            config=None,
             permissions=constants.COLLECTION_PERMISSIONS)
 
     def test_only_import_certs_and_gfx(self):
@@ -525,7 +525,7 @@ class TestMain(unittest.TestCase):
                 kinto_client=mock.ANY,
                 bucket=constants.CERT_BUCKET,
                 collection=constants.CERT_COLLECTION,
-                schema=None,
+                config=None,
                 permissions=constants.COLLECTION_PERMISSIONS),
             mock.call(
                 amo_records=RECORDS['gfx'],
@@ -533,6 +533,6 @@ class TestMain(unittest.TestCase):
                 kinto_client=mock.ANY,
                 bucket=constants.GFX_BUCKET,
                 collection=constants.GFX_COLLECTION,
-                schema=None,
+                config=None,
                 permissions=constants.COLLECTION_PERMISSIONS)],
             any_order=True)
