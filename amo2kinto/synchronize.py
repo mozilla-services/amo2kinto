@@ -32,7 +32,7 @@ def push_changes(diff, kinto_client, bucket, collection):
 
     with kinto_client.batch(bucket=bucket, collection=collection) as batch:
         for record in to_delete:
-            batch.delete_record(record)
+            batch.delete_record(record['id'])
         for record in to_create:
             # Records are enabled by default.
             record['enabled'] = True
