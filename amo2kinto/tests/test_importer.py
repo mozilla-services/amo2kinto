@@ -219,6 +219,7 @@ def test_sync_records_calls_the_scenario():
                     'amo2kinto.importer.get_diff',
                     return_value=(
                         mock.sentinel.to_create,
+                        mock.sentinel.to_update,
                         mock.sentinel.to_delete)) as get_diff:
                 with mock.patch(
                         'amo2kinto.importer.push_changes') as push_changes:
@@ -249,7 +250,9 @@ def test_sync_records_calls_the_scenario():
                         mock.sentinel.kinto_records)
 
                     push_changes.assert_called_with(
-                        (mock.sentinel.to_create, mock.sentinel.to_delete),
+                        (mock.sentinel.to_create,
+                         mock.sentinel.to_update,
+                         mock.sentinel.to_delete),
                         mock.sentinel.kinto_client,
                         bucket=mock.sentinel.bucket,
                         collection=mock.sentinel.collection)

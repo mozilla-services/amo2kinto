@@ -6,10 +6,11 @@ from amo2kinto.synchronize import get_diff, push_changes
 
 
 def test_get_diff():
-    source = [{'id': 1, 'val': 2}, {'id': 2, 'val': 3}]
-    dest = [{'id': 2, 'val': 3}, {'id': 3, 'val': 4}]
+    source = [{'id': 1, 'val': 2}, {'id': 2, 'val': 3}, {'id': 4, 'val': 4}]
+    dest = [{'id': 2, 'val': 3}, {'id': 3, 'val': 4}, {'id': 4, 'val': 5}]
     assert get_diff(source, dest) == (
         [{'id': 1, 'val': 2}],
+        [{'id': 4, 'val': 4}],
         [{'id': 3, 'val': 4}])
 
 
@@ -28,15 +29,21 @@ class SynchronizeTest(unittest.TestCase):
         self.collection = mock.sentinel.collection
 
     def test_synchronize_create_the_batch_request(self):
-        push_changes(([{'id': 1, 'val': 2}], [{'id': 3, 'val': 4}]),
+        push_changes(([{'id': 1, 'val': 2}],
+                      [{'id': 4, 'val': 4}],
+                      [{'id': 3, 'val': 4}]),
                      self.kinto_client, self.bucket, self.collection)
 
         self.mocked_batch.create_record.assert_called_with(
             {'id': 1, 'val': 2, 'enabled': True})
+        self.mocked_batch.patch_record.assert_called_with(
+            {'val': 4})
         self.mocked_batch.delete_record.assert_called_with(3)
 
     def test_synchronize_triggers_the_signature(self):
-        push_changes(([{'id': 1, 'val': 2}], [{'id': 3, 'val': 4}]),
+        push_changes(([{'id': 1, 'val': 2}],
+                      [{'id': 4, 'val': 4}],
+                      [{'id': 3, 'val': 4}]),
                      self.kinto_client, self.bucket, self.collection)
 
         self.kinto_client.patch_collection.assert_called_with(
@@ -44,6 +51,9 @@ class SynchronizeTest(unittest.TestCase):
             bucket=mock.sentinel.bucket, collection=mock.sentinel.collection)
 
     def test_synchronize_does_not_triggers_the_signer_on_empty_changes(self):
-        push_changes(([], []), self.kinto_client, self.bucket, self.collection)
+        push_changes(([], [], []),
+                     self.kinto_client,
+                     self.bucket,
+                     self.collection)
 
         self.assertFalse(self.kinto_client.patch_collection.called)
