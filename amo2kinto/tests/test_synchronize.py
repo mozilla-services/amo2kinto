@@ -37,7 +37,7 @@ class SynchronizeTest(unittest.TestCase):
         self.mocked_batch.create_record.assert_called_with(
             {'id': 1, 'val': 2, 'enabled': True})
         self.mocked_batch.patch_record.assert_called_with(
-            {'val': 4})
+            {'enabled': True, 'val': 4})
         self.mocked_batch.delete_record.assert_called_with(3)
 
     def test_synchronize_triggers_the_signature(self):
