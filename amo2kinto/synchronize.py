@@ -62,7 +62,7 @@ def push_changes(diff, kinto_client, bucket, collection):
             record['enabled'] = True
             batch.create_record(record)
         for record in to_update:
-            batch.patch_record(strip_keys(record))
+            batch.patch_record(strip_keys(record, ['id']))
 
     if to_create or to_update or to_delete:
         logger.info('Trigger the signature.')
