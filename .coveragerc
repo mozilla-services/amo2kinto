@@ -1,2 +1,2 @@
 [run]
-omit = kinto2xml/tests/*
+omit = amo2kinto/tests/*

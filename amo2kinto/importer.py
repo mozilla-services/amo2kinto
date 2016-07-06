@@ -47,9 +47,9 @@ def sync_records(amo_records, fields,
         config=config,
         permissions=permissions)
 
-    to_create, to_delete = get_diff(amo_records, kinto_records)
+    to_create, to_update, to_delete = get_diff(amo_records, kinto_records)
 
-    push_changes((to_create, to_delete), kinto_client,
+    push_changes((to_create, to_update, to_delete), kinto_client,
                  bucket=bucket, collection=collection)
 
 
