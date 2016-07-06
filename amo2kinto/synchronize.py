@@ -66,14 +66,9 @@ def push_changes(diff, kinto_client, bucket, collection):
             record['enabled'] = True
             batch.create_record(record)
         for record in to_update:
-            # Patch the record with the new properties from AMO.
-            # This will override changes that were made before in
-            # Kinto if any. But json2kinto should be used only to
-            # rsync AMO database so it is fine.
-            patch_record = strip_keys(record, ['id'])
             # Make sure the record is correcly activated.
-            patch_record['enabled'] = True
-            batch.patch_record(patch_record)
+            record['enabled'] = True
+            batch.patch_record(record)
 
     if to_create or to_update or to_delete:
         logger.info('Trigger the signature.')
