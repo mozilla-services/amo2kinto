@@ -3,7 +3,7 @@ CHANGELOG
 
 This document describes changes between each past release.
 
-1.4.0 (unreleased)
+1.4.0 (2016-07-18)
 ==================
 
 **New features**
@@ -11,6 +11,7 @@ This document describes changes between each past release.
 - Add version ranges for GFX items (#39) — `Bug 1283601`_
 
 .. _`Bug 1283601`: https://bugzilla.mozilla.org/show_bug.cgi?id=1283601
+
 
 1.3.1 (2016-07-06)
 ==================
