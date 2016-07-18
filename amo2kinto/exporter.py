@@ -307,7 +307,6 @@ def write_gfx_items(xml_tree, records, app_id, api_ver=3):
                         versionRange.set(field, str(value))
 
 
-
 def write_cert_items(xml_tree, records, api_ver=3):
     """Generate the certificate blocklists.
 
