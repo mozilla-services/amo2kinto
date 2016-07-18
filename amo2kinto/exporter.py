@@ -83,8 +83,8 @@ def write_addons_items(xml_tree, records, app_id, api_ver=3):
         if is_related_to(item, app_id):
             if item['guid'] in groupby:
                 emItem = groupby[item['guid']]
-                # Remove the first caracter which is the letter p to
-                # compare the numeric value p45 < p356.
+                # Remove the first caracter which is the letter i to
+                # compare the numeric value i45 < i356.
                 current_blockID = int(item['blockID'][1:])
                 previous_blockID = int(emItem.attrib['blockID'][1:])
                 # Group by and keep the biggest blockID in the XML file.
@@ -269,6 +269,7 @@ def write_gfx_items(xml_tree, records, app_id, api_ver=3):
         <featureStatus>BLOCKED_DRIVER_VERSION</featureStatus>
         <driverVersion>8.17.12.5896</driverVersion>
         <driverVersionComparator>LESS_THAN_OR_EQUAL</driverVersionComparator>
+        <versionRange minVersion="3.2" maxVersion="3.4" />
     </gfxBlacklistEntry>
     """
     if not records:
@@ -294,6 +295,15 @@ def write_gfx_items(xml_tree, records, app_id, api_ver=3):
                 for d in item['devices']:
                     device = etree.SubElement(devices, 'device')
                     device.text = d
+
+            if 'versionRange' in item:
+                version = item['versionRange']
+                versionRange = etree.SubElement(entry, 'versionRange')
+
+                for field in ['minVersion', 'maxVersion']:
+                    value = version.get(field)
+                    if value:
+                        versionRange.set(field, str(value))
 
 
 def write_cert_items(xml_tree, records, api_ver=3):

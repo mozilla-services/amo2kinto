@@ -19,7 +19,7 @@ FIELDS = {
     'certificates': ['serialNumber', 'issuerName', 'details'],
     'gfx': ['blockID', 'os', 'vendor', 'feature', 'featureStatus',
             'driverVersion', 'driverVersionmax', 'driverVersionComparator',
-            'devices', 'details'],
+            'devices', 'versionRange', 'details'],
     'plugins': ['blockID', 'os', 'xpcomabi', 'infoURL', 'versionRange',
                 'matchName', 'matchFilename', 'matchDescription', 'details']
 }

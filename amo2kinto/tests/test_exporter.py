@@ -750,6 +750,10 @@ GFX_DATA = {
     "feature": "DIRECT2D",
     "featureStatus": "BLOCKED_DRIVER_VERSION",
     "vendor": "0x10de",
+    "versionRange": {
+        "minVersion": "3.2",
+        "maxVersion": "3.4"
+    },
     "details": {
         "who": "All Firefox users who have these drivers installed.",
         "created": "2012-09-24T08:23:33Z",
@@ -792,6 +796,7 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
       <devices>
         <device>0x0a6c</device>
       </devices>
+      <versionRange minVersion="3.2" maxVersion="3.4"/>
     </gfxBlacklistEntry>
   </gfxItems>
 </blocklist>

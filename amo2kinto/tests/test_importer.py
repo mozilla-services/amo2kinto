@@ -146,6 +146,10 @@ GFX_DATA = {
     "feature": "DIRECT2D",
     "featureStatus": "BLOCKED_DRIVER_VERSION",
     "vendor": "0x10de",
+    "versionRange": {
+        "minVersion": "3.2",
+        "maxVersion": "3.4"
+    },
     "details": {
         "who": "All Firefox users who have these drivers installed.",
         "created": "2012-09-24T08:23:33Z",
@@ -168,6 +172,10 @@ def test_gfx_record():
         "feature": "DIRECT2D",
         "featureStatus": "BLOCKED_DRIVER_VERSION",
         "vendor": "0x10de",
+        "versionRange": {
+            "minVersion": "3.2",
+            "maxVersion": "3.4"
+        },
         "details": {
             "who": "All Firefox users who have these drivers installed.",
             "created": "2012-09-24T08:23:33Z",
