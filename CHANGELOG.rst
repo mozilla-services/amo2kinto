@@ -6,8 +6,11 @@ This document describes changes between each past release.
 1.4.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+**New features**
 
+- Add version ranges for GFX items (#39) — `Bug 1283601`_
+
+.. _`Bug 1283601`: https://bugzilla.mozilla.org/show_bug.cgi?id=1283601
 
 1.3.1 (2016-07-06)
 ==================
