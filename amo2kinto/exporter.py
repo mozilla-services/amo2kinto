@@ -269,6 +269,7 @@ def write_gfx_items(xml_tree, records, app_id, api_ver=3):
         <featureStatus>BLOCKED_DRIVER_VERSION</featureStatus>
         <driverVersion>8.17.12.5896</driverVersion>
         <driverVersionComparator>LESS_THAN_OR_EQUAL</driverVersionComparator>
+        <versionRange minVersion="3.2" maxVersion="3.4" />
     </gfxBlacklistEntry>
     """
     if not records:
@@ -294,6 +295,17 @@ def write_gfx_items(xml_tree, records, app_id, api_ver=3):
                 for d in item['devices']:
                     device = etree.SubElement(devices, 'device')
                     device.text = d
+
+            if 'versionRange' in item:
+                version = item['versionRange']
+                versionRange = etree.SubElement(
+                    entry, 'versionRange')
+
+                for field in ['minVersion', 'maxVersion']:
+                    value = version.get(field)
+                    if value:
+                        versionRange.set(field, str(value))
+
 
 
 def write_cert_items(xml_tree, records, api_ver=3):
