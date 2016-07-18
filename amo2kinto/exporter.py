@@ -298,8 +298,7 @@ def write_gfx_items(xml_tree, records, app_id, api_ver=3):
 
             if 'versionRange' in item:
                 version = item['versionRange']
-                versionRange = etree.SubElement(
-                    entry, 'versionRange')
+                versionRange = etree.SubElement(entry, 'versionRange')
 
                 for field in ['minVersion', 'maxVersion']:
                     value = version.get(field)
