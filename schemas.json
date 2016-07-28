@@ -206,7 +206,7 @@
           "details": {
             "why": {"ui:widget": "textarea"},
             "who": {"ui:widget": "textarea"},
-            "created": {"type": "string", "format": "date-time"}
+            "created": {"ui:readonly": true}
           }
         }
       }
@@ -287,7 +287,8 @@
           },
           "details": {
             "why": {"ui:widget": "textarea"},
-            "who": {"ui:widget": "textarea"}
+            "who": {"ui:widget": "textarea"},
+            "created": {"ui:readonly": true}
           }
         }
       }
@@ -298,6 +299,18 @@
       "config": {
         "displayFields": ["enabled", "blockID", "os", "vendor", "feature"],
         "schema": {
+          "definitions": {
+            "minVersion": {
+              "type": "string",
+              "title": "Min version",
+              "description": "The mininum version."
+            },
+            "maxVersion": {
+              "type": "string",
+              "title": "Max version",
+              "description": "The maximum version."
+            }
+          },
           "title": "Gfx",
           "description": "A graphic driver blocklist entry.",
           "type": "object",
@@ -334,6 +347,22 @@
               "title": "Enabled",
               "description": "blocking rule is enabled.",
               "default": false
+            },
+            "versionRange": {
+              "type": "object",
+              "title": "Version range",
+              "description": "Version range",
+              "additionalProperties": false,
+              "default": {
+                "minVersion": "",
+                "maxVersion": "",
+                "severity": 0,
+                "vulnerabilityStatus": 0
+              },
+              "properties": {
+                "minVersion": {"$ref": "#/definitions/minVersion"},
+                "maxVersion": {"$ref": "#/definitions/maxVersion"}
+              }
             },
             "os": {
               "type": "string",
@@ -478,7 +507,8 @@
           },
           "details": {
             "why": {"ui:widget": "textarea"},
-            "who": {"ui:widget": "textarea"}
+            "who": {"ui:widget": "textarea"},
+            "created": {"ui:readonly": true}
           }
         }
       }
@@ -684,7 +714,8 @@
           },
           "details": {
             "why": {"ui:widget": "textarea"},
-            "who": {"ui:widget": "textarea"}
+            "who": {"ui:widget": "textarea"},
+            "created": {"ui:readonly": true}
           }
         }
       }
