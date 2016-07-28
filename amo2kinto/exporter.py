@@ -85,8 +85,8 @@ def write_addons_items(xml_tree, records, app_id, api_ver=3):
                 emItem = groupby[item['guid']]
                 # Remove the first caracter which is the letter i to
                 # compare the numeric value i45 < i356.
-                current_blockID = int(item['blockID'][1:])
-                previous_blockID = int(emItem.attrib['blockID'][1:])
+                current_blockID = item['blockID'][1:]
+                previous_blockID = emItem.attrib['blockID'][1:]
                 # Group by and keep the biggest blockID in the XML file.
                 if current_blockID > previous_blockID:
                     emItem.attrib['blockID'] = item['blockID']
