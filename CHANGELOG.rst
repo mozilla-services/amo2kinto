@@ -3,10 +3,10 @@ CHANGELOG
 
 This document describes changes between each past release.
 
-1.5.0 (unreleased)
+1.4.1 (2016-08-02)
 ==================
 
-- Nothing changed yet.
+- Fix blockID ordering to make it the same as the addons-server.
 
 
 1.4.0 (2016-07-18)
