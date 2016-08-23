@@ -4,6 +4,9 @@ SCHEMA_FILE = os.path.abspath(os.path.join(
     os.path.dirname(os.path.dirname(__file__)),
     'schemas.json'))
 
+# Destination directory
+TARGET_DIR = os.path.abspath('results')
+
 # Addons Server defaults
 ADDONS_SERVER = 'https://addons-dev.allizom.org/'
 
@@ -22,6 +25,7 @@ GFX_COLLECTION = u'gfx'
 PLUGINS_BUCKET = u'staging'
 PLUGINS_COLLECTION = u'plugins'
 
+DESTINATION_BUCKET = 'blocklists'
 
 # APP ID
 FIREFOX_APPID = '{ec8030f7-c20a-464f-9b0e-13a3a9e97384}'
