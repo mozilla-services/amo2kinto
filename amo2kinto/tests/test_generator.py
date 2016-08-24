@@ -167,10 +167,10 @@ def test_generate_uses_last_modified_if_created_is_missing():
             assert f.return_value.write.call_count == 2
 
             # Present in index
-            assert 'May 13, 2013' in f.return_value.write.call_args_list[0][0][0]
+            assert b'May 13, 2013' in f.return_value.write.call_args_list[0][0][0]
 
             # Present in the record file
-            assert 'May 13, 2013' in f.return_value.write.call_args_list[1][0][0]
+            assert b'May 13, 2013' in f.return_value.write.call_args_list[1][0][0]
 
 
 class TestMain(unittest.TestCase):
