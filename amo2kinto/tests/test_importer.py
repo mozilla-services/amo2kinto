@@ -336,7 +336,7 @@ class TestMain(unittest.TestCase):
         self.MockedClient.return_value.session.request.return_value = {
             'capabilities': {}
         }, {}
-        p = mock.patch('kinto_client.cli_utils.Client', self.MockedClient)
+        p = mock.patch('kinto_http.cli_utils.Client', self.MockedClient)
         self.addCleanup(p.stop)
         p.start()
 
