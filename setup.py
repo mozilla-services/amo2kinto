@@ -61,6 +61,7 @@ setup(name='amo2kinto',
       author_email='services-dev@mozilla.com',
       url='https://github.com/mozilla-services/amo2kinto',
       packages=find_packages(),
+      include_package_data=True,
       zip_safe=False,
       install_requires=REQUIREMENTS,
       entry_points=ENTRY_POINTS)
