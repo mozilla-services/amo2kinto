@@ -197,3 +197,46 @@ The **xml-verifier** command accept both files path and files URLs.
     APPID="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
     kinto2xml --app $APPID --app-version 46.0 -o generated-blocklists.xml
     xml-verifier https://blocklist.addons.mozilla.org/blocklist/3/$APPID/46.0/ generated-blocklists.xml
+
+
+Generate blocked addons and plugins description pages
+=====================================================
+
+You might want to export the human readable list and description of
+add-ons and plugins that were blocked.
+
+You can do that using the ``blockpages-generator`` cli tool:
+
+.. code-block::
+
+    usage: blockpages-generator [-h] [-s SERVER] [-a AUTH] [-b BUCKET] [-v] [-q]
+                                [-D] [--addons-collection ADDONS_COLLECTION]
+                                [--plugins-collection PLUGINS_COLLECTION]
+                                [-d TARGET_DIR]
+    
+    Generate blocked item description files.
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      -s SERVER, --server SERVER
+                            The location of the remote server (with prefix)
+      -a AUTH, --auth AUTH  BasicAuth token:my-secret
+      -b BUCKET, --bucket BUCKET
+                            Bucket name.
+      -v, --verbose         Show all messages.
+      -q, --quiet           Show only critical errors.
+      -D, --debug           Show all messages, including debug messages.
+      --addons-collection ADDONS_COLLECTION
+                            Collection name for addon
+      --plugins-collection PLUGINS_COLLECTION
+                            Collection name for plugin
+      -d TARGET_DIR, --target-dir TARGET_DIR
+                            Destination directory to write files in.
+
+It will generate an ``index.html`` file with the list of records
+present in the ``addons`` and ``plugins`` collections in the
+``target-dir`` directory.
+
+It will also generate a file per ``add-on`` and ``plugin`` using the
+``blockID`` or the ``id``. e.g ``i487.html`` or
+``08db5018-2c80-4c4d-aa98-dafe6aacc28c.html``
