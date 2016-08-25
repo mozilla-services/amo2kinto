@@ -6,7 +6,7 @@ This document describes changes between each past release.
 1.5.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Add the ``blockpages-generator`` CLI tool (#43)
 
 
 1.4.1 (2016-08-02)

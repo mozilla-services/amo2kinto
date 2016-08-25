@@ -4,7 +4,7 @@ import jsonschema
 import requests
 import six
 
-from kinto_client import cli_utils
+from kinto_http import cli_utils
 from six.moves.urllib.parse import urljoin
 
 from . import constants
@@ -25,8 +25,7 @@ FIELDS = {
 }
 
 
-def sync_records(amo_records, fields,
-                 kinto_client, bucket, collection, config, permissions):
+def sync_records(amo_records, fields, kinto_client, bucket, collection, config, permissions):
 
     amo_records = prepare_amo_records(amo_records, fields)
 

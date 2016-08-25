@@ -1,7 +1,7 @@
 import sys
 from collections import OrderedDict
 from lxml import etree
-from kinto_client import cli_utils
+from kinto_http import cli_utils
 from . import constants
 from .compare import version_int
 

@@ -848,7 +848,7 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 
 class TestMain(unittest.TestCase):
     def setUp(self):
-        p = mock.patch('kinto_client.cli_utils.Client')
+        p = mock.patch('kinto_http.cli_utils.Client')
         self.MockedClient = p.start()
         self.MockedClient.return_value.get_records.return_value = []
         self.addCleanup(p.stop)
@@ -960,7 +960,7 @@ class TestMain(unittest.TestCase):
                 self.assertNotEqual(len(out_file.getvalue()), 0)
 
     def test_get_records_read_fails(self):
-        with mock.patch('kinto_client.cli_utils.Client') as MockedClient:
+        with mock.patch('kinto_http.cli_utils.Client') as MockedClient:
             MockedClient.return_value.get_records.side_effect = Exception
             with mock.patch('amo2kinto.exporter.logger') as mocked_logger:
                 exporter.main([])

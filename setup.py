@@ -13,10 +13,12 @@ with codecs.open(os.path.join(HERE, 'CHANGELOG.rst'), encoding='utf-8') as f:
 
 
 REQUIREMENTS = [
+    'jinja2',
     'jsonschema',
-    'kinto-client',
-    'requests',
+    'kinto-http',
     'lxml',
+    'python-dateutil',
+    'requests',
     'six',
     'xmltodict',
 ]
@@ -36,6 +38,7 @@ ENTRY_POINTS = {
         'kinto2xml = amo2kinto.exporter:main',
         'json2kinto = amo2kinto.importer:main',
         'xml-verifier = amo2kinto.verifier:main',
+        'blockpages-generator = amo2kinto.generator:main',
     ]
 }
 
@@ -58,6 +61,7 @@ setup(name='amo2kinto',
       author_email='services-dev@mozilla.com',
       url='https://github.com/mozilla-services/amo2kinto',
       packages=find_packages(),
+      include_package_data=True,
       zip_safe=False,
       install_requires=REQUIREMENTS,
       entry_points=ENTRY_POINTS)
