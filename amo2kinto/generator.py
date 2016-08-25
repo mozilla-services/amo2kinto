@@ -70,7 +70,7 @@ def generate(client, collections, target_dir, collection_template, record_templa
             if 'created' not in record['details']:
                 date = datetime.date.fromtimestamp(record['last_modified'] / 1000)
                 record['details']['created'] = date.strftime(JSON_DATE_FORMAT)
-        records.extend(response)
+            records.append(record)
 
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
