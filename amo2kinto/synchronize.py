@@ -51,7 +51,7 @@ def push_changes(diff, kinto_client, bucket, collection):
     to_create, to_update, to_delete = diff
 
     logger.warn('Syncing to {}{}'.format(
-        kinto_client.session_kwargs['server_url'],
+        kinto_client.session.server_url,
         kinto_client.endpoints.get(
             'records', bucket=bucket, collection=collection)))
 
