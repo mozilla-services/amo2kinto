@@ -25,8 +25,9 @@ FIELDS = {
 }
 
 
-def sync_records(amo_records, fields, kinto_client, editor_client, reviewer_client,
-                 bucket, collection, config, permissions):
+def sync_records(amo_records, fields, kinto_client,
+                 bucket, collection, config, permissions,
+                 editor_client=None, reviewer_client=None):
 
     amo_records = prepare_amo_records(amo_records, fields)
 
@@ -49,8 +50,9 @@ def sync_records(amo_records, fields, kinto_client, editor_client, reviewer_clie
 
     to_create, to_update, to_delete = get_diff(amo_records, kinto_records)
 
-    push_changes((to_create, to_update, to_delete), kinto_client, editor_client,
-                 reviewer_client, bucket=bucket, collection=collection)
+    push_changes((to_create, to_update, to_delete), kinto_client,
+                 bucket=bucket, collection=collection,
+                 editor_client=editor_client, reviewer_client=reviewer_client)
 
 
 def main(args=None):
@@ -129,19 +131,17 @@ def main(args=None):
 
     kinto_client = cli_utils.create_client_from_args(args)
 
-    if args.editor_auth is None:
-        args.editor_auth = args.auth
-    else:
+    editor_client = None
+    if args.editor_auth is not None:
         args.editor_auth = tuple(args.editor_auth.split(':', 1))
-    editor_client = Client(server_url=args.server,
-                           auth=args.editor_auth)
+        editor_client = Client(server_url=args.server,
+                               auth=args.editor_auth)
 
-    if args.reviewer_auth is None:
-        args.reviewer_auth = args.auth
-    else:
+    reviewer_client = None
+    if args.reviewer_auth is not None:
         args.reviewer_auth = tuple(args.reviewer_auth.split(':', 1))
-    reviewer_client = Client(server_url=args.server,
-                             auth=args.reviewer_auth)
+        reviewer_client = Client(server_url=args.server,
+                                 auth=args.reviewer_auth)
 
     # If none of the different "collections" were passed as parameter, then we
     # want to import them all.

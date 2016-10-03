@@ -47,9 +47,15 @@ def get_diff(source, dest):
             [dest_dict[k] for k in to_delete])
 
 
-def push_changes(diff, author_client, editor_client, reviewer_client,
-                 bucket, collection):
+def push_changes(diff, author_client, bucket, collection,
+                 editor_client=None, reviewer_client=None):
     to_create, to_update, to_delete = diff
+
+    if editor_client is None:
+        editor_client = author_client
+
+    if reviewer_client is None:
+        reviewer_client = author_client
 
     logger.warn('Syncing to {}{}'.format(
         author_client.session.server_url,

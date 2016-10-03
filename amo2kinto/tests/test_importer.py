@@ -263,7 +263,9 @@ def test_sync_records_calls_the_scenario():
                          mock.sentinel.to_delete),
                         mock.sentinel.kinto_client,
                         bucket=mock.sentinel.bucket,
-                        collection=mock.sentinel.collection)
+                        collection=mock.sentinel.collection,
+                        editor_client=None,
+                        reviewer_client=None)
 
 
 SCHEMAS = {
@@ -375,6 +377,8 @@ class TestMain(unittest.TestCase):
             'amo_records': RECORDS['certificates'],
             'fields': FIELDS['certificates'],
             'kinto_client': kinto_client.return_value,
+            'editor_client': None,
+            'reviewer_client': None,
             'bucket': kwargs['certificates_bucket'],
             'collection': kwargs['certificates_collection'],
             'config': cert_config,
@@ -387,6 +391,8 @@ class TestMain(unittest.TestCase):
             'amo_records': RECORDS['gfx'],
             'fields': FIELDS['gfx'],
             'kinto_client': kinto_client.return_value,
+            'editor_client': None,
+            'reviewer_client': None,
             'bucket': kwargs['gfx_bucket'],
             'collection': kwargs['gfx_collection'],
             'config': gfx_config,
@@ -399,6 +405,8 @@ class TestMain(unittest.TestCase):
             'amo_records': RECORDS['addons'],
             'fields': FIELDS['addons'],
             'kinto_client': kinto_client.return_value,
+            'editor_client': None,
+            'reviewer_client': None,
             'bucket': kwargs['addons_bucket'],
             'collection': kwargs['addons_collection'],
             'config': addons_config,
@@ -411,6 +419,8 @@ class TestMain(unittest.TestCase):
             'amo_records': RECORDS['plugins'],
             'fields': FIELDS['plugins'],
             'kinto_client': kinto_client.return_value,
+            'editor_client': None,
+            'reviewer_client': None,
             'bucket': kwargs['plugins_bucket'],
             'collection': kwargs['plugins_collection'],
             'config': plugins_config,
@@ -518,6 +528,8 @@ class TestMain(unittest.TestCase):
             amo_records=RECORDS['certificates'],
             fields=FIELDS['certificates'],
             kinto_client=mock.ANY,
+            editor_client=mock.ANY,
+            reviewer_client=mock.ANY,
             bucket=constants.CERT_BUCKET,
             collection=constants.CERT_COLLECTION,
             config=None,
@@ -534,6 +546,8 @@ class TestMain(unittest.TestCase):
                 amo_records=RECORDS['certificates'],
                 fields=FIELDS['certificates'],
                 kinto_client=mock.ANY,
+                editor_client=mock.ANY,
+                reviewer_client=mock.ANY,
                 bucket=constants.CERT_BUCKET,
                 collection=constants.CERT_COLLECTION,
                 config=None,
@@ -542,8 +556,18 @@ class TestMain(unittest.TestCase):
                 amo_records=RECORDS['gfx'],
                 fields=FIELDS['gfx'],
                 kinto_client=mock.ANY,
+                editor_client=mock.ANY,
+                reviewer_client=mock.ANY,
                 bucket=constants.GFX_BUCKET,
                 collection=constants.GFX_COLLECTION,
                 config=None,
                 permissions=constants.COLLECTION_PERMISSIONS)],
             any_order=True)
+
+    def test_editor_auth_defines_editor_client(self):
+        with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
+            main(['--editor-auth', 'editor-id:editor-password', '--no-schema'])
+
+    def test_reviewer_auth_defines_reviewer_client(self):
+        with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
+            main(['--reviewer-auth', 'reviewer-id:reviewer-password', '--no-schema'])
