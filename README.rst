@@ -75,6 +75,8 @@ load, with which user credentials and from which bucket and collection.
 
     usage: json2kinto [-h] [--addons-server ADDONS_SERVER] [-s SERVER] [-a AUTH]
                       [-v] [-q] [-D] [-S SCHEMA_FILE] [--no-schema]
+                      [--editor-auth EDITOR_AUTH]
+                      [--reviewer-auth REVIEWER_AUTH]
                       [--certificates-bucket CERTIFICATES_BUCKET]
                       [--certificates-collection CERTIFICATES_COLLECTION]
                       [--gfx-bucket GFX_BUCKET] [--gfx-collection GFX_COLLECTION]
@@ -83,9 +85,9 @@ load, with which user credentials and from which bucket and collection.
                       [--plugins-bucket PLUGINS_BUCKET]
                       [--plugins-collection PLUGINS_COLLECTION]
                       [-C] [-G] [-A] [-P]
-    
+
     Import the blocklists from the addons server into Kinto.
-    
+
     optional arguments:
       -h, --help            show this help message and exit
       --addons-server ADDONS_SERVER
@@ -99,6 +101,10 @@ load, with which user credentials and from which bucket and collection.
       -S SCHEMA_FILE, --schema-file SCHEMA_FILE
                             JSON Schemas file
       --no-schema           Should we handle schemas
+      --editor-auth EDITOR_AUTH
+                            Credentials to be used for requesting a review
+      --reviewer-auth REVIEWER_AUTH
+                            Credentials to be used for validating the review
       --certificates-bucket CERTIFICATES_BUCKET
                             Bucket name for certificates
       --certificates-collection CERTIFICATES_COLLECTION
