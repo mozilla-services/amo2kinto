@@ -181,6 +181,7 @@ def main(args=None):
             config = None
             if collection_type in schemas:
                 config = schemas[collection_type]['config']
+            print editor_client, kinto_client
             sync_records(amo_records=records,
                          fields=FIELDS[collection_type],
                          kinto_client=kinto_client,

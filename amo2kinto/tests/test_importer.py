@@ -565,9 +565,45 @@ class TestMain(unittest.TestCase):
             any_order=True)
 
     def test_editor_auth_defines_editor_client(self):
-        with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
-            main(['--editor-auth', 'editor-id:editor-password', '--no-schema'])
+        EditorClient = mock.MagicMock()
+        EditorClient._bucket_name = "staging"
+        EditorClient._collection_name = "qa"
+        EditorClient.return_value.session.request.return_value = {
+            'capabilities': {}
+        }, {}
+        with mock.patch('amo2kinto.importer.Client', EditorClient):
+            with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
+                main(['--editor-auth', 'editor-id:editor-password', '--no-schema'])
+
+                mock_sync.assert_any_call(
+                    amo_records=RECORDS['certificates'],
+                    fields=FIELDS['certificates'],
+                    kinto_client=self.MockedClient.return_value,
+                    editor_client=EditorClient.return_value,
+                    reviewer_client=None,
+                    bucket=constants.CERT_BUCKET,
+                    collection=constants.CERT_COLLECTION,
+                    config=None,
+                    permissions=constants.COLLECTION_PERMISSIONS)
 
     def test_reviewer_auth_defines_reviewer_client(self):
-        with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
-            main(['--reviewer-auth', 'reviewer-id:reviewer-password', '--no-schema'])
+        ReviewerClient = mock.MagicMock()
+        ReviewerClient._bucket_name = "staging"
+        ReviewerClient._collection_name = "qa"
+        ReviewerClient.return_value.session.request.return_value = {
+            'capabilities': {}
+        }, {}
+        with mock.patch('amo2kinto.importer.Client', ReviewerClient):
+            with mock.patch('amo2kinto.importer.sync_records') as mock_sync:
+                main(['--reviewer-auth', 'reviewer-id:reviewer-password', '--no-schema'])
+
+                mock_sync.assert_any_call(
+                    amo_records=RECORDS['certificates'],
+                    fields=FIELDS['certificates'],
+                    kinto_client=self.MockedClient.return_value,
+                    editor_client=None,
+                    reviewer_client=ReviewerClient.return_value,
+                    bucket=constants.CERT_BUCKET,
+                    collection=constants.CERT_COLLECTION,
+                    config=None,
+                    permissions=constants.COLLECTION_PERMISSIONS)
