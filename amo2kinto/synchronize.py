@@ -47,18 +47,25 @@ def get_diff(source, dest):
             [dest_dict[k] for k in to_delete])
 
 
-def push_changes(diff, kinto_client, bucket, collection):
+def push_changes(diff, author_client, bucket, collection,
+                 editor_client=None, reviewer_client=None):
     to_create, to_update, to_delete = diff
 
+    if editor_client is None:
+        editor_client = author_client
+
+    if reviewer_client is None:
+        reviewer_client = author_client
+
     logger.warn('Syncing to {}{}'.format(
-        kinto_client.session.server_url,
-        kinto_client.endpoints.get(
+        author_client.session.server_url,
+        author_client.endpoints.get(
             'records', bucket=bucket, collection=collection)))
 
     logger.info('- {} records to create.'.format(len(to_create)))
     logger.info('- {} records to delete.'.format(len(to_delete)))
 
-    with kinto_client.batch(bucket=bucket, collection=collection) as batch:
+    with author_client.batch(bucket=bucket, collection=collection) as batch:
         for record in to_delete:
             batch.delete_record(record['id'])
         for record in to_create:
@@ -71,10 +78,11 @@ def push_changes(diff, kinto_client, bucket, collection):
             batch.patch_record(record)
 
     if to_create or to_update or to_delete:
-        logger.info('Trigger the signature.')
-
-        # Trigger signature once modifications where done.
-        kinto_client.patch_collection(data={'status': 'to-sign'},
-                                      bucket=bucket, collection=collection)
+        logger.info('Request review.')
+        editor_client.patch_collection(data={'status': 'to-review'},
+                                       bucket=bucket, collection=collection)
+        logger.info('Approve and trigger the signature.')
+        reviewer_client.patch_collection(data={'status': 'to-sign'},
+                                         bucket=bucket, collection=collection)
 
     logger.info('Done!')

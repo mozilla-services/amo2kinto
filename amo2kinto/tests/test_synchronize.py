@@ -28,6 +28,42 @@ class SynchronizeTest(unittest.TestCase):
         self.bucket = mock.sentinel.bucket
         self.collection = mock.sentinel.collection
 
+    def test_synchronize_uses_kinto_client_for_signature(self):
+        push_changes(([{'id': 1, 'val': 2}],
+                      [{'id': 4, 'val': 4}],
+                      [{'id': 3, 'val': 4}]),
+                     self.kinto_client, self.bucket, self.collection)
+
+        self.kinto_client.patch_collection.assert_any_call(
+            bucket=mock.sentinel.bucket,
+            collection=mock.sentinel.collection,
+            data={'status': 'to-review'})
+
+        self.kinto_client.patch_collection.assert_any_call(
+            bucket=mock.sentinel.bucket,
+            collection=mock.sentinel.collection,
+            data={'status': 'to-sign'})
+
+    def test_synchronize_uses_editor_and_reviewer_clients(self):
+        editor_client = mock.MagicMock()
+        reviewer_client = mock.MagicMock()
+
+        push_changes(([{'id': 1, 'val': 2}],
+                      [{'id': 4, 'val': 4}],
+                      [{'id': 3, 'val': 4}]),
+                     self.kinto_client, self.bucket, self.collection,
+                     editor_client, reviewer_client)
+
+        editor_client.patch_collection.assert_called_with(
+            bucket=mock.sentinel.bucket,
+            collection=mock.sentinel.collection,
+            data={'status': 'to-review'})
+
+        reviewer_client.patch_collection.assert_called_with(
+            bucket=mock.sentinel.bucket,
+            collection=mock.sentinel.collection,
+            data={'status': 'to-sign'})
+
     def test_synchronize_create_the_batch_request(self):
         push_changes(([{'id': 1, 'val': 2}],
                       [{'id': 4, 'val': 4}],
