@@ -6,7 +6,9 @@ This document describes changes between each past release.
 1.6.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+**New features**
+
+- Add a configurable signoff workflow to-review → to-sign (#48)
 
 
 1.5.1 (2016-09-08)
