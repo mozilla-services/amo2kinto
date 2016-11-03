@@ -56,7 +56,7 @@ def test_verifier_supports_http_links():
         blocklist_content = f.read()
 
     response = mock.MagicMock(text=blocklist_content)
-    with mock.patch('requests.get', return_value=response) as mocked_request:
+    with mock.patch('requests.Session.get', return_value=response) as mocked_request:
         main(['http://first_server/url/', 'http://second_server/url/'])
 
         mocked_request.assert_any_call('http://first_server/url/')
