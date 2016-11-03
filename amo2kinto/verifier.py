@@ -46,6 +46,16 @@ def sort_lists_in_dict(d):
     return d
 
 
+def download(uri):
+    session = requests.Session()
+    adapter = requests.adapters.HTTPAdapter(max_retries=3)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+    resp = session.get(uri)
+    resp.raise_for_status()
+    return resp.text
+
+
 def main(args=None):
     parser = argparse.ArgumentParser(
         description='Parse and normalize two XML files and '
@@ -72,9 +82,7 @@ def main(args=None):
         curr_file = tempfile.NamedTemporaryFile("w", delete=False)
         tmp_files.append(curr_file)
         if filepath.startswith('http'):
-            resp = requests.get(filepath)
-            resp.raise_for_status()
-            content = resp.text
+            content = download(filepath)
         else:
             with open(filepath) as f:
                 content = f.read()
