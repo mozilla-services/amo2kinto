@@ -6,9 +6,19 @@ This document describes changes between each past release.
 1.7.0 (unreleased)
 ==================
 
+**New features**
+
+- Retry downloading the XML in case it fails the first time. (#50)
+
+
 **Bug fix**
 
+- Remove redundant footer when generating pages. (#51)
 - Allow the importer to work even without the permission to create buckets. (#53)
+
+**Internal changes**
+
+- Improve the way the Makefile works (#52)
 
 
 1.6.0 (2016-10-04)
