@@ -8,7 +8,7 @@ This document describes changes between each past release.
 
 **Bug fix**
 
-- Allow the importer to work even without needing the permission to create buckets. (#53)
+- Allow the importer to work even without the permission to create buckets. (#53)
 
 
 1.6.0 (2016-10-04)
