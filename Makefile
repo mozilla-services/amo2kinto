@@ -8,19 +8,19 @@ TEMPDIR := $(shell mktemp -d)
 ADDONS_SERVER = https://addons.mozilla.org/
 KINTO_SERVER = http://localhost:8888/v1
 
-FIREFOX_APP_ID = "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
-THUNDERBIRD_APPID = "{3550f703-e582-4d05-9a08-453d09bdfdc6}"
-SEAMONKEY_APPID = "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}"
-ANDROID_APPID = "{aa3c5121-dab2-40e2-81ca-7ea25febc110}"
+FIREFOX_APP_ID = {ec8030f7-c20a-464f-9b0e-13a3a9e97384}
+THUNDERBIRD_APPID = {3550f703-e582-4d05-9a08-453d09bdfdc6}
+SEAMONKEY_APPID = {92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
+ANDROID_APPID = {aa3c5121-dab2-40e2-81ca-7ea25febc110}
 
 
-BLOCKLIST_ARGS = "blocklist/3/$(FIREFOX_APP_ID)/45.0/"
+BLOCKLIST_ARGS = blocklist/3/$(FIREFOX_APP_ID)/47.0/
 
-BLOCKLIST_FILE_URL = "https://blocklist.addons.mozilla.org/$(BLOCKLIST_ARGS)"
+BLOCKLIST_FILE_URL = https://blocklists-settings.stage.mozaws.net/$(BLOCKLIST_ARGS)
 
-AMO_BLOCKLIST_UI_SCHEMA = "https://raw.githubusercontent.com/mozilla-services/amo-blocklist-ui/master/amo-blocklist.json"
+AMO_BLOCKLIST_UI_SCHEMA = https://raw.githubusercontent.com/mozilla-services/amo-blocklist-ui/master/amo-blocklist.json
 
-BLOCKLIST_BUCKET = "staging"
+BLOCKLIST_BUCKET = staging
 
 .IGNORE: clean distclean maintainer-clean
 .PHONY: all install install-dev virtualenv tests
@@ -96,4 +96,4 @@ need-kinto-running:
 	@curl http://localhost:8888/v1 2>/dev/null 1>&2 || (echo "Run 'make run-kinto' before starting tests." && exit 1)
 
 verify-server: sync
-	$(VENV)/bin/xml-verifier $(AMO_SERVER)/$(BLOCKLIST_ARGS) $(KINTO_SERVER)/$(BLOCKLIST_ARGS)
+	$(VENV)/bin/xml-verifier $(BLOCKLIST_FILE_URL) $(KINTO_SERVER)/$(BLOCKLIST_ARGS)
