@@ -25,7 +25,6 @@
 
     When Mozilla becomes aware of add-ons, plugins, or other third-party software that seriously compromises Firefox security, stability, or performance and meets <a href="http://wiki.mozilla.org/Blocklisting">certain criteria</a>, the software may be blocked from general use.  For more information, please read <a href="http://support.mozilla.org/kb/add-ons-cause-issues-are-on-blocklist">this support article</a>.</dd>
   </dl>
-      <footer>
    {% if record.details.bug %}
     <footer>Blocked on {{ record.details.created|datetime }}. <a href="{{ record.details.bug }}">View block request</a>.</footer>
   {% else %}
