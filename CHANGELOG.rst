@@ -6,7 +6,9 @@ This document describes changes between each past release.
 1.7.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+**Bug fix**
+
+- Allow the importer to work even without the permission to create buckets. (#53)
 
 
 1.6.0 (2016-10-04)
