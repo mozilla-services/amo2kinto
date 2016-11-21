@@ -1,4 +1,5 @@
 from functools import partial
+from kinto_http.exceptions import KintoException
 
 
 def update_schema_if_mandatory(response, config, patch_collection):
@@ -24,7 +25,13 @@ def get_kinto_records(kinto_client, bucket, collection, permissions,
                       config=None):
     """Return all the kinto records for this bucket/collection."""
     # Create bucket if needed
-    kinto_client.create_bucket(bucket, if_not_exists=True)
+    try:
+        kinto_client.create_bucket(bucket, if_not_exists=True)
+    except KintoException as e:
+        if hasattr(e, 'response') and e.response.status_code == 403:
+            # The user cannot create buckets on this server, ignore the creation.
+            pass
+
     response = kinto_client.create_collection(
         collection, bucket, permissions=permissions, if_not_exists=True)
 
