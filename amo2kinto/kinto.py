@@ -32,8 +32,14 @@ def get_kinto_records(kinto_client, bucket, collection, permissions,
             # The user cannot create buckets on this server, ignore the creation.
             pass
 
-    response = kinto_client.create_collection(
-        collection, bucket, permissions=permissions, if_not_exists=True)
+    try:
+        response = kinto_client.create_collection(
+            collection, bucket, permissions=permissions, if_not_exists=True)
+    except KintoException as e:
+        if hasattr(e, 'response') and e.response.status_code == 403:
+            # The user cannot create collection on this bucket, ignore the creation.
+            pass
+        response = kinto_client.get_collection(collection, bucket)
 
     patch_collection = partial(kinto_client.patch_collection,
                                bucket=bucket, collection=collection)
