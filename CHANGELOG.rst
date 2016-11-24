@@ -6,7 +6,9 @@ This document describes changes between each past release.
 1.8.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+**Bug fix**
+
+- Allow the importer to work even without the permission to create collections. (#56)
 
 
 1.7.0 (2016-11-21)
