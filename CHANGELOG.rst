@@ -9,6 +9,7 @@ This document describes changes between each past release.
 **Bug fix**
 
 - Allow the importer to work even without the permission to create collections. (#56)
+- Use ``PUT`` instead of ``PATCH`` to fully overwrite the destination with the source (#58)
 
 
 1.7.0 (2016-11-21)
