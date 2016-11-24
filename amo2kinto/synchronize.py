@@ -5,7 +5,7 @@ from six import iteritems
 from .logger import logger
 
 
-def strip_keys(record, keys=['id', 'last_modified', 'enabled']):
+def strip_keys(record, keys=['id', 'last_modified', 'enabled', 'schema']):
     return {key: value for key, value in iteritems(record) if key not in keys}
 
 
