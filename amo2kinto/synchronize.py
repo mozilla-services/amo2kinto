@@ -75,7 +75,7 @@ def push_changes(diff, author_client, bucket, collection,
         for record in to_update:
             # Make sure the record is correcly activated.
             record['enabled'] = True
-            batch.patch_record(record)
+            batch.update_record(record)
 
     if to_create or to_update or to_delete:
         logger.info('Request review.')
