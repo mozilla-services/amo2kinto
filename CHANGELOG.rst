@@ -3,7 +3,7 @@ CHANGELOG
 
 This document describes changes between each past release.
 
-1.8.0 (unreleased)
+1.7.1 (2016-11-24)
 ==================
 
 **Bug fix**
