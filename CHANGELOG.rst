@@ -3,13 +3,13 @@ CHANGELOG
 
 This document describes changes between each past release.
 
-1.8.0 (unreleased)
+1.7.1 (2016-11-24)
 ==================
 
 **Bug fix**
 
 - Allow the importer to work even without the permission to create collections. (#56)
-- Use ``PUT`` instead of ``PATCH`` to fully overwrite the destination with the source
+- Use ``PUT`` instead of ``PATCH`` to fully overwrite the destination with the source (#58)
 
 
 1.7.0 (2016-11-21)
