@@ -80,16 +80,21 @@
               "title": "Versions",
               "description": "The list of impacted versions.",
               "default": [],
+              "minItems": 1,
               "items": {
                 "type": "object",
                 "title": "Version range",
                 "description": "Version range",
                 "additionalProperties": false,
+                "required": [
+                  "minVersion",
+                  "maxVersion",
+                  "severity"
+                ],
                 "default": {
                   "minVersion": "",
                   "maxVersion": "",
-                  "severity": 0,
-                  "vulnerabilityStatus": 0
+                  "severity": 1
                 },
                 "properties": {
                   "minVersion": {"$ref": "#/definitions/minVersion"},
@@ -99,28 +104,14 @@
                     "title": "Severity",
                     "description": "The severity code number.",
                     "enum": [
-                      0,
                       1,
-                      2,
                       3
                     ],
-                    "default": 0
-                  },
-                  "vulnerabilityStatus": {
-                    "type": "integer",
-                    "title": "Vulnerability status",
-                    "description": "The vulnerability status code number.",
-                    "enum": [
-                      0,
-                      1,
-                      2
-                    ],
                     "enumNames": [
-                      "",
-                      "Update available",
-                      "Update unavailable"
+                      "1 - Soft block",
+                      "3 - Hard block"
                     ],
-                    "default": 0
+                    "default": 1
                   },
                   "targetApplication": {
                     "type": "array",
@@ -204,9 +195,35 @@
             "ui:readonly": true
           },
           "details": {
+            "ui:order": [
+              "name",
+              "why",
+              "who",
+              "bug",
+              "created"
+            ],
             "why": {"ui:widget": "textarea"},
             "who": {"ui:widget": "textarea"},
             "created": {"ui:readonly": true}
+          },
+          "versionRange": {
+            "items": {
+              "ui:order": [
+                "minVersion",
+                "maxVersion",
+                "severity",
+                "targetApplication"
+              ],
+              "targetApplication": {
+                "items": {
+                  "ui:order": [
+                    "guid",
+                    "minVersion",
+                    "maxVersion"
+                  ]
+                }
+              }
+            }
           }
         }
       }
@@ -276,6 +293,15 @@
           }
         },
         "uiSchema": {
+          "ui:order": [
+            "id",
+            "schema",
+            "enabled",
+            "issuerName",
+            "serialNumber",
+            "details",
+            "blockID"
+          ],
           "id": {
             "ui:widget": "hidden"
           },
@@ -286,6 +312,13 @@
             "ui:readonly": true
           },
           "details": {
+            "ui:order": [
+              "name",
+              "why",
+              "who",
+              "bug",
+              "created"
+            ],
             "why": {"ui:widget": "textarea"},
             "who": {"ui:widget": "textarea"},
             "created": {"ui:readonly": true}
@@ -355,9 +388,7 @@
               "additionalProperties": false,
               "default": {
                 "minVersion": "",
-                "maxVersion": "",
-                "severity": 0,
-                "vulnerabilityStatus": 0
+                "maxVersion": ""
               },
               "properties": {
                 "minVersion": {"$ref": "#/definitions/minVersion"},
@@ -496,6 +527,23 @@
           }
         },
         "uiSchema": {
+          "ui:order": [
+            "enabled",
+            "vendor",
+            "devices",
+            "os",
+            "driverVersion",
+            "driverVersionMax",
+            "driverVersionComparator",
+            "feature",
+            "featureStatus",
+            "hardware",
+            "versionRange",
+            "details",
+            "id",
+            "schema",
+            "blockID"
+          ],
           "id": {
             "ui:widget": "hidden"
           },
@@ -506,9 +554,22 @@
             "ui:readonly": true
           },
           "details": {
-            "why": {"ui:widget": "textarea"},
-            "who": {"ui:widget": "textarea"},
+            "ui:order": [
+              "name",
+              "why",
+              "who",
+              "bug",
+              "created"
+            ],
+            "why": {"ui:widget": "hidden"},
+            "who": {"ui:widget": "hidden"},
             "created": {"ui:readonly": true}
+          },
+          "versionRange": {
+            "ui:order": [
+              "minVersion",
+              "maxVersion"
+            ]
           }
         }
       }
@@ -540,7 +601,6 @@
           ],
           "default": {
             "os": "",
-            "xpcomabi": "",
             "matchName": "",
             "matchFilename": "",
             "matchDescription": "",
@@ -569,11 +629,6 @@
               "title": "OS",
               "description": "The comma-separated operating system identifiers, eg. Darwin,Linux",
               "pattern": "^[^,]*(,[^,]+)*$"
-            },
-            "xpcomabi": {
-              "type": "string",
-              "title": "XPCOM ABI",
-              "description": "The comma-separated XPCOM binary interfaces, eg. x86-gcc3,x86_64-msvc."
             },
             "matchName": {
               "type": "string",
@@ -703,6 +758,19 @@
           }
         },
         "uiSchema": {
+          "ui:order": [
+            "enabled",
+            "os",
+            "matchName",
+            "matchFilename",
+            "matchDescription",
+            "infoURL",
+            "versionRange",
+            "details",
+            "id",
+            "schema",
+            "blockID"
+          ],
           "id": {
             "ui:widget": "hidden"
           },
@@ -713,9 +781,36 @@
             "ui:readonly": true
           },
           "details": {
+            "ui:order": [
+              "name",
+              "why",
+              "who",
+              "bug",
+              "created"
+            ],
             "why": {"ui:widget": "textarea"},
             "who": {"ui:widget": "textarea"},
             "created": {"ui:readonly": true}
+          },
+          "versionRange": {
+            "items": {
+              "ui:order": [
+                "minVersion",
+                "maxVersion",
+                "severity",
+                "vulnerabilityStatus",
+                "targetApplication"
+              ],
+              "targetApplication": {
+                "items": {
+                  "ui:order": [
+                    "guid",
+                    "minVersion",
+                    "maxVersion"
+                  ]
+                }
+              }
+            }
           }
         }
       }
