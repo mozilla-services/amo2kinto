@@ -27,11 +27,18 @@ FIELDS = {
 
 def sync_records(amo_records, fields, kinto_client,
                  bucket, collection, config, permissions,
-                 editor_client=None, reviewer_client=None):
+                 editor_client=None, reviewer_client=None,
+                 ignore_incorrect_records=False):
 
     amo_records = prepare_amo_records(amo_records, fields)
 
+    for record in amo_records:
+        for versionRange in record['versionRange']:
+            versionRange.setdefault('severity', 1)
+
+    valid_records = amo_records
     if config:
+        valid_records = []
         # We validate all amo_records to make sure nothing is broken
         # if we were to import everything.
         #
@@ -39,7 +46,16 @@ def sync_records(amo_records, fields, kinto_client,
         # is a sane safety check.
         #
         for record in amo_records:
-            jsonschema.validate(record, config['schema'])
+            try:
+                jsonschema.validate(record, config['schema'])
+            except jsonschema.exceptions.ValidationError as e:
+                if ignore_incorrect_records:
+                    logger.warn('Invalid record ignored: %s' % record['blockID'])
+                    logger.info('Error was:\n %s' % e)
+                    continue
+                raise
+            valid_records.append(record)
+
 
     kinto_records = get_kinto_records(
         kinto_client=kinto_client,
@@ -48,7 +64,7 @@ def sync_records(amo_records, fields, kinto_client,
         config=config,
         permissions=permissions)
 
-    to_create, to_update, to_delete = get_diff(amo_records, kinto_records)
+    to_create, to_update, to_delete = get_diff(valid_records, kinto_records)
 
     push_changes((to_create, to_update, to_delete), kinto_client,
                  bucket=bucket, collection=collection,
@@ -126,6 +142,9 @@ def main(args=None):
                         help='The addons server to import from',
                         type=str, default=constants.ADDONS_SERVER)
 
+    parser.add_argument('--ignore-errors', help='Ignore validation errors',
+                        action='store_true')
+
     args = parser.parse_args(args=args)
     cli_utils.setup_logger(logger, args)
 
@@ -189,4 +208,6 @@ def main(args=None):
                          bucket=bucket,
                          collection=collection,
                          config=config,
-                         permissions=constants.COLLECTION_PERMISSIONS)
+                         permissions=constants.COLLECTION_PERMISSIONS,
+                         ignore_incorrect_records=args.ignore_errors)
+

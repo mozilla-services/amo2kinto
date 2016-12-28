@@ -85,9 +85,10 @@ load, with which user credentials and from which bucket and collection.
                       [--plugins-bucket PLUGINS_BUCKET]
                       [--plugins-collection PLUGINS_COLLECTION]
                       [-C] [-G] [-A] [-P]
-
+                      [--ignore-errors]
+    
     Import the blocklists from the addons server into Kinto.
-
+    
     optional arguments:
       -h, --help            show this help message and exit
       --addons-server ADDONS_SERVER
@@ -125,6 +126,7 @@ load, with which user credentials and from which bucket and collection.
       -G, --gfx             Only import GFX drivers
       -A, --addons          Only import addons
       -P, --plugins         Only import plugins
+      --ignore-errors       Ignore validation errors
 
 
 Generate a blocklist.xml file from Kinto collections
