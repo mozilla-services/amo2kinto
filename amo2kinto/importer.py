@@ -33,7 +33,7 @@ def sync_records(amo_records, fields, kinto_client,
     amo_records = prepare_amo_records(amo_records, fields)
 
     for record in amo_records:
-        for versionRange in record['versionRange']:
+        for versionRange in record.get('versionRange', []):
             versionRange.setdefault('severity', 1)
 
     valid_records = amo_records
