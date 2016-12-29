@@ -29,7 +29,11 @@
             "guid": "",
             "os": "",
             "prefs": [],
-            "versionRange": [{}]
+            "versionRange": [{
+              "minVersion": "0",
+              "maxVersion": "*",
+              "severity": 1
+            }]
           },
           "properties": {
             "id": {
@@ -46,7 +50,7 @@
               "type": "boolean",
               "title": "Enabled",
               "description": "blocking rule is enabled.",
-              "default": false
+              "default": true
             },
             "guid": {
               "type": "string",
@@ -79,8 +83,6 @@
               "type": "array",
               "title": "Versions",
               "description": "The list of impacted versions.",
-              "default": [],
-              "minItems": 1,
               "items": {
                 "type": "object",
                 "title": "Version range",
@@ -261,7 +263,7 @@
               "type": "boolean",
               "title": "Enabled",
               "description": "blocking rule is enabled.",
-              "default": false
+              "default": true
             },
             "blockID": {
               "type": "string",
@@ -379,7 +381,7 @@
               "type": "boolean",
               "title": "Enabled",
               "description": "blocking rule is enabled.",
-              "default": false
+              "default": true
             },
             "versionRange": {
               "type": "object",
@@ -605,7 +607,12 @@
             "matchFilename": "",
             "matchDescription": "",
             "infoURL": "",
-            "versionRange": [{}]
+            "versionRange": [{
+              "minVersion": "0",
+              "maxVersion": "*",
+              "severity": 0,
+              "vulnerabilityStatus": 0
+            }]
           },
           "properties": {
             "id": {
@@ -622,7 +629,7 @@
               "type": "boolean",
               "title": "Enabled",
               "description": "blocking rule is enabled.",
-              "default": false
+              "default": true
             },
             "os": {
               "type": "string",
@@ -654,7 +661,6 @@
               "type": "array",
               "title": "Versions",
               "description": "The list of impacted versions.",
-              "default": [],
               "items": {
                 "type": "object",
                 "title": "Version range",
