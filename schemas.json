@@ -159,11 +159,15 @@
             "details": {
               "type": "object",
               "title": "Details",
+              "required": [
+                "name",
+                "why"
+              ],
               "properties": {
-                "name": {"type": "string"},
-                "why": {"type": "string"},
-                "who": {"type": "string"},
-                "bug": {"type": "string"},
+                "name": {"type": "string", "title": "Name"},
+                "why": {"type": "string", "title": "Why"},
+                "who": {"type": "string", "title": "Who"},
+                "bug": {"type": "string", "title": "Bug"},
                 "created": {"type": "string", "format": "date-time"}
               }
             },
@@ -195,6 +199,9 @@
           },
           "blockID": {
             "ui:readonly": true
+          },
+          "enabled": {
+            "ui:help": "When checked this blocklist rule will apply to Firefox users."
           },
           "details": {
             "ui:order": [
@@ -284,11 +291,15 @@
             "details": {
               "type": "object",
               "title": "Details",
+              "required": [
+                "name",
+                "why"
+              ],
               "properties": {
-                "name": {"type": "string"},
-                "why": {"type": "string"},
-                "who": {"type": "string"},
-                "bug": {"type": "string"},
+                "name": {"type": "string", "title": "Name"},
+                "why": {"type": "string", "title": "Why"},
+                "who": {"type": "string", "title": "Who"},
+                "bug": {"type": "string", "title": "Bug"},
                 "created": {"type": "string", "format": "date-time"}
               }
             }
@@ -312,6 +323,9 @@
           },
           "blockID": {
             "ui:readonly": true
+          },
+          "enabled": {
+            "ui:help": "When checked this blocklist rule will apply to Firefox users."
           },
           "details": {
             "ui:order": [
@@ -512,11 +526,14 @@
             "details": {
               "type": "object",
               "title": "Details",
+              "required": [
+                "name"
+              ],
               "properties": {
-                "name": {"type": "string"},
-                "why": {"type": "string"},
-                "who": {"type": "string"},
-                "bug": {"type": "string"},
+                "name": {"type": "string", "title": "Name"},
+                "why": {"type": "string", "title": "Why"},
+                "who": {"type": "string", "title": "Who"},
+                "bug": {"type": "string", "title": "Bug"},
                 "created": {"type": "string", "format": "date-time"}
               }
             },
@@ -554,6 +571,9 @@
           },
           "blockID": {
             "ui:readonly": true
+          },
+          "enabled": {
+            "ui:help": "When checked this blocklist rule will apply to Firefox users."
           },
           "details": {
             "ui:order": [
@@ -747,11 +767,15 @@
             "details": {
               "type": "object",
               "title": "Details",
+              "required": [
+                "name",
+                "why"
+              ],
               "properties": {
-                "name": {"type": "string"},
-                "why": {"type": "string"},
-                "who": {"type": "string"},
-                "bug": {"type": "string"},
+                "name": {"type": "string", "title": "Name"},
+                "why": {"type": "string", "title": "Why"},
+                "who": {"type": "string", "title": "Who"},
+                "bug": {"type": "string", "title": "Bug"},
                 "created": {"type": "string", "format": "date-time"}
               }
             },
@@ -785,6 +809,9 @@
           },
           "blockID": {
             "ui:readonly": true
+          },
+          "enabled": {
+            "ui:help": "When checked this blocklist rule will apply to Firefox users."
           },
           "details": {
             "ui:order": [
