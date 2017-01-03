@@ -575,6 +575,9 @@
           "enabled": {
             "ui:help": "When checked this blocklist rule will apply to Firefox users."
           },
+          "devices": {
+            "ui:field": "tags"
+          },
           "details": {
             "ui:order": [
               "name",
