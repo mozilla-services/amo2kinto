@@ -302,7 +302,18 @@ class TestSyncRecords(unittest.TestCase):
         self.addCleanup(p.stop)
         p.start()
 
-    def test_sync_records_validate_records_against_schema(self):
+    def test_sync_records_validate_records_against_schema_and_raise_errors(self):
+        # sync_records should not raise an Exception here.
+        with pytest.raises(ValidationError):
+            sync_records(RECORDS['addons'],
+                         FIELDS['addons'],
+                         mock.sentinel.kinto_client,
+                         mock.sentinel.bucket,
+                         mock.sentinel.collection,
+                         SCHEMAS['addons']['config'],
+                         mock.sentinel.permissions)
+
+    def test_sync_records_validate_records_against_schema_and_ignore_errors(self):
         # sync_records should not raise an Exception here.
         sync_records(RECORDS['addons'],
                      FIELDS['addons'],
@@ -310,7 +321,8 @@ class TestSyncRecords(unittest.TestCase):
                      mock.sentinel.bucket,
                      mock.sentinel.collection,
                      SCHEMAS['addons']['config'],
-                     mock.sentinel.permissions)
+                     mock.sentinel.permissions,
+                     ignore_incorrect_records=True)
 
     def test_sync_records_fails_if_the_schema_does_not_validate_records(self):
         # Make sure it raises an exception with wrong records.
@@ -383,6 +395,7 @@ class TestMain(unittest.TestCase):
             'collection': kwargs['certificates_collection'],
             'config': cert_config,
             'permissions': constants.COLLECTION_PERMISSIONS,
+            'ignore_incorrect_records': False,
         }
 
         mock_sync.assert_any_call(**cert_arguments)
@@ -397,6 +410,7 @@ class TestMain(unittest.TestCase):
             'collection': kwargs['gfx_collection'],
             'config': gfx_config,
             'permissions': constants.COLLECTION_PERMISSIONS,
+            'ignore_incorrect_records': False,
         }
 
         mock_sync.assert_any_call(**gfx_arguments)
@@ -411,6 +425,7 @@ class TestMain(unittest.TestCase):
             'collection': kwargs['addons_collection'],
             'config': addons_config,
             'permissions': constants.COLLECTION_PERMISSIONS,
+            'ignore_incorrect_records': False,
         }
 
         mock_sync.assert_any_call(**addons_arguments)
@@ -425,6 +440,7 @@ class TestMain(unittest.TestCase):
             'collection': kwargs['plugins_collection'],
             'config': plugins_config,
             'permissions': constants.COLLECTION_PERMISSIONS,
+            'ignore_incorrect_records': False,
         }
 
         mock_sync.assert_any_call(**plugins_arguments)
@@ -533,7 +549,8 @@ class TestMain(unittest.TestCase):
             bucket=constants.CERT_BUCKET,
             collection=constants.CERT_COLLECTION,
             config=None,
-            permissions=constants.COLLECTION_PERMISSIONS)
+            permissions=constants.COLLECTION_PERMISSIONS,
+            ignore_incorrect_records=False)
 
     def test_only_import_certs_and_gfx(self):
         """Only import specified collections"""
@@ -551,7 +568,8 @@ class TestMain(unittest.TestCase):
                 bucket=constants.CERT_BUCKET,
                 collection=constants.CERT_COLLECTION,
                 config=None,
-                permissions=constants.COLLECTION_PERMISSIONS),
+                permissions=constants.COLLECTION_PERMISSIONS,
+                ignore_incorrect_records=False),
             mock.call(
                 amo_records=RECORDS['gfx'],
                 fields=FIELDS['gfx'],
@@ -561,7 +579,8 @@ class TestMain(unittest.TestCase):
                 bucket=constants.GFX_BUCKET,
                 collection=constants.GFX_COLLECTION,
                 config=None,
-                permissions=constants.COLLECTION_PERMISSIONS)],
+                permissions=constants.COLLECTION_PERMISSIONS,
+                ignore_incorrect_records=False)],
             any_order=True)
 
     def test_editor_auth_defines_editor_client(self):
@@ -584,7 +603,9 @@ class TestMain(unittest.TestCase):
                     bucket=constants.CERT_BUCKET,
                     collection=constants.CERT_COLLECTION,
                     config=None,
-                    permissions=constants.COLLECTION_PERMISSIONS)
+                    permissions=constants.COLLECTION_PERMISSIONS,
+                    ignore_incorrect_records=False
+                )
 
     def test_reviewer_auth_defines_reviewer_client(self):
         ReviewerClient = mock.MagicMock()
@@ -606,4 +627,5 @@ class TestMain(unittest.TestCase):
                     bucket=constants.CERT_BUCKET,
                     collection=constants.CERT_COLLECTION,
                     config=None,
-                    permissions=constants.COLLECTION_PERMISSIONS)
+                    permissions=constants.COLLECTION_PERMISSIONS,
+                    ignore_incorrect_records=False)
