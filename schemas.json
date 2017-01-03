@@ -600,7 +600,7 @@
       "name": "plugins",
       "synced": true,
       "config": {
-        "displayFields": ["enabled", "blockID", "os", "matchName", "matchFilename", "matchDescription"],
+        "displayFields": ["enabled", "blockID", "os", "matchFilename", "matchDescription"],
         "schema": {
           "definitions": {
             "minVersion": {
@@ -812,6 +812,9 @@
           },
           "enabled": {
             "ui:help": "When checked this blocklist rule will apply to Firefox users."
+          },
+          "matchName": {
+            "ui:widget": "hidden"
           },
           "details": {
             "ui:order": [
