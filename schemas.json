@@ -29,7 +29,11 @@
             "guid": "",
             "os": "",
             "prefs": [],
-            "versionRange": [{}]
+            "versionRange": [{
+              "minVersion": "0",
+              "maxVersion": "*",
+              "severity": 1
+            }]
           },
           "properties": {
             "id": {
@@ -46,7 +50,7 @@
               "type": "boolean",
               "title": "Enabled",
               "description": "blocking rule is enabled.",
-              "default": false
+              "default": true
             },
             "guid": {
               "type": "string",
@@ -79,17 +83,20 @@
               "type": "array",
               "title": "Versions",
               "description": "The list of impacted versions.",
-              "default": [],
               "items": {
                 "type": "object",
                 "title": "Version range",
                 "description": "Version range",
                 "additionalProperties": false,
+                "required": [
+                  "minVersion",
+                  "maxVersion",
+                  "severity"
+                ],
                 "default": {
                   "minVersion": "",
                   "maxVersion": "",
-                  "severity": 0,
-                  "vulnerabilityStatus": 0
+                  "severity": 1
                 },
                 "properties": {
                   "minVersion": {"$ref": "#/definitions/minVersion"},
@@ -99,28 +106,14 @@
                     "title": "Severity",
                     "description": "The severity code number.",
                     "enum": [
-                      0,
                       1,
-                      2,
                       3
                     ],
-                    "default": 0
-                  },
-                  "vulnerabilityStatus": {
-                    "type": "integer",
-                    "title": "Vulnerability status",
-                    "description": "The vulnerability status code number.",
-                    "enum": [
-                      0,
-                      1,
-                      2
-                    ],
                     "enumNames": [
-                      "",
-                      "Update available",
-                      "Update unavailable"
+                      "1 - Soft block",
+                      "3 - Hard block"
                     ],
-                    "default": 0
+                    "default": 1
                   },
                   "targetApplication": {
                     "type": "array",
@@ -166,11 +159,15 @@
             "details": {
               "type": "object",
               "title": "Details",
+              "required": [
+                "name",
+                "why"
+              ],
               "properties": {
-                "name": {"type": "string"},
-                "why": {"type": "string"},
-                "who": {"type": "string"},
-                "bug": {"type": "string"},
+                "name": {"type": "string", "title": "Name"},
+                "why": {"type": "string", "title": "Why"},
+                "who": {"type": "string", "title": "Who"},
+                "bug": {"type": "string", "title": "Bug"},
                 "created": {"type": "string", "format": "date-time"}
               }
             },
@@ -203,10 +200,39 @@
           "blockID": {
             "ui:readonly": true
           },
+          "enabled": {
+            "ui:help": "When checked this blocklist rule will apply to Firefox users."
+          },
           "details": {
+            "ui:order": [
+              "name",
+              "why",
+              "who",
+              "bug",
+              "created"
+            ],
             "why": {"ui:widget": "textarea"},
             "who": {"ui:widget": "textarea"},
             "created": {"ui:readonly": true}
+          },
+          "versionRange": {
+            "items": {
+              "ui:order": [
+                "minVersion",
+                "maxVersion",
+                "severity",
+                "targetApplication"
+              ],
+              "targetApplication": {
+                "items": {
+                  "ui:order": [
+                    "guid",
+                    "minVersion",
+                    "maxVersion"
+                  ]
+                }
+              }
+            }
           }
         }
       }
@@ -244,7 +270,7 @@
               "type": "boolean",
               "title": "Enabled",
               "description": "blocking rule is enabled.",
-              "default": false
+              "default": true
             },
             "blockID": {
               "type": "string",
@@ -265,17 +291,30 @@
             "details": {
               "type": "object",
               "title": "Details",
+              "required": [
+                "name",
+                "why"
+              ],
               "properties": {
-                "name": {"type": "string"},
-                "why": {"type": "string"},
-                "who": {"type": "string"},
-                "bug": {"type": "string"},
+                "name": {"type": "string", "title": "Name"},
+                "why": {"type": "string", "title": "Why"},
+                "who": {"type": "string", "title": "Who"},
+                "bug": {"type": "string", "title": "Bug"},
                 "created": {"type": "string", "format": "date-time"}
               }
             }
           }
         },
         "uiSchema": {
+          "ui:order": [
+            "id",
+            "schema",
+            "enabled",
+            "issuerName",
+            "serialNumber",
+            "details",
+            "blockID"
+          ],
           "id": {
             "ui:widget": "hidden"
           },
@@ -285,7 +324,17 @@
           "blockID": {
             "ui:readonly": true
           },
+          "enabled": {
+            "ui:help": "When checked this blocklist rule will apply to Firefox users."
+          },
           "details": {
+            "ui:order": [
+              "name",
+              "why",
+              "who",
+              "bug",
+              "created"
+            ],
             "why": {"ui:widget": "textarea"},
             "who": {"ui:widget": "textarea"},
             "created": {"ui:readonly": true}
@@ -346,7 +395,7 @@
               "type": "boolean",
               "title": "Enabled",
               "description": "blocking rule is enabled.",
-              "default": false
+              "default": true
             },
             "versionRange": {
               "type": "object",
@@ -355,9 +404,7 @@
               "additionalProperties": false,
               "default": {
                 "minVersion": "",
-                "maxVersion": "",
-                "severity": 0,
-                "vulnerabilityStatus": 0
+                "maxVersion": ""
               },
               "properties": {
                 "minVersion": {"$ref": "#/definitions/minVersion"},
@@ -479,11 +526,14 @@
             "details": {
               "type": "object",
               "title": "Details",
+              "required": [
+                "name"
+              ],
               "properties": {
-                "name": {"type": "string"},
-                "why": {"type": "string"},
-                "who": {"type": "string"},
-                "bug": {"type": "string"},
+                "name": {"type": "string", "title": "Name"},
+                "why": {"type": "string", "title": "Why"},
+                "who": {"type": "string", "title": "Who"},
+                "bug": {"type": "string", "title": "Bug"},
                 "created": {"type": "string", "format": "date-time"}
               }
             },
@@ -496,6 +546,23 @@
           }
         },
         "uiSchema": {
+          "ui:order": [
+            "enabled",
+            "vendor",
+            "devices",
+            "os",
+            "driverVersion",
+            "driverVersionMax",
+            "driverVersionComparator",
+            "feature",
+            "featureStatus",
+            "hardware",
+            "versionRange",
+            "details",
+            "id",
+            "schema",
+            "blockID"
+          ],
           "id": {
             "ui:widget": "hidden"
           },
@@ -505,10 +572,29 @@
           "blockID": {
             "ui:readonly": true
           },
+          "enabled": {
+            "ui:help": "When checked this blocklist rule will apply to Firefox users."
+          },
+          "devices": {
+            "ui:field": "tags"
+          },
           "details": {
-            "why": {"ui:widget": "textarea"},
-            "who": {"ui:widget": "textarea"},
+            "ui:order": [
+              "name",
+              "why",
+              "who",
+              "bug",
+              "created"
+            ],
+            "why": {"ui:widget": "hidden"},
+            "who": {"ui:widget": "hidden"},
             "created": {"ui:readonly": true}
+          },
+          "versionRange": {
+            "ui:order": [
+              "minVersion",
+              "maxVersion"
+            ]
           }
         }
       }
@@ -517,7 +603,7 @@
       "name": "plugins",
       "synced": true,
       "config": {
-        "displayFields": ["enabled", "blockID", "os", "matchName", "matchFilename", "matchDescription"],
+        "displayFields": ["enabled", "blockID", "os", "matchFilename", "matchDescription"],
         "schema": {
           "definitions": {
             "minVersion": {
@@ -540,12 +626,16 @@
           ],
           "default": {
             "os": "",
-            "xpcomabi": "",
             "matchName": "",
             "matchFilename": "",
             "matchDescription": "",
             "infoURL": "",
-            "versionRange": [{}]
+            "versionRange": [{
+              "minVersion": "0",
+              "maxVersion": "*",
+              "severity": 0,
+              "vulnerabilityStatus": 0
+            }]
           },
           "properties": {
             "id": {
@@ -562,18 +652,13 @@
               "type": "boolean",
               "title": "Enabled",
               "description": "blocking rule is enabled.",
-              "default": false
+              "default": true
             },
             "os": {
               "type": "string",
               "title": "OS",
               "description": "The comma-separated operating system identifiers, eg. Darwin,Linux",
               "pattern": "^[^,]*(,[^,]+)*$"
-            },
-            "xpcomabi": {
-              "type": "string",
-              "title": "XPCOM ABI",
-              "description": "The comma-separated XPCOM binary interfaces, eg. x86-gcc3,x86_64-msvc."
             },
             "matchName": {
               "type": "string",
@@ -599,7 +684,6 @@
               "type": "array",
               "title": "Versions",
               "description": "The list of impacted versions.",
-              "default": [],
               "items": {
                 "type": "object",
                 "title": "Version range",
@@ -686,11 +770,15 @@
             "details": {
               "type": "object",
               "title": "Details",
+              "required": [
+                "name",
+                "why"
+              ],
               "properties": {
-                "name": {"type": "string"},
-                "why": {"type": "string"},
-                "who": {"type": "string"},
-                "bug": {"type": "string"},
+                "name": {"type": "string", "title": "Name"},
+                "why": {"type": "string", "title": "Why"},
+                "who": {"type": "string", "title": "Who"},
+                "bug": {"type": "string", "title": "Bug"},
                 "created": {"type": "string", "format": "date-time"}
               }
             },
@@ -703,6 +791,19 @@
           }
         },
         "uiSchema": {
+          "ui:order": [
+            "enabled",
+            "os",
+            "matchName",
+            "matchFilename",
+            "matchDescription",
+            "infoURL",
+            "versionRange",
+            "details",
+            "id",
+            "schema",
+            "blockID"
+          ],
           "id": {
             "ui:widget": "hidden"
           },
@@ -712,10 +813,43 @@
           "blockID": {
             "ui:readonly": true
           },
+          "enabled": {
+            "ui:help": "When checked this blocklist rule will apply to Firefox users."
+          },
+          "matchName": {
+            "ui:widget": "hidden"
+          },
           "details": {
+            "ui:order": [
+              "name",
+              "why",
+              "who",
+              "bug",
+              "created"
+            ],
             "why": {"ui:widget": "textarea"},
             "who": {"ui:widget": "textarea"},
             "created": {"ui:readonly": true}
+          },
+          "versionRange": {
+            "items": {
+              "ui:order": [
+                "minVersion",
+                "maxVersion",
+                "severity",
+                "vulnerabilityStatus",
+                "targetApplication"
+              ],
+              "targetApplication": {
+                "items": {
+                  "ui:order": [
+                    "guid",
+                    "minVersion",
+                    "maxVersion"
+                  ]
+                }
+              }
+            }
           }
         }
       }
