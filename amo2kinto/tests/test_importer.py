@@ -302,6 +302,18 @@ class TestSyncRecords(unittest.TestCase):
         self.addCleanup(p.stop)
         p.start()
 
+    def test_sync_records_validate_records_against_schema(self):
+        # sync_records should not raise an Exception here.
+        with pytest.raises(ValidationError):
+            sync_records(RECORDS['plugins'],
+                         FIELDS['plugins'],
+                         mock.sentinel.kinto_client,
+                         mock.sentinel.bucket,
+                         mock.sentinel.collection,
+                         SCHEMAS['addons']['config'],
+                         mock.sentinel.permissions,
+                         ignore_incorrect_records=False)
+
     def test_sync_records_validate_records_against_schema_and_raise_errors(self):
         # sync_records should not raise an Exception here.
         with pytest.raises(ValidationError):
