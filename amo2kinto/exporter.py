@@ -102,7 +102,7 @@ def write_addons_items(xml_tree, records, app_id, api_ver=3):
             emItem.set('id', item['guid'])
 
             for field in ['name', 'os']:
-                if field in item:
+                if field in item and item[field]:
                     emItem.set(field, item[field])
 
             build_version_range(emItem, item, app_id)
@@ -172,17 +172,17 @@ def add_plugin_item(pluginItems, item, version, tA=None, app_id=None,
                              blockID=item.get('blockID', item['id']))
 
     for field in ['name', 'os', 'xpcomabi']:
-        if field in item:
+        if field in item and item[field]:
             entry.set(field, item[field])
 
     for xml_field in ['name', 'filename', 'description']:
         json_field = 'match%s' % xml_field.capitalize()
-        if json_field in item:
+        if json_field in item and item[json_field]:
             etree.SubElement(entry, 'match',
                              name=xml_field,
                              exp=item[json_field])
 
-    if 'infoURL' in item:
+    if 'infoURL' in item and item['infoURL']:
         infoURL = etree.SubElement(entry, 'infoURL')
         infoURL.text = item['infoURL']
 
@@ -285,7 +285,7 @@ def write_gfx_items(xml_tree, records, app_id, api_ver=3):
             fields = ['os', 'vendor', 'feature', 'featureStatus',
                       'driverVersion', 'driverVersionComparator']
             for field in fields:
-                if field in item:
+                if field in item and item[field]:
                     node = etree.SubElement(entry, field)
                     node.text = item[field]
 
