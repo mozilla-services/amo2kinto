@@ -83,6 +83,7 @@ def write_addons_items(xml_tree, records, app_id, api_ver=3):
         if is_related_to(item, app_id):
             if item['guid'] in groupby:
                 emItem = groupby[item['guid']]
+                # When creating new records from the Kinto Admin we don't have proper blockID.
                 if 'blockID' in item:
                     # Remove the first caracter which is the letter i to
                     # compare the numeric value i45 < i356.
@@ -100,6 +101,7 @@ def write_addons_items(xml_tree, records, app_id, api_ver=3):
                     pref = etree.SubElement(prefs, 'pref')
                     pref.text = p
 
+            # Set the add-on ID
             emItem.set('id', item['guid'])
 
             for field in ['name', 'os']:
