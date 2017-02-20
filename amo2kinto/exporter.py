@@ -91,8 +91,6 @@ def write_addons_items(xml_tree, records, app_id, api_ver=3):
                     # Group by and keep the biggest blockID in the XML file.
                     if current_blockID > previous_blockID:
                         emItem.attrib['blockID'] = item['blockID']
-                else:
-                    emItem.attrib['blockID'] = item['id']
             else:
                 emItem = etree.SubElement(emItems, 'emItem',
                                           blockID=item.get('blockID', item['id']))
