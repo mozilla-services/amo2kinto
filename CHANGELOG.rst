@@ -3,7 +3,7 @@ CHANGELOG
 
 This document describes changes between each past release.
 
-1.7.2 (unreleased)
+1.7.2 (2017-02-20)
 ==================
 
 - Fix XML exporter on missing blockID. (#63)
