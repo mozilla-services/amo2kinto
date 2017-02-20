@@ -1,5 +1,6 @@
 import mock
 import unittest
+from copy import deepcopy
 from lxml import etree
 from six import StringIO
 
@@ -85,6 +86,45 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 """.decode('utf-8')
 
 
+def test_addons_record_with_empty_name_and_os():
+    xml_tree = etree.Element(
+        'blocklist',
+        xmlns="http://www.mozilla.org/2006/addons-blocklist",
+        lastupdate='1459262434336'
+    )
+
+    data = deepcopy(ADDONS_DATA)
+    data['name'] = ''
+    data['os'] = ''
+
+    exporter.write_addons_items(xml_tree, [data],
+                                constants.FIREFOX_APPID)
+    result = etree.tostring(
+        etree.ElementTree(xml_tree),
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='UTF-8').decode('utf-8')
+
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
+<blocklist lastupdate="1459262434336" \
+xmlns="http://www.mozilla.org/2006/addons-blocklist">
+  <emItems>
+    <emItem blockID="i454" id="sqlmoz@facebook.com">
+      <prefs>
+        <pref>test.blocklist</pref>
+      </prefs>
+      <versionRange minVersion="0" maxVersion="*" severity="3">
+        <targetApplication id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}">
+          <versionRange maxVersion="3.6.*" minVersion="3.6"/>
+        </targetApplication>
+      </versionRange>
+      <versionRange minVersion="0" maxVersion="*"/>
+    </emItem>
+  </emItems>
+</blocklist>
+""".decode('utf-8')
+
+
 def test_addon_record_with_no_version_range_info():
     xml_tree = etree.Element(
         'blocklist',
@@ -92,7 +132,7 @@ def test_addon_record_with_no_version_range_info():
         lastupdate='1459262434336'
     )
 
-    data = ADDONS_DATA.copy()
+    data = deepcopy(ADDONS_DATA)
     data['versionRange'] = []
 
     exporter.write_addons_items(xml_tree, [data],
@@ -125,7 +165,7 @@ def test_addon_record_with_no_targetApplication_info():
         lastupdate='1459262434336'
     )
 
-    data = ADDONS_DATA.copy()
+    data = deepcopy(ADDONS_DATA)
     data['name'] = "Mozilla Service Pack (malware)"
     data['os'] = "WINNT"
     data['versionRange'] = [{
@@ -167,7 +207,7 @@ def test_addon_record_with_no_targetApplication_matching():
         lastupdate='1459262434336'
     )
 
-    data = ADDONS_DATA.copy()
+    data = deepcopy(ADDONS_DATA)
     data['versionRange'] = [{
         "targetApplication": [
             {"guid": "{some-other-application}",
@@ -203,7 +243,7 @@ def test_addon_record_group_by_blockID():
         lastupdate='1459262434336'
     )
 
-    data = ADDONS_DATA.copy()
+    data = deepcopy(ADDONS_DATA)
     data['versionRange'] = [{
         "targetApplication": [
             {"guid": constants.FIREFOX_APPID,
@@ -215,7 +255,7 @@ def test_addon_record_group_by_blockID():
         "severity": 3
     }]
 
-    data2 = ADDONS_DATA.copy()
+    data2 = deepcopy(ADDONS_DATA)
     data2['blockID'] = 'i586'
     data2['versionRange'] = [{
         "targetApplication": [
@@ -334,6 +374,43 @@ vulnerabilitystatus="1">
 """.decode('utf-8')
 
 
+def test_plugin_record_with_empty_name_description_os_and_filename():
+    xml_tree = etree.Element(
+        'blocklist',
+        xmlns="http://www.mozilla.org/2006/addons-blocklist",
+        lastupdate='1459262434336'
+    )
+
+    data = deepcopy(PLUGIN_DATA)
+    data['matchName'] = ''
+    data['matchFilename'] = ''
+    data['matchDescription'] = ''
+    data['os'] = ''
+    data['infoURL'] = ''
+
+    exporter.write_plugin_items(xml_tree, [data],
+                                constants.FIREFOX_APPID,
+                                api_ver=2)
+
+    result = etree.tostring(
+        etree.ElementTree(xml_tree),
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='UTF-8').decode('utf-8')
+
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
+<blocklist lastupdate="1459262434336" \
+xmlns="http://www.mozilla.org/2006/addons-blocklist">
+  <pluginItems>
+    <pluginItem blockID="p26">
+      <versionRange maxVersion="4.1.10328.0" minVersion="0" severity="0" \
+vulnerabilitystatus="1"/>
+    </pluginItem>
+  </pluginItems>
+</blocklist>
+""".decode('utf-8')
+
+
 def test_plugin_record_with_api_version_2():
     xml_tree = etree.Element(
         'blocklist',
@@ -375,7 +452,7 @@ def test_plugin_record_with_api_version_2_with_no_guid():
         lastupdate='1459262434336'
     )
 
-    data = PLUGIN_DATA.copy()
+    data = deepcopy(PLUGIN_DATA)
     data['versionRange'] = [{
         "targetApplication": [],
         "minVersion": "0",
@@ -417,7 +494,7 @@ def test_plugin_record_with_api_version_2_with_no_guid_and_no_vulnerability():
         lastupdate='1459262434336'
     )
 
-    data = PLUGIN_DATA.copy()
+    data = deepcopy(PLUGIN_DATA)
     data['versionRange'] = [{
         "targetApplication": [],
         "minVersion": "0",
@@ -457,7 +534,7 @@ def test_plugin_record_with_api_version_2_with_no_guid_and_severity_only():
         lastupdate='1459262434336'
     )
 
-    data = PLUGIN_DATA.copy()
+    data = deepcopy(PLUGIN_DATA)
     data['versionRange'] = [{
         "targetApplication": [],
         "severity": 1
@@ -496,7 +573,7 @@ def test_plugin_record_with_api_version_2_with_no_guid_and_severity_0():
         lastupdate='1459262434336'
     )
 
-    data = PLUGIN_DATA.copy()
+    data = deepcopy(PLUGIN_DATA)
     data['versionRange'] = [{
         "targetApplication": [],
         "severity": 0
@@ -535,7 +612,7 @@ def test_plugin_record_with_api_version_2_with_guid_and_no_min_max_version():
         lastupdate='1459262434336'
     )
 
-    data = PLUGIN_DATA.copy()
+    data = deepcopy(PLUGIN_DATA)
     data['versionRange'] = [{
         "targetApplication": [
             {"guid": constants.FIREFOX_APPID,
@@ -579,7 +656,7 @@ def test_plugin_record_with_api_version_2_with_guid_and_empty_versionRange():
         lastupdate='1459262434336'
     )
 
-    data = PLUGIN_DATA.copy()
+    data = deepcopy(PLUGIN_DATA)
     data['versionRange'] = [{
         "targetApplication": [
             {"guid": constants.FIREFOX_APPID,
@@ -621,7 +698,7 @@ def test_plugin_record_with_api_version_2_with_related_version():
         lastupdate='1459262434336'
     )
 
-    data = PLUGIN_DATA.copy()
+    data = deepcopy(PLUGIN_DATA)
     data['versionRange'] = [{
         "targetApplication": [
             {"guid": constants.FIREFOX_APPID,
@@ -665,7 +742,7 @@ def test_plugin_record_with_no_targetApplication_info():
         lastupdate='1459262434336'
     )
 
-    data = PLUGIN_DATA.copy()
+    data = deepcopy(PLUGIN_DATA)
     data['name'] = "Yahoo Application State Plugin"
     data['os'] = "WINNT"
     data['xpcomabi'] = "test"
@@ -711,7 +788,7 @@ def test_plugin_record_with_no_targetApplication_matching():
         lastupdate='1459262434336'
     )
 
-    data = PLUGIN_DATA.copy()
+    data = deepcopy(PLUGIN_DATA)
     data['versionRange'] = [{
         "targetApplication": [
             {"guid": "{some-other-application}",
