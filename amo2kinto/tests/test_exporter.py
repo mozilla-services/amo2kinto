@@ -85,6 +85,44 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 """.decode('utf-8')
 
 
+def test_addon_record_with_no_blockID():
+    xml_tree = etree.Element(
+        'blocklist',
+        xmlns="http://www.mozilla.org/2006/addons-blocklist",
+        lastupdate='1459262434336'
+    )
+
+    data = ADDONS_DATA.copy()
+    del data['blockID']
+    exporter.write_addons_items(xml_tree, [data],
+                                constants.FIREFOX_APPID)
+
+    result = etree.tostring(
+        etree.ElementTree(xml_tree),
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='UTF-8').decode('utf-8')
+
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
+<blocklist lastupdate="1459262434336" \
+xmlns="http://www.mozilla.org/2006/addons-blocklist">
+  <emItems>
+    <emItem blockID="e3e8f123-588d-0f73-63d8-93bdfc6ae8e2" id="sqlmoz@facebook.com">
+      <prefs>
+        <pref>test.blocklist</pref>
+      </prefs>
+      <versionRange minVersion="0" maxVersion="*" severity="3">
+        <targetApplication id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}">
+          <versionRange maxVersion="3.6.*" minVersion="3.6"/>
+        </targetApplication>
+      </versionRange>
+      <versionRange minVersion="0" maxVersion="*"/>
+    </emItem>
+  </emItems>
+</blocklist>
+""".decode('utf-8')
+
+
 def test_addon_record_with_no_version_range_info():
     xml_tree = etree.Element(
         'blocklist',
