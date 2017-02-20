@@ -13,10 +13,6 @@ matrix:
     - python: 3.5
       env:
         - TOX_ENV=py35
-    - env: TOX_ENV=functional
-      before_install:
-        - make install-kinto
-        - make run-kinto &
 after_success:
     # Report coverage results to coveralls.io
     - pip install coveralls
