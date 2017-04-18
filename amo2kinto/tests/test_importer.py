@@ -78,6 +78,43 @@ def test_addon_record():
     }]
 
 
+def test_addon_record_guid_integer():
+    data = ADDONS_DATA.copy()
+    data['guid'] = 2
+    assert prepare_amo_records([data], FIELDS['addons']) == [{
+        "id": "e3e8f123-588d-0f73-63d8-93bdfc6ae8e2",
+        "guid": "2",
+        "blockID": "i454",
+        "details": {
+            "who": "All Firefox users who have this extension installed.",
+            "created": "2013-05-13T09:43:07Z",
+            "name": "Mozilla Service Pack (malware)",
+            "bug": "https://bugzilla.mozilla.org/show_bug.cgi?id=871610",
+            "why": "This extension is malware posing as Mozilla software. "
+            "It hijacks Facebook accounts and spams other Facebook users."
+        },
+        "versionRange": [{
+            'targetApplication': [
+                {'guid': '{ec8030f7-c20a-464f-9b0e-13a3a9e97384}',
+                 'minVersion': '3.6',
+                 'maxVersion': '3.6.*'},
+                {'guid': '{some-other-application}',
+                 'minVersion': '1.2',
+                 'maxVersion': '1.4'}
+            ],
+            "minVersion": "0",
+            "maxVersion": "*",
+            "severity": 3
+        }, {
+            "targetApplication": [],
+            "minVersion": "0",
+            "maxVersion": "*",
+            "severity": 3
+        }],
+        "prefs": ["test.blocklist"]
+    }]
+
+
 PLUGIN_DATA = {
     "blockID": "p26",
     "matchName": "^Yahoo Application State Plugin$",
