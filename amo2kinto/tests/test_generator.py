@@ -199,7 +199,8 @@ class TestMain(unittest.TestCase):
         kinto_client.assert_called_with(server_url=kwargs['kinto_server'],
                                         auth=kwargs['auth'],
                                         bucket=kwargs['bucket'],
-                                        collection=None)
+                                        collection=None,
+                                        retry=0, retry_after=None)
 
         addons_arguments = {
             'bucket': kwargs['bucket'],
