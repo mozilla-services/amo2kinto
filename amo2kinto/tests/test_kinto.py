@@ -9,7 +9,7 @@ def test_get_kinto_records_try_to_create_the_bucket():
     get_kinto_records(kinto_client, mock.sentinel.bucket,
                       mock.sentinel.collection, mock.sentinel.permissions)
 
-    kinto_client.create_bucket.assert_called_with(mock.sentinel.bucket,
+    kinto_client.create_bucket.assert_called_with(id=mock.sentinel.bucket,
                                                   if_not_exists=True)
 
 
@@ -21,10 +21,10 @@ def test_get_kinto_records_try_to_create_the_bucket_and_keep_going_on_403():
     get_kinto_records(kinto_client, mock.sentinel.bucket,
                       mock.sentinel.collection, mock.sentinel.permissions)
 
-    kinto_client.create_bucket.assert_called_with(mock.sentinel.bucket,
+    kinto_client.create_bucket.assert_called_with(id=mock.sentinel.bucket,
                                                   if_not_exists=True)
     kinto_client.create_collection.assert_called_with(
-        mock.sentinel.collection, mock.sentinel.bucket,
+        id=mock.sentinel.collection, bucket=mock.sentinel.bucket,
         permissions=mock.sentinel.permissions, if_not_exists=True)
 
 
@@ -35,7 +35,7 @@ def test_get_kinto_records_try_to_create_the_collection_with_permissions():
                       mock.sentinel.collection, mock.sentinel.permissions)
 
     kinto_client.create_collection.assert_called_with(
-        mock.sentinel.collection, mock.sentinel.bucket,
+        id=mock.sentinel.collection, bucket=mock.sentinel.bucket,
         permissions=mock.sentinel.permissions, if_not_exists=True)
 
 
@@ -47,8 +47,8 @@ def test_get_kinto_records_try_to_create_the_collection_and_keep_going_on_403():
     get_kinto_records(kinto_client, mock.sentinel.bucket,
                       mock.sentinel.collection, mock.sentinel.permissions)
 
-    kinto_client.get_collection.assert_called_with(mock.sentinel.collection,
-                                                   mock.sentinel.bucket)
+    kinto_client.get_collection.assert_called_with(id=mock.sentinel.collection,
+                                                   bucket=mock.sentinel.bucket)
 
 
 def test_get_kinto_records_gets_a_list_of_records():
@@ -79,7 +79,7 @@ def test_get_kinto_records_try_to_create_the_collection_with_schema():
 
     kinto_client.patch_collection.assert_called_with(
         bucket=mock.sentinel.bucket,
-        collection=mock.sentinel.collection,
+        id=mock.sentinel.collection,
         data={"schema": {"foo": "bar"}})
 
 
@@ -102,7 +102,7 @@ def test_get_kinto_records_try_to_update_the_collection_schema():
 
     kinto_client.patch_collection.assert_called_with(
         bucket=mock.sentinel.bucket,
-        collection=mock.sentinel.collection,
+        id=mock.sentinel.collection,
         data={"schema": {"foo": "bar"}})
 
 

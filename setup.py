@@ -15,7 +15,7 @@ with codecs.open(os.path.join(HERE, 'CHANGELOG.rst'), encoding='utf-8') as f:
 REQUIREMENTS = [
     'jinja2',
     'jsonschema',
-    'kinto-http',
+    'kinto-http>=8',
     'lxml',
     'python-dateutil',
     'requests',
@@ -44,16 +44,14 @@ ENTRY_POINTS = {
 
 
 setup(name='amo2kinto',
-      version='1.8.0.dev0',
+      version='2.0.0.dev0',
       description='Generate a blocklists.xml file from the Kinto collections.',
       long_description=README + "\n\n" + CHANGELOG,
       license='Apache License (2.0)',
       classifiers=[
           "Programming Language :: Python",
-          "Programming Language :: Python :: 2",
-          "Programming Language :: Python :: 2.7",
           "Programming Language :: Python :: 3",
-          "Programming Language :: Python :: 3.4",
+          "Programming Language :: Python :: 3.5",
           "License :: OSI Approved :: Apache Software License"
       ],
       keywords="web services",

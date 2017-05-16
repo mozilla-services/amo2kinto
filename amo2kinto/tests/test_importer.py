@@ -360,7 +360,8 @@ class TestMain(unittest.TestCase):
         kinto_client.assert_called_with(server_url=kwargs['kinto_server'],
                                         auth=kwargs['auth'],
                                         bucket=None,
-                                        collection=None)
+                                        collection=None,
+                                        retry=0, retry_after=None)
 
         cert_config = kwargs['schemas']['certificates']['config']
         gfx_config = kwargs['schemas']['gfx']['config']

@@ -1,4 +1,4 @@
-PYTHON_VERSION = python2.7
+PYTHON_VERSION = python3.5
 VIRTUALENV = virtualenv
 VENV := $(shell echo $${VIRTUAL_ENV-.venv-$(PYTHON_VERSION)})
 PYTHON = $(VENV)/bin/python

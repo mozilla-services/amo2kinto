@@ -3,10 +3,12 @@ CHANGELOG
 
 This document describes changes between each past release.
 
-1.8.0 (unreleased)
+2.0.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+**Breaking changes**
+
+- Upgrade to kinto-http.py 8.0 and drop support for Python < 3.5
 
 
 1.7.2 (2017-02-20)

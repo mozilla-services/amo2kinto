@@ -67,15 +67,15 @@ def push_changes(diff, author_client, bucket, collection,
 
     with author_client.batch(bucket=bucket, collection=collection) as batch:
         for record in to_delete:
-            batch.delete_record(record['id'])
+            batch.delete_record(id=record['id'])
         for record in to_create:
             # Records are enabled by default.
             record['enabled'] = True
-            batch.create_record(record)
+            batch.create_record(data=record)
         for record in to_update:
             # Make sure the record is correcly activated.
             record['enabled'] = True
-            batch.update_record(record)
+            batch.update_record(data=record)
 
     if to_create or to_update or to_delete:
         logger.info('Request review.')
