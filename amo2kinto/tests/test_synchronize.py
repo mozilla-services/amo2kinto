@@ -36,12 +36,12 @@ class SynchronizeTest(unittest.TestCase):
 
         self.kinto_client.patch_collection.assert_any_call(
             bucket=mock.sentinel.bucket,
-            collection=mock.sentinel.collection,
+            id=mock.sentinel.collection,
             data={'status': 'to-review'})
 
         self.kinto_client.patch_collection.assert_any_call(
             bucket=mock.sentinel.bucket,
-            collection=mock.sentinel.collection,
+            id=mock.sentinel.collection,
             data={'status': 'to-sign'})
 
     def test_synchronize_uses_editor_and_reviewer_clients(self):
@@ -56,12 +56,12 @@ class SynchronizeTest(unittest.TestCase):
 
         editor_client.patch_collection.assert_called_with(
             bucket=mock.sentinel.bucket,
-            collection=mock.sentinel.collection,
+            id=mock.sentinel.collection,
             data={'status': 'to-review'})
 
         reviewer_client.patch_collection.assert_called_with(
             bucket=mock.sentinel.bucket,
-            collection=mock.sentinel.collection,
+            id=mock.sentinel.collection,
             data={'status': 'to-sign'})
 
     def test_synchronize_create_the_batch_request(self):
@@ -84,7 +84,7 @@ class SynchronizeTest(unittest.TestCase):
 
         self.kinto_client.patch_collection.assert_called_with(
             data={'status': 'to-sign'},
-            bucket=mock.sentinel.bucket, collection=mock.sentinel.collection)
+            bucket=mock.sentinel.bucket, id=mock.sentinel.collection)
 
     def test_synchronize_does_not_triggers_the_signer_on_empty_changes(self):
         push_changes(([], [], []),
