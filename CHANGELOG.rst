@@ -3,10 +3,12 @@ CHANGELOG
 
 This document describes changes between each past release.
 
-2.1.0 (unreleased)
+2.0.1 (unreleased)
 ==================
 
-- Nothing changed yet.
+**Bug fix**
+
+- Fix synchronize kinto-http parameters.
 
 
 2.0.0 (2017-06-02)

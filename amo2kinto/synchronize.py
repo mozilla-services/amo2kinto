@@ -80,9 +80,9 @@ def push_changes(diff, author_client, bucket, collection,
     if to_create or to_update or to_delete:
         logger.info('Request review.')
         editor_client.patch_collection(data={'status': 'to-review'},
-                                       bucket=bucket, collection=collection)
+                                       bucket=bucket, id=collection)
         logger.info('Approve and trigger the signature.')
         reviewer_client.patch_collection(data={'status': 'to-sign'},
-                                         bucket=bucket, collection=collection)
+                                         bucket=bucket, id=collection)
 
     logger.info('Done!')
