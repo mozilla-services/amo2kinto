@@ -8,7 +8,7 @@ This document describes changes between each past release.
 
 **Bug fix**
 
-- Fix synchronize kinto-http parameters.
+- Fix synchronize kinto-http parameters. (#67)
 
 
 2.0.0 (2017-06-02)
