@@ -193,6 +193,9 @@
           "id": {
             "ui:widget": "hidden"
           },
+          "guid": {
+            "ui:help": "In case of a RegExp, the value must conform to the JavaScript syntax, enclosed within slashes (/)."
+          },
           "schema": {
             "ui:widget": "hidden"
           },
@@ -811,7 +814,13 @@
             "ui:help": "When checked this blocklist rule will apply to Firefox users."
           },
           "matchName": {
-            "ui:widget": "hidden"
+            "ui:help": "The value must conform to the RegExp JavaScript syntax, without expression delimiters (no /)."
+          },
+          "matchFilename": {
+            "ui:help": "The value must conform to the RegExp JavaScript syntax, without expression delimiters (no /)."
+          },
+          "matchDescription": {
+            "ui:help": "The value must conform to the RegExp JavaScript syntax, without expression delimiters (no /)."
           },
           "details": {
             "ui:order": [
