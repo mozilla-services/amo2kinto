@@ -3,7 +3,6 @@
 # https://github.com/mozilla/addons-server/
 # - src/olympia/versions/compare.py
 import re
-import six
 
 MAXVERSION = 2 ** 63 - 1
 
@@ -21,7 +20,7 @@ version_re = re.compile(r"""(?P<major>\d+|\*)      # major (x in x.y)
 
 def version_dict(version):
     """Turn a version string into a dict with major/minor/... info."""
-    match = version_re.match(six.text_type(version) or '')
+    match = version_re.match(str(version) or '')
     letters = 'alpha pre'.split()
     numbers = 'major minor1 minor2 minor3 alpha_ver pre_ver'.split()
     if match:
@@ -40,7 +39,7 @@ def version_dict(version):
 
 
 def version_int(version):
-    if isinstance(version, six.binary_type):  # pragma: no cover
+    if isinstance(version, bytes):  # pragma: no cover
         version = version.decode('utf-8')
 
     d = version_dict(version)

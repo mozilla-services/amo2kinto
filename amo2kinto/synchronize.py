@@ -1,12 +1,10 @@
 import json
 
-from six import iteritems
-
 from .logger import logger
 
 
 def strip_keys(record, keys=['id', 'last_modified', 'enabled', 'schema']):
-    return {key: value for key, value in iteritems(record) if key not in keys}
+    return {key: value for key, value in record.items() if key not in keys}
 
 
 def canonical_json(record):

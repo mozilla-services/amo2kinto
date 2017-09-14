@@ -1,7 +1,7 @@
 import mock
 import unittest
+from io import StringIO
 from lxml import etree
-from six import StringIO
 
 from amo2kinto import constants, exporter, compare
 
