@@ -3,7 +3,7 @@ CHANGELOG
 
 This document describes changes between each past release.
 
-3.0.0 (unreleased)
+3.0.0 (2017-09-14)
 ==================
 
 - Remove json2kinto importer
