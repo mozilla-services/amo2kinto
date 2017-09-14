@@ -1,11 +1,10 @@
 import hashlib
-import six
 import uuid
 
 
 def make_id_from_string(string):
     hashed = hashlib.md5(string.encode('utf-8'))
-    return six.text_type(uuid.UUID(hashed.hexdigest()))
+    return str(uuid.UUID(hashed.hexdigest()))
 
 
 def prepare_amo_records(records, fields):
@@ -17,7 +16,7 @@ def prepare_amo_records(records, fields):
             if field not in fields:
                 del record[field]
             else:
-                if isinstance(record[field], six.string_types):
+                if isinstance(record[field], str):
                     record[field] = record[field].strip()
 
         record['id'] = make_id_from_string(blockID)

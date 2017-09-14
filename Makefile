@@ -4,7 +4,7 @@ VENV := $(shell echo $${VIRTUAL_ENV-.venv-$(PYTHON_VERSION)})
 PYTHON = $(VENV)/bin/python
 DEV_STAMP = $(VENV)/.dev_env_installed.stamp
 INSTALL_STAMP = $(VENV)/.install.stamp
-TEMPDIR := $(shell mktemp -d)
+TEMPDIR := $(shell mktemp -du)
 ADDONS_SERVER = https://addons.mozilla.org/
 KINTO_SERVER = http://localhost:8888/v1
 

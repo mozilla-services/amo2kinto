@@ -3,10 +3,11 @@ CHANGELOG
 
 This document describes changes between each past release.
 
-2.1.0 (unreleased)
+3.0.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Remove json2kinto importer
+- Remove xml verifier
 
 
 2.0.1 (2017-06-02)

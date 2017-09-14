@@ -1,9 +1,5 @@
 import os
 
-SCHEMA_FILE = os.path.abspath(os.path.join(
-    os.path.dirname(os.path.dirname(__file__)),
-    'schemas.json'))
-
 # Destination directory
 TARGET_DIR = os.path.abspath('results')
 

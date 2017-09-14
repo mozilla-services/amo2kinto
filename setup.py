@@ -1,6 +1,5 @@
 import codecs
 import os
-import sys
 from setuptools import setup, find_packages
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -14,37 +13,22 @@ with codecs.open(os.path.join(HERE, 'CHANGELOG.rst'), encoding='utf-8') as f:
 
 REQUIREMENTS = [
     'jinja2',
-    'jsonschema',
     'kinto-http>=8',
     'lxml',
     'python-dateutil',
-    'requests',
-    'six',
-    'xmltodict',
 ]
-
-
-if sys.version_info < (2, 7, 9):
-    # Add OpenSSL dependencies to handle requests SSL warning.
-    REQUIREMENTS.append([
-        "pyopenssl",
-        "ndg-httpsclient",
-        "pyasn1"
-    ])
 
 
 ENTRY_POINTS = {
     'console_scripts': [
         'kinto2xml = amo2kinto.exporter:main',
-        'json2kinto = amo2kinto.importer:main',
-        'xml-verifier = amo2kinto.verifier:main',
         'blockpages-generator = amo2kinto.generator:main',
     ]
 }
 
 
 setup(name='amo2kinto',
-      version='2.1.0.dev0',
+      version='3.0.0.dev0',
       description='Generate a blocklists.xml file from the Kinto collections.',
       long_description=README + "\n\n" + CHANGELOG,
       license='Apache License (2.0)',
@@ -52,6 +36,7 @@ setup(name='amo2kinto',
           "Programming Language :: Python",
           "Programming Language :: Python :: 3",
           "Programming Language :: Python :: 3.5",
+          "Programming Language :: Python :: 3.6",
           "License :: OSI Approved :: Apache Software License"
       ],
       keywords="web services",
