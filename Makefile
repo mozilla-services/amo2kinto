@@ -90,7 +90,7 @@ $(VENV)/bin/kinto: install
 	$(VENV)/bin/pip install kinto
 
 run-kinto: $(VENV)/bin/kinto
-	$(VENV)/bin/kinto --ini config/kinto.ini start
+	$(VENV)/bin/kinto start --ini config/kinto.ini
 
 need-kinto-running:
 	@curl http://localhost:8888/v1 2>/dev/null 1>&2 || (echo "Run 'make run-kinto' before starting tests." && exit 1)
