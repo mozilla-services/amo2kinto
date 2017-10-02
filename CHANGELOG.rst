@@ -6,7 +6,7 @@ This document describes changes between each past release.
 3.1.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Add support for cert items subject and pubKeyHash attributes. (#70)
 
 
 3.0.0 (2017-09-14)
