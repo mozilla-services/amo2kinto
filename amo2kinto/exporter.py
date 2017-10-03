@@ -327,7 +327,7 @@ def write_cert_items(xml_tree, records, api_ver=3):
 
     certItems = etree.SubElement(xml_tree, 'certItems')
     for item in records:
-        if 'subject' in item and 'pubKeyHash' in item and item['subject'] and item['pubKeyHash']:
+        if item.get('subject') and item.get('pubKeyHash'):
             cert = etree.SubElement(certItems, 'certItem',
                                     subject=item['subject'],
                                     pubKeyHash=item['pubKeyHash'])
