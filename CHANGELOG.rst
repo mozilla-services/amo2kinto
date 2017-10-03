@@ -3,6 +3,12 @@ CHANGELOG
 
 This document describes changes between each past release.
 
+3.2.0 (unreleased)
+==================
+
+- Nothing changed yet.
+
+
 3.1.0 (2017-10-03)
 ==================
 
