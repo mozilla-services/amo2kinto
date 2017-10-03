@@ -3,7 +3,7 @@ CHANGELOG
 
 This document describes changes between each past release.
 
-3.1.0 (unreleased)
+3.1.0 (2017-10-03)
 ==================
 
 - Add support for cert items subject and pubKeyHash attributes. (#70)
