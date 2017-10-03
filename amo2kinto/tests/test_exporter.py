@@ -884,6 +884,137 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 """.decode('utf-8')
 
 
+CERTIFICATE_DATA_WITH_EMPTY_PUB_KEY = {
+    "id": "fe7681eb-8480-718e-9870-084dca698f1d",
+    "last_modified": "1448372434324",
+    "blockID": "c796",
+    "issuerName": "MBQxEjAQBgNVBAMTCWVEZWxsUm9vdA==",
+    "serialNumber": "a8V7lRiTqpdLYkrAiPw7tg==",
+    "subject": "",
+    "pubKeyHash": "=",
+    "details": {
+        "who": ".",
+        "created": "2015-11-24T14:40:34Z",
+        "name": "eDellRoot",
+        "bug": "https://bugzilla.mozilla.org/show_bug.cgi?id=1227729",
+        "why": "."
+    }
+}
+
+
+def test_certificate_record_with_empty_pub_key():
+    xml_tree = etree.Element(
+        'blocklist',
+        xmlns="http://www.mozilla.org/2006/addons-blocklist",
+        lastupdate='1459262434336'
+    )
+
+    exporter.write_cert_items(xml_tree, [CERTIFICATE_DATA_WITH_EMPTY_PUB_KEY])
+
+    result = etree.tostring(
+        etree.ElementTree(xml_tree),
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='UTF-8').decode('utf-8')
+
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
+<blocklist lastupdate="1459262434336" \
+xmlns="http://www.mozilla.org/2006/addons-blocklist">
+  <certItems>
+    <certItem issuerName="MBQxEjAQBgNVBAMTCWVEZWxsUm9vdA==">
+      <serialNumber>a8V7lRiTqpdLYkrAiPw7tg==</serialNumber>
+    </certItem>
+  </certItems>
+</blocklist>
+""".decode('utf-8')
+
+
+CERTIFICATE_DATA_WITH_SUBJECT = {
+    "id": "fe7681eb-8480-718e-9870-084dca698f1d",
+    "last_modified": "1448372434324",
+    "blockID": "c796",
+    "subject": "MCIxIDAeBgNVBAMMF0Fub3RoZXIgVGVzdCBFbmQtZW50aXR5",
+    "pubKeyHash": "VCIlmPM9NkgFQtrs4Oa5TeFcDu6MWRTKSNdePEhOgD8=",
+    "details": {
+        "who": ".",
+        "created": "2017-10-02T14:23:34Z",
+        "name": "Test End-entity",
+        "bug": "https://bugzilla.mozilla.org/show_bug.cgi?id=1404915",
+        "why": "."
+    }
+}
+
+
+def test_certificate_record_with_subject_and_pubKeyHash():
+    xml_tree = etree.Element(
+        'blocklist',
+        xmlns="http://www.mozilla.org/2006/addons-blocklist",
+        lastupdate='1459262434336'
+    )
+
+    exporter.write_cert_items(xml_tree, [CERTIFICATE_DATA_WITH_SUBJECT])
+
+    result = etree.tostring(
+        etree.ElementTree(xml_tree),
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='UTF-8').decode('utf-8')
+
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
+<blocklist lastupdate="1459262434336" \
+xmlns="http://www.mozilla.org/2006/addons-blocklist">
+  <certItems>
+    <certItem pubKeyHash="VCIlmPM9NkgFQtrs4Oa5TeFcDu6MWRTKSNdePEhOgD8=" \
+subject="MCIxIDAeBgNVBAMMF0Fub3RoZXIgVGVzdCBFbmQtZW50aXR5"/>
+  </certItems>
+</blocklist>
+""".decode('utf-8')
+
+
+CERTIFICATE_DATA_WITH_SUBJECT_AND_EMPTY_ISSUER = {
+    "id": "fe7681eb-8480-718e-9870-084dca698f1d",
+    "last_modified": "1448372434324",
+    "blockID": "c796",
+    "subject": "MCIxIDAeBgNVBAMMF0Fub3RoZXIgVGVzdCBFbmQtZW50aXR5",
+    "pubKeyHash": "VCIlmPM9NkgFQtrs4Oa5TeFcDu6MWRTKSNdePEhOgD8=",
+    "issuerName": "",
+    "serialNumber": "",
+    "details": {
+        "who": ".",
+        "created": "2017-10-02T14:23:34Z",
+        "name": "Test End-entity",
+        "bug": "https://bugzilla.mozilla.org/show_bug.cgi?id=1404915",
+        "why": "."
+    }
+}
+
+
+def test_certificate_record_with_subject_and_pubKeyHash_with_empty_issuerName():
+    xml_tree = etree.Element(
+        'blocklist',
+        xmlns="http://www.mozilla.org/2006/addons-blocklist",
+        lastupdate='1459262434336'
+    )
+
+    exporter.write_cert_items(xml_tree, [CERTIFICATE_DATA_WITH_SUBJECT_AND_EMPTY_ISSUER])
+
+    result = etree.tostring(
+        etree.ElementTree(xml_tree),
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='UTF-8').decode('utf-8')
+
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
+<blocklist lastupdate="1459262434336" \
+xmlns="http://www.mozilla.org/2006/addons-blocklist">
+  <certItems>
+    <certItem pubKeyHash="VCIlmPM9NkgFQtrs4Oa5TeFcDu6MWRTKSNdePEhOgD8=" \
+subject="MCIxIDAeBgNVBAMMF0Fub3RoZXIgVGVzdCBFbmQtZW50aXR5"/>
+  </certItems>
+</blocklist>
+""".decode('utf-8')
+
+
 class TestMain(unittest.TestCase):
     def setUp(self):
         p = mock.patch('kinto_http.cli_utils.Client')
