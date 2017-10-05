@@ -6,8 +6,7 @@ This document describes changes between each past release.
 3.2.0 (unreleased)
 ==================
 
-- Nothing changed yet.
-
+- Allow export for only ``pubKeyHash`` or ``subject``. (#73)
 
 3.1.0 (2017-10-03)
 ==================
