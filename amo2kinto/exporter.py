@@ -411,7 +411,7 @@ def main(args=None):
             collection=args.addons_collection,
             enabled=True,
             _sort="last_modified")
-    except:
+    except Exception:
         logger.warn(
             'Unable to fetch the ``{bucket}/{collection}`` records.'.format(
                 bucket=args.addons_bucket,
@@ -429,7 +429,7 @@ def main(args=None):
             collection=args.plugins_collection,
             enabled=True,
             _sort="last_modified")
-    except:
+    except Exception:
         logger.warn(
             'Unable to fetch the ``{bucket}/{collection}`` records.'.format(
                 bucket=args.plugins_bucket,
@@ -447,7 +447,7 @@ def main(args=None):
             collection=args.gfx_collection,
             enabled=True,
             _sort="last_modified")
-    except:
+    except Exception:
         logger.warn(
             'Unable to fetch the ``{bucket}/{collection}`` records.'.format(
                 bucket=args.gfx_bucket,
@@ -465,7 +465,7 @@ def main(args=None):
             collection=args.certificates_collection,
             enabled=True,
             _sort="last_modified")
-    except:
+    except Exception:
         logger.warn(
             'Unable to fetch the ``{bucket}/{collection}`` records.'.format(
                 bucket=args.certificates_bucket,
