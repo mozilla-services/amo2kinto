@@ -78,6 +78,13 @@ def get_related_targetApplication(vR, app_id, app_ver):
     return None
 
 
+def should_include_certs(app_id=None, app_ver=None):
+    """Whether we should include certificate blocklist items for this application version."""
+    # As of Firefox 58, we definitely won't need the cert items in here.
+    # They get fetched via a different means than the XML-based blocklist
+    return app_id != constants.FIREFOX_APPID or version_int(app_ver) < version_int("58.0")
+
+
 def write_addons_items(xml_tree, records, app_id, api_ver=3, app_ver=None):
     """Generate the addons blocklists.
 
@@ -310,7 +317,7 @@ def write_gfx_items(xml_tree, records, app_id, api_ver=3):
                         versionRange.set(field, str(value))
 
 
-def write_cert_items(xml_tree, records, api_ver=3):
+def write_cert_items(xml_tree, records, api_ver=3, app_id=None, app_ver=None):
     """Generate the certificate blocklists.
 
     <certItem issuerName="MIGQMQswCQYD...IENB">
@@ -323,7 +330,7 @@ def write_cert_items(xml_tree, records, api_ver=3):
               pubKeyHash='VCIlmPM9NkgFQtrs4Oa5TeFcDu6MWRTKSNdePEhOgD8='>
     </certItem>
     """
-    if not records:
+    if not records or not should_include_certs(app_id, app_ver):
         return
 
     certItems = etree.SubElement(xml_tree, 'certItems')
@@ -460,23 +467,25 @@ def main(args=None):
     if gfx_records:
         last_update = max(last_update, gfx_records[-1]['last_modified'])
 
-    try:
-        cert_records = client.get_records(
-            bucket=args.certificates_bucket,
-            collection=args.certificates_collection,
-            enabled=True,
-            _sort="last_modified")
-    except Exception:
-        logger.warn(
-            'Unable to fetch the ``{bucket}/{collection}`` records.'.format(
+    cert_records = None
+    if should_include_certs(args.app, args.app_version):
+        try:
+            cert_records = client.get_records(
                 bucket=args.certificates_bucket,
                 collection=args.certificates_collection,
+                enabled=True,
+                _sort="last_modified")
+        except Exception:
+            logger.warn(
+                'Unable to fetch the ``{bucket}/{collection}`` records.'.format(
+                    bucket=args.certificates_bucket,
+                    collection=args.certificates_collection,
+                )
             )
-        )
-        cert_records = []
+            cert_records = []
 
-    if cert_records:
-        last_update = max(last_update, cert_records[-1]['last_modified'])
+        if cert_records:
+            last_update = max(last_update, cert_records[-1]['last_modified'])
 
     xml_tree = etree.Element(
         'blocklist',
@@ -496,7 +505,9 @@ def main(args=None):
                     api_ver=args.api_version,
                     app_id=args.app)
     write_cert_items(xml_tree, cert_records,
-                     api_ver=args.api_version)
+                     api_ver=args.api_version,
+                     app_id=args.app,
+                     app_ver=args.app_version)
 
     doc = etree.ElementTree(xml_tree)
     out_fd.write(etree.tostring(

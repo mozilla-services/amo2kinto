@@ -6,7 +6,7 @@ This document describes changes between each past release.
 3.2.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Stop exporting cert items to Firefox 58 and above, where they aren't used. (#75)
 
 
 3.1.0 (2017-10-03)
