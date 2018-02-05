@@ -43,23 +43,39 @@ def build_version_range(root, item, app_id, app_ver=None):
                             maxVersion=tA['maxVersion'])
 
 
-def is_related_to(item, app_id):
-    """Return True if the item relates to the given app_id."""
+def is_related_to(item, app_id, app_ver=None):
+    """Return True if the item relates to the given app_id (and app_ver, if passed)."""
     if not item.get('versionRange'):
         return True
 
     for vR in item['versionRange']:
         if not vR.get('targetApplication'):
             return True
-
-        for tA in vR['targetApplication']:
-            if tA['guid'] == app_id:
-                return True
-
+        if get_related_targetApplication(vR, app_id, app_ver) is not None:
+            return True
     return False
 
 
-def write_addons_items(xml_tree, records, app_id, api_ver=3):
+def get_related_targetApplication(vR, app_id, app_ver):
+    """Return the first matching target application in this version range.
+    Returns None if there are no target applications or no matching ones."""
+    if not vR.get('targetApplication'):
+        return None
+
+    for tA in vR['targetApplication']:
+        if tA['guid'] == app_id:
+            if not app_ver:
+                return tA
+            # We purposefully use maxVersion only, so that the blocklist contains items
+            # whose minimum version is ahead of the version we get passed. This means
+            # the blocklist we serve is "future-proof" for app upgrades.
+            if between(version_int(app_ver), '0', tA.get('maxVersion', '*')):
+                return tA
+
+    return None
+
+
+def write_addons_items(xml_tree, records, app_id, api_ver=3, app_ver=None):
     """Generate the addons blocklists.
 
     <emItem blockID="i372" id="5nc3QHFgcb@r06Ws9gvNNVRfH.com">
@@ -80,7 +96,7 @@ def write_addons_items(xml_tree, records, app_id, api_ver=3):
     emItems = etree.SubElement(xml_tree, 'emItems')
     groupby = {}
     for item in records:
-        if is_related_to(item, app_id):
+        if is_related_to(item, app_id, app_ver):
             if item['guid'] in groupby:
                 emItem = groupby[item['guid']]
                 # When creating new records from the Kinto Admin we don't have proper blockID.
@@ -137,35 +153,17 @@ def write_plugin_items(xml_tree, records, app_id, api_ver=3, app_ver=None):
 
     pluginItems = etree.SubElement(xml_tree, 'pluginItems')
     for item in records:
-        if is_related_to(item, app_id):
-            for versionRange in item.get('versionRange', []):
-                if not versionRange.get('targetApplication'):
-                    add_plugin_item(pluginItems, item, versionRange,
+        for versionRange in item.get('versionRange', []):
+            if not versionRange.get('targetApplication'):
+                add_plugin_item(pluginItems, item, versionRange,
+                                app_id=app_id, api_ver=api_ver,
+                                app_ver=app_ver)
+            else:
+                targetApplication = get_related_targetApplication(versionRange, app_id, app_ver)
+                if targetApplication is not None:
+                    add_plugin_item(pluginItems, item, versionRange, targetApplication,
                                     app_id=app_id, api_ver=api_ver,
                                     app_ver=app_ver)
-                else:
-                    for targetApplication in versionRange['targetApplication']:
-                        is_targetApplication_related = (
-                            'guid' not in targetApplication or
-                            targetApplication['guid'] == app_id
-                        )
-                        if is_targetApplication_related:
-                            if api_ver < 3 and app_ver is not None:
-                                app_version = version_int(app_ver)
-                                is_version_related = between(
-                                    app_version,
-                                    targetApplication.get('minVersion', 0),
-                                    targetApplication.get('maxVersion', '*'))
-                                if is_version_related:
-                                    add_plugin_item(
-                                        pluginItems, item, versionRange,
-                                        targetApplication, app_id=app_id,
-                                        api_ver=api_ver, app_ver=app_ver)
-                            else:
-                                add_plugin_item(
-                                    pluginItems, item, versionRange,
-                                    targetApplication, app_id=app_id,
-                                    api_ver=api_ver, app_ver=app_ver)
 
 
 def add_plugin_item(pluginItems, item, version, tA=None, app_id=None,
@@ -485,7 +483,8 @@ def main(args=None):
 
     write_addons_items(xml_tree, addons_records,
                        api_ver=args.api_version,
-                       app_id=args.app)
+                       app_id=args.app,
+                       app_ver=args.app_version)
     write_plugin_items(xml_tree, plugin_records,
                        api_ver=args.api_version,
                        app_id=args.app,
