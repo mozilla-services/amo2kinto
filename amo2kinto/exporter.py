@@ -45,10 +45,11 @@ def build_version_range(root, item, app_id, app_ver=None):
 
 def is_related_to(item, app_id, app_ver=None):
     """Return True if the item relates to the given app_id (and app_ver, if passed)."""
-    if not item.get('versionRange'):
+    versionRange = item.get('versionRange')
+    if not versionRange:
         return True
 
-    for vR in item['versionRange']:
+    for vR in versionRange:
         if not vR.get('targetApplication'):
             return True
         if get_related_targetApplication(vR, app_id, app_ver) is not None:
@@ -59,11 +60,13 @@ def is_related_to(item, app_id, app_ver=None):
 def get_related_targetApplication(vR, app_id, app_ver):
     """Return the first matching target application in this version range.
     Returns None if there are no target applications or no matching ones."""
-    if not vR.get('targetApplication'):
+    targetApplication = vR.get('targetApplication')
+    if not targetApplication:
         return None
 
-    for tA in vR['targetApplication']:
-        if tA['guid'] == app_id:
+    for tA in targetApplication:
+        guid = tA.get('guid')
+        if not guid or guid == app_id:
             if not app_ver:
                 return tA
             # We purposefully use maxVersion only, so that the blocklist contains items
