@@ -1091,6 +1091,27 @@ subject="MCIxIDAeBgNVBAMMF0Fub3RoZXIgVGVzdCBFbmQtZW50aXR5"/>
 """.decode('utf-8')
 
 
+def test_certificate_record_post_fx58():
+    xml_tree = etree.Element(
+        'blocklist',
+        xmlns="http://www.mozilla.org/2006/addons-blocklist",
+        lastupdate='1459262434336'
+    )
+
+    exporter.write_cert_items(xml_tree, [CERTIFICATE_DATA_WITH_SUBJECT_AND_EMPTY_ISSUER],
+                              app_id=constants.FIREFOX_APPID, app_ver="59.0")
+    result = etree.tostring(
+        etree.ElementTree(xml_tree),
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='UTF-8').decode('utf-8')
+
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
+<blocklist lastupdate="1459262434336" \
+xmlns="http://www.mozilla.org/2006/addons-blocklist"/>
+""".decode('utf-8')
+
+
 class TestMain(unittest.TestCase):
     def setUp(self):
         p = mock.patch('kinto_http.cli_utils.Client')
@@ -1222,3 +1243,14 @@ class TestMain(unittest.TestCase):
             with mock.patch('amo2kinto.exporter.open', return_value=out_file):
                 exporter.main(['--out', 'file'])
         self.assertIn('lastupdate="1448372434324"', out_file.getvalue())
+
+    def test_no_certs_post_fx58(self):
+        self.MockedClient.return_value.get_records.side_effect = (
+            [ADDONS_DATA], [PLUGIN_DATA], [GFX_DATA], [CERTIFICATE_DATA]
+        )
+        out_file = StringIO()
+        with mock.patch.object(out_file, 'close'):
+            with mock.patch('amo2kinto.exporter.open', return_value=out_file):
+                exporter.main(['--out', 'file', '--app', constants.FIREFOX_APPID,
+                               '--app-version', '58.0'])
+        self.assertNotIn('<certItems>', out_file.getvalue())
