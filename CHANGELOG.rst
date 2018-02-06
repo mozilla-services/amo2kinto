@@ -6,8 +6,9 @@ This document describes changes between each past release.
 3.2.0 (2018-02-06)
 ==================
 
+- Filter add-ons and plugins in v3 based on the requesting application and version. (#74)
 - Stop exporting cert items to Firefox 58 and above, where they aren't used. (#75)
-- Apply version checks to add-ons and plugins in the blocklist (#74)
+
 
 3.1.0 (2017-10-03)
 ==================
