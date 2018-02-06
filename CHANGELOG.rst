@@ -3,7 +3,7 @@ CHANGELOG
 
 This document describes changes between each past release.
 
-3.2.0 (unreleased)
+3.2.0 (2018-02-06)
 ==================
 
 - Stop exporting cert items to Firefox 58 and above, where they aren't used. (#75)
