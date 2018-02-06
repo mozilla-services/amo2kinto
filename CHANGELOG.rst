@@ -3,7 +3,7 @@ CHANGELOG
 
 This document describes changes between each past release.
 
-3.2.0 (unreleased)
+3.2.0 (2018-02-06)
 ==================
 
 - Filter add-ons and plugins in v3 based on the requesting application and version. (#74)
