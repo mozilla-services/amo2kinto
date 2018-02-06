@@ -234,6 +234,78 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 """.decode('utf-8')
 
 
+def test_addon_record_with_no_targetApplication_version_matching():
+    xml_tree = etree.Element(
+        'blocklist',
+        xmlns="http://www.mozilla.org/2006/addons-blocklist",
+        lastupdate='1459262434336'
+    )
+
+    data = ADDONS_DATA.copy()
+    data['versionRange'] = [{
+        "targetApplication": [
+            {"guid": constants.FIREFOX_APPID,
+             "minVersion": "3.6",
+             "maxVersion": "3.6.*"}
+        ],
+        "minVersion": "0",
+        "maxVersion": "*",
+        "severity": 3
+    }]
+
+    exporter.write_addons_items(xml_tree, [data],
+                                constants.FIREFOX_APPID, app_ver="3.7")
+
+    result = etree.tostring(
+        etree.ElementTree(xml_tree),
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='UTF-8').decode('utf-8')
+
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
+<blocklist lastupdate="1459262434336" \
+xmlns="http://www.mozilla.org/2006/addons-blocklist">
+  <emItems/>
+</blocklist>
+""".decode('utf-8')
+
+
+def test_addon_record_with_future_targetApplication_version_matching():
+    xml_tree = etree.Element(
+        'blocklist',
+        xmlns="http://www.mozilla.org/2006/addons-blocklist",
+        lastupdate='1459262434336'
+    )
+
+    exporter.write_addons_items(xml_tree, [ADDONS_DATA],
+                                constants.FIREFOX_APPID, app_ver="3.1")
+
+    result = etree.tostring(
+        etree.ElementTree(xml_tree),
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='UTF-8').decode('utf-8')
+
+    assert result == b"""<?xml version='1.0' encoding='UTF-8'?>
+<blocklist lastupdate="1459262434336" \
+xmlns="http://www.mozilla.org/2006/addons-blocklist">
+  <emItems>
+    <emItem blockID="i454" id="sqlmoz@facebook.com">
+      <prefs>
+        <pref>test.blocklist</pref>
+      </prefs>
+      <versionRange minVersion="0" maxVersion="*" severity="3">
+        <targetApplication id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}">
+          <versionRange maxVersion="3.6.*" minVersion="3.6"/>
+        </targetApplication>
+      </versionRange>
+      <versionRange minVersion="0" maxVersion="*"/>
+    </emItem>
+  </emItems>
+</blocklist>
+""".decode('utf-8')
+
+
 def test_addon_record_group_by_blockID():
     xml_tree = etree.Element(
         'blocklist',
@@ -333,6 +405,10 @@ PLUGIN_DATA = {
 
 def test_between_does_not_fails_with_none():
     assert exporter.between(compare.version_int("46.2"), None, None)
+
+
+def test_get_related_targetApplication_accepts_versionRange_without_targetApplication():
+    assert exporter.get_related_targetApplication({}, None, None) is None
 
 
 def test_plugin_record():
