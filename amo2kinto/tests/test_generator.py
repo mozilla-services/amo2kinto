@@ -100,7 +100,7 @@ def test_generate_index():
     f = mock.mock_open()
     with mock.patch('amo2kinto.generator.open', f, create=True):
         generate_index(records, template, 'tmp')
-        f.assert_called_once_with('tmp/index.html', 'wb')
+        f.assert_called_once_with('tmp/index.html', 'w', encoding='utf-8')
         handle = f()
         assert handle.write.call_count == 1
 
@@ -121,7 +121,7 @@ def test_generate_record():
     with mock.patch('amo2kinto.generator.os.makedirs'):
         with mock.patch('amo2kinto.generator.open', f, create=True):
             generate_record(ADDONS_DATA, template, 'tmp', get_record_filename)
-            f.assert_called_once_with('tmp/i454.html', 'wb')
+            f.assert_called_once_with('tmp/i454.html', 'w', encoding='utf-8')
             handle = f()
             assert handle.write.call_count == 1
 
@@ -167,10 +167,10 @@ def test_generate_uses_last_modified_if_created_is_missing():
             assert f.return_value.write.call_count == 2
 
             # Present in index
-            assert b'May 13, 2013' in f.return_value.write.call_args_list[0][0][0]
+            assert 'May 13, 2013' in f.return_value.write.call_args_list[0][0][0]
 
             # Present in the record file
-            assert b'May 13, 2013' in f.return_value.write.call_args_list[1][0][0]
+            assert 'May 13, 2013' in f.return_value.write.call_args_list[1][0][0]
 
 
 class TestMain(unittest.TestCase):
@@ -248,4 +248,4 @@ class TestMain(unittest.TestCase):
         main(['--target-dir', 'file'])
         self.assert_arguments(self.MockedClient)
 
-        self.mocked_open.assert_called_with('file/index.html', 'wb')
+        self.mocked_open.assert_called_with('file/index.html', 'w', encoding='utf-8')
