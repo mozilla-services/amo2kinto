@@ -100,7 +100,7 @@ def test_generate_index():
     f = mock.mock_open()
     with mock.patch('amo2kinto.generator.open', f, create=True):
         generate_index(records, template, 'tmp')
-        f.assert_called_once_with('tmp/index.html', 'w')
+        f.assert_called_once_with('tmp/index.html', 'wb')
         handle = f()
         assert handle.write.call_count == 1
 
@@ -248,4 +248,4 @@ class TestMain(unittest.TestCase):
         main(['--target-dir', 'file'])
         self.assert_arguments(self.MockedClient)
 
-        self.mocked_open.assert_called_with('file/index.html', 'w')
+        self.mocked_open.assert_called_with('file/index.html', 'wb')

@@ -35,7 +35,7 @@ def generate_index(records, template, target_dir):
     filename = os.path.join(target_dir, 'index.html')
 
     logger.info('Writing %s' % filename)
-    with open(filename, 'w') as f:
+    with open(filename, 'wb') as f:
         f.write(res.encode('utf8'))
 
 
