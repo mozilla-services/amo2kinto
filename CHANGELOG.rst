@@ -3,7 +3,7 @@ CHANGELOG
 
 This document describes changes between each past release.
 
-3.3.0 (unreleased)
+3.2.1 (2018-02-28)
 ==================
 
 - Fix bug with Python 3 and writing files (#80).
