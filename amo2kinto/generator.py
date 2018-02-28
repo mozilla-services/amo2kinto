@@ -35,8 +35,8 @@ def generate_index(records, template, target_dir):
     filename = os.path.join(target_dir, 'index.html')
 
     logger.info('Writing %s' % filename)
-    with open(filename, 'w') as f:
-        f.write(res.encode('utf8'))
+    with open(filename, 'w', encoding='utf-8') as f:
+        f.write(res)
 
 
 def generate_record(record, template, target_dir, get_filename):
@@ -46,8 +46,8 @@ def generate_record(record, template, target_dir, get_filename):
     logger.info('Writing %s' % filename)
 
     # This needs to be able to write to S3
-    with open(filename, 'w') as f:
-        f.write(res.encode('utf-8'))
+    with open(filename, 'w', encoding='utf-8') as f:
+        f.write(res)
 
 
 def get_record_filename(record):
