@@ -46,7 +46,7 @@ def generate_record(record, template, target_dir, get_filename):
     logger.info('Writing %s' % filename)
 
     # This needs to be able to write to S3
-    with open(filename, 'w') as f:
+    with open(filename, 'wb') as f:
         f.write(res.encode('utf-8'))
 
 

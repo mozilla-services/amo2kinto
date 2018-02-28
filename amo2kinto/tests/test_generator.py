@@ -121,7 +121,7 @@ def test_generate_record():
     with mock.patch('amo2kinto.generator.os.makedirs'):
         with mock.patch('amo2kinto.generator.open', f, create=True):
             generate_record(ADDONS_DATA, template, 'tmp', get_record_filename)
-            f.assert_called_once_with('tmp/i454.html', 'w')
+            f.assert_called_once_with('tmp/i454.html', 'wb')
             handle = f()
             assert handle.write.call_count == 1
 
