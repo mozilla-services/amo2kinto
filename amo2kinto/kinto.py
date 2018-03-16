@@ -1,4 +1,3 @@
-from functools import partial
 from kinto_http.exceptions import KintoException
 
 
@@ -14,8 +13,8 @@ def get_kinto_records(kinto_client, bucket, collection, permissions,
             pass
 
     try:
-        response = kinto_client.create_collection(
-            id=collection, bucket=bucket, permissions=permissions, if_not_exists=True)
+        kinto_client.create_collection(id=collection, bucket=bucket,
+                                       permissions=permissions, if_not_exists=True)
     except KintoException as e:
         if hasattr(e, 'response') and e.response.status_code == 403:
             # The user cannot create collection on this bucket, ignore the creation.
