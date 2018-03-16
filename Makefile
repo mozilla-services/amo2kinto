@@ -1,4 +1,4 @@
-PYTHON_VERSION = python3.5
+PYTHON_VERSION = python3.6
 VIRTUALENV = virtualenv
 VENV := $(shell echo $${VIRTUAL_ENV-.venv-$(PYTHON_VERSION)})
 PYTHON = $(VENV)/bin/python
@@ -17,8 +17,6 @@ ANDROID_APPID = {aa3c5121-dab2-40e2-81ca-7ea25febc110}
 BLOCKLIST_ARGS = blocklist/3/$(FIREFOX_APP_ID)/47.0/
 
 BLOCKLIST_FILE_URL = https://blocklists-settings.stage.mozaws.net/$(BLOCKLIST_ARGS)
-
-AMO_BLOCKLIST_UI_SCHEMA = https://raw.githubusercontent.com/mozilla-services/amo-blocklist-ui/master/amo-blocklist.json
 
 BLOCKLIST_BUCKET = staging
 
@@ -81,9 +79,6 @@ generate-blocklist-file:
 
 verify-blocklists:
 	$(VENV)/bin/xml-verifier blocklist.xml generated-blocklist.xml
-
-update-schemas:
-	wget -O schemas.json $(AMO_BLOCKLIST_UI_SCHEMA)
 
 install-kinto: $(VENV)/bin/kinto
 $(VENV)/bin/kinto: install

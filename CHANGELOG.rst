@@ -6,7 +6,9 @@ This document describes changes between each past release.
 3.2.2 (unreleased)
 ==================
 
-- Nothing changed yet.
+**Breaking changes**
+
+- Removed code in charge of updating the collection schema (#85)
 
 
 3.2.1 (2018-02-28)
