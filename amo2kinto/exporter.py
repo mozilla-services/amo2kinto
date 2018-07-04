@@ -113,11 +113,17 @@ def write_addons_items(xml_tree, records, app_id, api_ver=3, app_ver=None):
                 if 'blockID' in item:
                     # Remove the first caracter which is the letter i to
                     # compare the numeric value i45 < i356.
-                    current_blockID = item['blockID'][1:]
-                    previous_blockID = emItem.attrib['blockID'][1:]
+                    current_blockID = int(item['blockID'][1:])
+                    previous_blockID = int(emItem.attrib['blockID'][1:])
                     # Group by and keep the biggest blockID in the XML file.
                     if current_blockID > previous_blockID:
                         emItem.attrib['blockID'] = item['blockID']
+                else:
+                    # If the latest entry does not have any blockID attribute, its
+                    # ID should be used. (the list of records is sorted by ascending
+                    # last_modified).
+                    # See https://bugzilla.mozilla.org/show_bug.cgi?id=1473194
+                    emItem.attrib['blockID'] = item['id']
             else:
                 emItem = etree.SubElement(emItems, 'emItem',
                                           blockID=item.get('blockID', item['id']))
