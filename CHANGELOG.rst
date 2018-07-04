@@ -6,6 +6,10 @@ This document describes changes between each past release.
 3.2.2 (unreleased)
 ==================
 
+**Bug fix**
+
+- Fix the affected users section (#87), thanks @rctgamer3!
+
 **Breaking changes**
 
 - Removed code in charge of updating the collection schema (#85)
