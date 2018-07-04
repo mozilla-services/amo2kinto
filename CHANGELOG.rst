@@ -6,7 +6,9 @@ This document describes changes between each past release.
 4.1.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+**Bug fix**
+
+- Fix the XML item ID when squashing entries by addon ID
 
 
 4.0.0 (2018-07-04)
