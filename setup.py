@@ -28,7 +28,7 @@ ENTRY_POINTS = {
 
 
 setup(name='amo2kinto',
-      version='3.2.2.dev0',
+      version='4.0.0',
       description='Generate a blocklists.xml file from the Kinto collections.',
       long_description=README + "\n\n" + CHANGELOG,
       license='Apache License (2.0)',
