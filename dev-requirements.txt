@@ -1,7 +1,7 @@
 tox
 flake8
 mock
-pytest==3.3.2
+pytest
 pytest-cache
 pytest-cover
 pytest-sugar
