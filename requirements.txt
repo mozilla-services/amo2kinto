@@ -1,6 +1,6 @@
 certifi==2018.1.18
 chardet==3.0.4
-idna==2.6
+idna==2.8
 Jinja2==2.10
 kinto-http==9.1.0
 lxml==4.1.1
