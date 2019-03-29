@@ -200,7 +200,9 @@ class TestMain(unittest.TestCase):
                                         auth=kwargs['auth'],
                                         bucket=kwargs['bucket'],
                                         collection=None,
-                                        retry=0, retry_after=None)
+                                        retry=0,
+                                        retry_after=None,
+                                        ignore_batch_4xx=False)
 
         addons_arguments = {
             'bucket': kwargs['bucket'],

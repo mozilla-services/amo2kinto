@@ -153,7 +153,7 @@ def write_plugin_items(xml_tree, records, app_id, api_ver=3, app_ver=None):
     """Generate the plugin blocklists.
 
     <pluginItem blockID="p422">
-        <match name="filename" exp="JavaAppletPlugin\.plugin"/>
+        <match name="filename" exp="JavaAppletPlugin\\.plugin"/>
         <versionRange minVersion="Java 7 Update 16"
                       maxVersion="Java 7 Update 24"
                       severity="0" vulnerabilitystatus="1">

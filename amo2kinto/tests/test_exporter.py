@@ -1204,7 +1204,8 @@ class TestMain(unittest.TestCase):
                                         bucket=None,
                                         collection=None,
                                         retry=0,
-                                        retry_after=None)
+                                        retry_after=None,
+                                        ignore_batch_4xx=False)
 
         cert_arguments = {
             'bucket': kwargs['certificates_bucket'],
