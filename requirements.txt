@@ -6,7 +6,7 @@ kinto-http==10.4.0
 lxml==4.3.3
 MarkupSafe==1.1.1
 python-dateutil==2.8.0
-requests==2.21.0
+requests==2.22.0
 six==1.12.0
 Unidecode==1.0.23
 urllib3==1.25.2
