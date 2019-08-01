@@ -39,8 +39,8 @@ def build_version_range(root, item, app_id, app_ver=None):
                             id=tA['guid'])
                         etree.SubElement(
                             targetApplication, 'versionRange',
-                            minVersion=tA['minVersion'],
-                            maxVersion=tA['maxVersion'])
+                            maxVersion=tA['maxVersion'],
+                            minVersion=tA['minVersion'])
 
 
 def is_related_to(item, app_id, app_ver=None):
@@ -196,8 +196,8 @@ def add_plugin_item(pluginItems, item, version, tA=None, app_id=None,
         json_field = 'match%s' % xml_field.capitalize()
         if json_field in item:
             etree.SubElement(entry, 'match',
-                             name=xml_field,
-                             exp=item[json_field])
+                             exp=item[json_field],
+                             name=xml_field,)
 
     if 'infoURL' in item:
         infoURL = etree.SubElement(entry, 'infoURL')
@@ -269,8 +269,8 @@ def add_plugin_item(pluginItems, item, version, tA=None, app_id=None,
             id=tA['guid'])
         etree.SubElement(targetApplication,
                          'versionRange',
-                         minVersion=tA['minVersion'],
-                         maxVersion=tA['maxVersion'])
+                         maxVersion=tA['maxVersion'],
+                         minVersion=tA['minVersion'])
 
 
 def write_gfx_items(xml_tree, records, app_id, api_ver=3):
@@ -343,8 +343,8 @@ def write_cert_items(xml_tree, records, api_ver=3, app_id=None, app_ver=None):
     for item in records:
         if item.get('subject') and item.get('pubKeyHash'):
             cert = etree.SubElement(certItems, 'certItem',
-                                    subject=item['subject'],
-                                    pubKeyHash=item['pubKeyHash'])
+                                    pubKeyHash=item['pubKeyHash'],
+                                    subject=item['subject'])
         else:
             cert = etree.SubElement(certItems, 'certItem',
                                     issuerName=item['issuerName'])
@@ -495,8 +495,8 @@ def main(args=None):
 
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='%s' % last_update,
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='%s' % last_update
     )
 
     write_addons_items(xml_tree, addons_records,

@@ -52,8 +52,8 @@ ADDONS_DATA = {
 def test_addon_record():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     exporter.write_addons_items(xml_tree, [ADDONS_DATA],
@@ -88,8 +88,8 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 def test_addon_record_with_no_blockID():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     data = ADDONS_DATA.copy()
@@ -126,8 +126,8 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 def test_addon_record_with_no_version_range_info():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     data = ADDONS_DATA.copy()
@@ -159,8 +159,8 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 def test_addon_record_with_no_targetApplication_info():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     data = ADDONS_DATA.copy()
@@ -201,8 +201,8 @@ name="Mozilla Service Pack (malware)" os="WINNT">
 def test_addon_record_with_no_targetApplication_matching():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     data = ADDONS_DATA.copy()
@@ -237,8 +237,8 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 def test_addon_record_with_no_targetApplication_version_matching():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     data = ADDONS_DATA.copy()
@@ -273,8 +273,8 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 def test_addon_record_with_future_targetApplication_version_matching():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     exporter.write_addons_items(xml_tree, [ADDONS_DATA],
@@ -309,8 +309,8 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 def test_addon_record_group_by_addon_id():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     data = ADDONS_DATA.copy()
@@ -375,8 +375,8 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 def test_addon_record_group_by_addon_id_without_blockID():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     data = ADDONS_DATA.copy()
@@ -482,8 +482,8 @@ def test_get_related_targetApplication_accepts_versionRange_without_targetApplic
 def test_plugin_record():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     exporter.write_plugin_items(xml_tree, [PLUGIN_DATA],
@@ -519,8 +519,8 @@ vulnerabilitystatus="1">
 def test_plugin_record_with_api_version_2():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     exporter.write_plugin_items(xml_tree, [PLUGIN_DATA],
@@ -553,8 +553,8 @@ vulnerabilitystatus="1"/>
 def test_plugin_record_with_api_version_2_with_no_guid():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     data = PLUGIN_DATA.copy()
@@ -595,8 +595,8 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 def test_plugin_record_with_api_version_2_with_no_guid_and_no_vulnerability():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     data = PLUGIN_DATA.copy()
@@ -635,8 +635,8 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 def test_plugin_record_with_api_version_2_with_no_guid_and_severity_only():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     data = PLUGIN_DATA.copy()
@@ -674,8 +674,8 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 def test_plugin_record_with_api_version_2_with_no_guid_and_severity_0():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     data = PLUGIN_DATA.copy()
@@ -713,8 +713,8 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 def test_plugin_record_with_api_version_2_with_guid_and_no_min_max_version():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     data = PLUGIN_DATA.copy()
@@ -757,8 +757,8 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 def test_plugin_record_with_api_version_2_with_guid_and_empty_versionRange():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     data = PLUGIN_DATA.copy()
@@ -799,8 +799,8 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 def test_plugin_record_with_api_version_2_with_related_version():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     data = PLUGIN_DATA.copy()
@@ -843,8 +843,8 @@ xmlns="http://www.mozilla.org/2006/addons-blocklist">
 def test_plugin_record_with_no_targetApplication_info():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     data = PLUGIN_DATA.copy()
@@ -889,8 +889,8 @@ vulnerabilitystatus="1"/>
 def test_plugin_record_with_no_targetApplication_matching():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     data = PLUGIN_DATA.copy()
@@ -951,8 +951,8 @@ GFX_DATA = {
 def test_gfx_record():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     exporter.write_gfx_items(xml_tree, [GFX_DATA],
@@ -1004,8 +1004,8 @@ CERTIFICATE_DATA = {
 def test_certificate_record():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     exporter.write_cert_items(xml_tree, [CERTIFICATE_DATA])
@@ -1049,8 +1049,8 @@ CERTIFICATE_DATA_WITH_EMPTY_PUB_KEY = {
 def test_certificate_record_with_empty_pub_key():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     exporter.write_cert_items(xml_tree, [CERTIFICATE_DATA_WITH_EMPTY_PUB_KEY])
@@ -1092,8 +1092,8 @@ CERTIFICATE_DATA_WITH_SUBJECT = {
 def test_certificate_record_with_subject_and_pubKeyHash():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     exporter.write_cert_items(xml_tree, [CERTIFICATE_DATA_WITH_SUBJECT])
@@ -1136,8 +1136,8 @@ CERTIFICATE_DATA_WITH_SUBJECT_AND_EMPTY_ISSUER = {
 def test_certificate_record_with_subject_and_pubKeyHash_with_empty_issuerName():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     exporter.write_cert_items(xml_tree, [CERTIFICATE_DATA_WITH_SUBJECT_AND_EMPTY_ISSUER])
@@ -1162,8 +1162,8 @@ subject="MCIxIDAeBgNVBAMMF0Fub3RoZXIgVGVzdCBFbmQtZW50aXR5"/>
 def test_certificate_record_post_fx58():
     xml_tree = etree.Element(
         'blocklist',
+        lastupdate='1459262434336',
         xmlns="http://www.mozilla.org/2006/addons-blocklist",
-        lastupdate='1459262434336'
     )
 
     exporter.write_cert_items(xml_tree, [CERTIFICATE_DATA_WITH_SUBJECT_AND_EMPTY_ISSUER],
