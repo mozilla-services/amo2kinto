@@ -129,7 +129,7 @@ def write_addons_items(xml_tree, records, app_id, api_ver=3, app_ver=None):
                                           blockID=item.get('blockID', item['id']))
                 groupby[item['guid']] = emItem
                 prefs = etree.SubElement(emItem, 'prefs')
-                for p in item['prefs']:
+                for p in item.get('prefs', []):
                     pref = etree.SubElement(prefs, 'pref')
                     pref.text = p
 
