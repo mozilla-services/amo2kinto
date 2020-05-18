@@ -6,7 +6,9 @@ This document describes changes between each past release.
 4.1.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+**Bug fix**
+
+- Fix crash when ``prefs`` field is missing from addons entry
 
 
 4.0.1 (2018-07-04)
