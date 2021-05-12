@@ -4,7 +4,7 @@ idna==3.1
 Jinja2==2.11.3
 kinto-http==10.7.0
 lxml==4.6.3
-MarkupSafe==1.1.1
+MarkupSafe==2.0.0
 python-dateutil==2.8.1
 requests==2.25.1
 six==1.16.0
